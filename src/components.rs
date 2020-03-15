@@ -15,4 +15,9 @@ pub struct Renderable {
 }
 
 #[derive(Component)]
-pub struct Player { }
+pub struct Player {}
+
+#[derive(Component)]
+// Entities with this component will "block" movement over them.
+// After all, you can't walk over enemies (unless you're flying!).
+pub struct Blocker {}

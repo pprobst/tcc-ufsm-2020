@@ -6,6 +6,7 @@ use state::State;
 mod components;
 pub use components::*;
 mod player;
+pub mod map_gen;
 
 pub const WINDOW_WIDTH: i32 = 80;
 pub const WINDOW_HEIGHT: i32 = 60;
@@ -21,6 +22,7 @@ fn main() {
     world.register::<Position>();
     world.register::<Renderable>();
     world.register::<Player>();
+    world.register::<Blocker>();
 
     let mut gs = State::new(world);
 
@@ -35,8 +37,11 @@ fn main() {
             .with(Player{})
             .build();
 
+    gs.ecs.insert(map_gen::Map::new(80, 60));
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(player);
+
+    gs.generate_map();
 
     bracket_lib::prelude::main_loop(context, gs);
 }

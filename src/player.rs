@@ -1,6 +1,7 @@
 use bracket_lib::prelude::*;
 use specs::prelude::*;
 use crate::state::*;
+use crate::map_gen::Map;
 use super::{Position, Player};
 
 struct Direction {
@@ -20,15 +21,21 @@ const SOUTHWEST: Direction = Direction { delta_x: -1, delta_y: 1 };
 fn move_player(dir: Direction, ecs: &mut World) {
     let mut pos_ = ecs.write_storage::<Position>();
     let mut player_ = ecs.write_storage::<Player>();
+    let map = ecs.fetch::<Map>();
     
     // Increment position for all the entities with components 'Player' and 'Position'.
     for (_player, pos) in (&mut player_, &mut pos_).join() {
-        pos.x = pos.x + dir.delta_x as i32; 
-        pos.y = pos.y + dir.delta_y as i32; 
+        let dir_x = dir.delta_x as i32;
+        let dir_y = dir.delta_y as i32;
+        let destination = map.idx(pos.x + dir_x, pos.y + dir_y);
 
-        let mut player_pos = ecs.write_resource::<Point>();
-        player_pos.x = pos.x;
-        player_pos.y = pos.y;
+        if !map.tiles[destination].block {
+            pos.x = pos.x + dir_x; 
+            pos.y = pos.y + dir_y; 
+            let mut player_pos = ecs.write_resource::<Point>();
+            player_pos.x = pos.x;
+            player_pos.y = pos.y;
+        }
     }
 }
 
