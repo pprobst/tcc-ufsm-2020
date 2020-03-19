@@ -29,7 +29,7 @@ impl Tile {
             visible: false,
             revealed: false,
             glyph: to_cp437('#'),
-            fg: RGB::from_hex("#6ABE89").expect("Invalid hex string"),
+            fg: RGB::from_hex("#F9DFA7").expect("Invalid hex string"),
         }
     }
 
@@ -40,7 +40,7 @@ impl Tile {
             visible: false,
             revealed: false,
             glyph: to_cp437('.'),
-            fg: RGB::from_hex("#6ABE89").expect("Invalid hex string"),
+            fg: RGB::from_hex("#F8E6C0").expect("Invalid hex string"),
         }
     }
 

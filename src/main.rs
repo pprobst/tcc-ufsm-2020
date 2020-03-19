@@ -41,7 +41,7 @@ fn main() {
                 bg: RGB::named(BLACK),
             })
             .with(Player{})
-            .with(Fov { range: 8, visible_pos: Vec::new(), dirty: true })
+            .with(Fov { range: 50, visible_pos: Vec::new(), dirty: true })
             .build();
 
     gs.ecs.insert(map_gen::Map::new(80, 60));
