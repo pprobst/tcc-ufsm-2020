@@ -28,7 +28,7 @@ pub struct Mob {}
 // An entity's field of view (fov).
 pub struct Fov {
     pub range: i32,
-    pub visible_tiles: Vec<Position>,
+    pub visible_pos: Vec<Position>,
     pub dirty: bool
 }
 
