@@ -12,11 +12,13 @@ pub mod map_gen;
 
 pub const WINDOW_WIDTH: i32 = 80;
 pub const WINDOW_HEIGHT: i32 = 60;
+pub const POSTPROCESS: bool = true;
 
 fn main() {
-    let context = BTermBuilder::simple(WINDOW_WIDTH, WINDOW_HEIGHT)
+    let mut context = BTermBuilder::simple(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         .build();
+    context.with_post_scanlines(POSTPROCESS);
 
     let mut world = World::new();
 
@@ -28,7 +30,7 @@ fn main() {
     world.register::<Fov>();
     world.register::<Blocker>();
 
-    let mut gs = State::new(world);
+    let mut gs = State::new(world, POSTPROCESS);
 
     let player = gs.ecs
             .create_entity()

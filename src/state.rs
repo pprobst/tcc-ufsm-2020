@@ -17,12 +17,13 @@ pub enum RunState {
 pub struct State {
     pub ecs: World,
     pub runstate: RunState,
-    pub renderer: Renderer
+    pub renderer: Renderer,
+    pub burn: bool,
 }
 
 impl State {
-  pub fn new(world: World) -> Self {
-    Self{ ecs: world, runstate: RunState::Start, renderer: Renderer::new() }
+  pub fn new(world: World, burn: bool) -> Self {
+    Self{ ecs: world, runstate: RunState::Start, renderer: Renderer::new(), burn }
   }
 
   fn run_systems(&mut self) {
@@ -44,6 +45,18 @@ impl State {
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         ctx.cls();
+
+        // F3 to enable/disable post-processing effects.
+        match ctx.key {
+            None => {}
+            Some(key) => {
+                if let VirtualKeyCode::F3 = key {
+                    self.burn = !self.burn;
+                    ctx.with_post_scanlines(self.burn);
+                }
+            }
+        }
+
         // TODO: Change this to a match!
         if self.runstate == RunState::Start {
             // Do start stuff
