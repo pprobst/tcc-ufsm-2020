@@ -20,7 +20,7 @@ fn main() {
 
     let mut world = World::new();
 
-    // Register the components.
+    // Register the components (see components.rs).
     world.register::<Position>();
     world.register::<Renderable>();
     world.register::<Player>();
@@ -39,7 +39,7 @@ fn main() {
                 bg: RGB::named(BLACK),
             })
             .with(Player{})
-            .with(Fov { range: 8, visible_tiles: Vec::new(), revealed_tiles: Vec::new(), dirty: true })
+            .with(Fov { range: 8, visible_tiles: Vec::new(), dirty: true })
             .build();
 
     gs.ecs.insert(map_gen::Map::new(80, 60));
