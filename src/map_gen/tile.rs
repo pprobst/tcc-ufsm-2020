@@ -11,11 +11,12 @@ pub enum TileType {
     DeepWater,
 }
 
-#[derive(Clone)]
+#[derive(Copy, Clone)]
 pub struct Tile {
     pub ttype: TileType,
+    pub visible: bool,
+    pub revealed: bool,
     pub block: bool,
-    pub explored: bool,
     pub glyph: u8,
     pub fg: RGB
 }
@@ -25,9 +26,10 @@ impl Tile {
         Self {
             ttype: TileType::Wall,
             block: true,
-            explored: false,
+            visible: false,
+            revealed: false,
             glyph: to_cp437('#'),
-            fg: RGB::from_hex("#636363").expect("Invalid hex string"),
+            fg: RGB::from_hex("#6ABE89").expect("Invalid hex string"),
         }
     }
 
@@ -35,9 +37,10 @@ impl Tile {
         Self {
             ttype: TileType::Floor,
             block: false,
-            explored: false,
+            visible: false,
+            revealed: false,
             glyph: to_cp437('.'),
-            fg: RGB::from_hex("#373737").expect("Invalid hex string"),
+            fg: RGB::from_hex("#6ABE89").expect("Invalid hex string"),
         }
     }
 
@@ -45,9 +48,10 @@ impl Tile {
         Self {
             ttype: TileType::Tree,
             block: false,
-            explored: false,
+            visible: false,
+            revealed: false,
             glyph: to_cp437('♣'),
-            fg: RGB::from_hex("#4DA25F").expect("Invalid hex string"),
+            fg: RGB::from_hex("#6ABE89").expect("Invalid hex string"),
         }
     }
 }

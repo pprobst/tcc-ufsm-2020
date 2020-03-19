@@ -1,9 +1,11 @@
 use bracket_lib::prelude::*;
 use specs::prelude::*;
 
-use crate::components::*;
+//use crate::components::*;
 use crate::player::*;
 use crate::map_gen::*;
+use crate::renderer::{Renderer};
+use crate::systems::{visibility::VisibilitySystem};
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -14,15 +16,18 @@ pub enum RunState {
 
 pub struct State {
     pub ecs: World,
-    pub runstate: RunState
+    pub runstate: RunState,
+    pub renderer: Renderer
 }
 
 impl State {
   pub fn new(world: World) -> Self {
-    Self{ ecs: world, runstate: RunState::Start }
+    Self{ ecs: world, runstate: RunState::Start, renderer: Renderer::new() }
   }
 
   fn run_systems(&mut self) {
+    let mut vis = VisibilitySystem{};
+    vis.run_now(&self.ecs);
     self.ecs.maintain();
   }
 
@@ -50,13 +55,6 @@ impl GameState for State {
             self.runstate = player_input(self, ctx);
         }
 
-        let positions = self.ecs.read_storage::<Position>();
-        let renderables = self.ecs.read_storage::<Renderable>();
-
-        render_map(&self.ecs.fetch::<Map>(), ctx); 
-
-        for (pos, render) in (&positions, &renderables).join() {
-            ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph);
-        }
+        self.renderer.render_all(&self.ecs, ctx);
     }
 }
