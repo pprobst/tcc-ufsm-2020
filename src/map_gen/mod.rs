@@ -1,4 +1,5 @@
 use bracket_lib::prelude::*;
+use crate::components::Position;
 //use specs::prelude::*;
 mod tile;
 use tile::{Tile};
@@ -25,7 +26,18 @@ impl Map {
             height,
         }
     }
+    pub fn contain(&self, position: Position) -> bool {
+        position.x < self.width && position.y < self.height
+    }
 }
+
+impl Algorithm2D for Map {
+    fn dimensions(&self) -> Point {
+        Point::new(self.width, self.height)
+    }
+}
+
+impl BaseMap for Map {}
 
 pub struct MapGenerator {
     pub map: Map
@@ -37,6 +49,7 @@ impl MapGenerator {
            map: Map::new(80, 60),
         }
     }
+
     pub fn gen_map(&mut self) {
         random_map_gen(&mut self.map);
         // future: apply_theme(map)
@@ -45,30 +58,5 @@ impl MapGenerator {
 
     pub fn get_map(&self) -> Map {
         self.map.clone()
-    }
-}
-
-impl Algorithm2D for Map {
-    fn dimensions(&self) -> Point {
-        Point::new(self.width, self.height)
-    }
-
-}
-
-impl BaseMap for Map {}
-
-pub fn render_map(map: &Map, ctx: &mut BTerm) {
-    let mut y = 0;
-    let mut x = 0;
-
-    let bg = RGB::from_f32(0., 0., 0.);
-    for tile in map.tiles.iter() {
-        ctx.set(x, y, tile.fg, bg, tile.glyph);
-
-        x += 1;
-        if x > 80 as i32 - 1 {
-            x = 0;
-            y += 1;
-        }
     }
 }

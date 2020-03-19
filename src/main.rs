@@ -5,7 +5,9 @@ mod state;
 use state::State;
 mod components;
 pub use components::*;
+mod renderer;
 mod player;
+mod systems;
 pub mod map_gen;
 
 pub const WINDOW_WIDTH: i32 = 80;
@@ -22,6 +24,8 @@ fn main() {
     world.register::<Position>();
     world.register::<Renderable>();
     world.register::<Player>();
+    world.register::<Mob>();
+    world.register::<Fov>();
     world.register::<Blocker>();
 
     let mut gs = State::new(world);

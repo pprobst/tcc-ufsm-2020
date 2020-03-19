@@ -2,19 +2,20 @@ use bracket_lib::prelude::{RGB, to_cp437};
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
 pub enum TileType {
-	Empty,
-	Wall,
-	Floor,
+    Empty,
+    Wall,
+    Floor,
     Tree,
     Mushroom,
-	ShallowWater,
-	DeepWater,
+    ShallowWater,
+    DeepWater,
 }
 
 #[derive(Clone)]
 pub struct Tile {
     pub ttype: TileType,
     pub block: bool,
+    pub explored: bool,
     pub glyph: u8,
     pub fg: RGB
 }
@@ -24,6 +25,7 @@ impl Tile {
         Self {
             ttype: TileType::Wall,
             block: true,
+            explored: false,
             glyph: to_cp437('#'),
             fg: RGB::from_hex("#636363").expect("Invalid hex string"),
         }
@@ -33,6 +35,7 @@ impl Tile {
         Self {
             ttype: TileType::Floor,
             block: false,
+            explored: false,
             glyph: to_cp437('.'),
             fg: RGB::from_hex("#373737").expect("Invalid hex string"),
         }
@@ -42,6 +45,7 @@ impl Tile {
         Self {
             ttype: TileType::Tree,
             block: false,
+            explored: false,
             glyph: to_cp437('♣'),
             fg: RGB::from_hex("#4DA25F").expect("Invalid hex string"),
         }
