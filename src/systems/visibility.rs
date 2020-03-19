@@ -3,6 +3,8 @@ use specs::prelude::*;
 use crate::components::{Position, Fov, Player};
 use crate::map_gen::Map;
 
+// See: https://github.com/thebracket/bracket-lib/blob/master/rltk/examples/ex04-fov.rs
+
 pub struct VisibilitySystem {}
 
 impl<'a> System<'a> for VisibilitySystem {
