@@ -12,7 +12,7 @@ Após isso, baixe este repositório e execute no terminal o comando ```cargo run
 
 ## Main Quest
 Ou, _"seria bom se eu fizesse tudo isso!_".
-- [x] Basear-se nos exemplos para estruturar o básico do básico do [bracket-lib](https://github.com/thebracket/bracket-lib) 
+- [x] Estruturar o básico do básico do [bracket-lib](https://github.com/thebracket/bracket-lib) 
   (RLTK);
 - [x] Movimento do jogador @;
 - [x] Estrutura básica de um mapa;
@@ -26,6 +26,10 @@ Ou, _"seria bom se eu fizesse tudo isso!_".
   serde;
 - [ ] Itens únicos com efeitos aleatórios;
 - [ ] Sistema de IA relativamente avançada para os mobs;
+
+Naturalmente, à medida que vou desenvolvendo posso ter de 
+alterar/aprimorar itens da checklist já marcados. Isso é um processo natural;
+considere que itens marcados já possuem a _estrutura básica_ concluída. 
 
 ###  Sidequests
 Ou, _"se sobrar tempo eu faço!"_.
