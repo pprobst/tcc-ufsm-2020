@@ -21,7 +21,7 @@ Ou, _"seria bom se eu fizesse tudo isso!_".
 - [ ] Implementar uma UI e aproveitar para aprimorar os estados de jogo (game states);
 - [ ] Sistema de geração de mapas (pipeline) híbrido utilizando
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;
-- [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para para estruturar os raws;
+- [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
 - [ ] Sistema de serilialização/desserialização usando RON +
   serde;
 - [ ] Itens únicos com efeitos aleatórios;
