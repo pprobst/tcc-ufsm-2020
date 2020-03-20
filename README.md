@@ -16,16 +16,19 @@ Ou, _"seria bom se eu fizesse tudo isso!_".
   (RLTK);
 - [x] Movimento do jogador @;
 - [x] Estrutura básica de um mapa;
+- [x] Arquivo separado para a renderização do mapa e das entidades;
 - [x] Sistema de FOV (_field-of-view_);
 - [ ] Mobs e combate básico;
-- [ ] Implementar uma UI e aproveitar para aprimorar os estados de jogo (game states);
+- [ ] Implementar uma UI + câmera e aproveitar para aprimorar os estados de jogo (game states);
+- [ ] Equipamento e inventário;
 - [ ] Sistema de geração de mapas (pipeline) híbrido utilizando
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;
+- [ ] Temáticas diferentes de mapas (ruínas, florestas, aquedutos, etc.);
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
 - [ ] Sistema de serilialização/desserialização usando RON +
   serde;
 - [ ] Itens únicos com efeitos aleatórios;
-- [ ] Sistema de IA relativamente avançada para os mobs;
+- [ ] Sistema de IA relativamente avançada para os mobs.
 
 Naturalmente, à medida que vou desenvolvendo posso ter de 
 alterar/aprimorar itens da checklist já marcados. Isso é um processo natural;
@@ -36,6 +39,7 @@ Ou, _"se sobrar tempo eu faço!"_.
 - [ ] Narrativa procedural;
 - [ ] Sistema de partículas;
 - [ ] Fontes melhores;
+- [ ] Otimizações gerais;
 - [ ] Salvar o jogo (tedioso de programar!).
 
 ## Referências e inspirações
