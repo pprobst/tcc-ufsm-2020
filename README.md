@@ -25,7 +25,7 @@ Ou, _"seria bom se eu fizesse tudo isso!_".
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;
 - [ ] Temáticas diferentes de mapas (ruínas, florestas, aquedutos, etc.);
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
-- [ ] Sistema de serilialização/desserialização usando RON +
+- [ ] Sistema de serialização/desserialização usando RON +
   serde;
 - [ ] Itens únicos com efeitos aleatórios;
 - [ ] Sistema de IA relativamente avançada para os mobs.
