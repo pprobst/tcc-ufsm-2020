@@ -3,16 +3,16 @@ use super::{Map, Tile};
 
 // Just a test!
 pub fn random_map_gen(map: &mut Map) {
-    for x in 0..map.width {
-        let idx1 = map.idx(x, 0);
+    for x in 1..map.width {
+        let idx1 = map.idx(x, 1);
         map.tiles[idx1] = Tile::wall();
-        let idx2 = map.idx(x, map.height-1);
+        let idx2 = map.idx(x, map.height-2);
         map.tiles[idx2] = Tile::wall();
     }
-    for y in 0..map.height {
-        let idx1 = map.idx(0, y);
+    for y in 1..map.height {
+        let idx1 = map.idx(1, y);
         map.tiles[idx1] = Tile::wall();
-        let idx2 = map.idx(map.width-1, y);
+        let idx2 = map.idx(map.width-2, y);
         map.tiles[idx2] = Tile::wall();
     }
 

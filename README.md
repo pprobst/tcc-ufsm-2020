@@ -18,8 +18,9 @@ Ou, _"seria bom se eu fizesse tudo isso!_".
 - [x] Estrutura básica de um mapa;
 - [x] Arquivo separado para a renderização do mapa e das entidades;
 - [x] Sistema de FOV (_field-of-view_);
+- [x] Câmera/viewport;
+- [ ] Implementar uma UI básica e aproveitar para aprimorar os estados de jogo (game states);
 - [ ] Mobs e combate básico;
-- [ ] Implementar uma UI + câmera e aproveitar para aprimorar os estados de jogo (game states);
 - [ ] Equipamento e inventário;
 - [ ] Sistema de geração de mapas (pipeline) híbrido utilizando
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;

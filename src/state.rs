@@ -4,7 +4,7 @@ use specs::prelude::*;
 //use crate::components::*;
 use crate::player::*;
 use crate::map_gen::*;
-use crate::renderer::{Renderer};
+use crate::renderer::{render_all};
 use crate::systems::{visibility::VisibilitySystem};
 
 #[derive(PartialEq, Copy, Clone)]
@@ -17,13 +17,16 @@ pub enum RunState {
 pub struct State {
     pub ecs: World,
     pub runstate: RunState,
-    pub renderer: Renderer,
     pub burn: bool,
 }
 
 impl State {
   pub fn new(world: World, burn: bool) -> Self {
-    Self{ ecs: world, runstate: RunState::Start, renderer: Renderer::new(), burn }
+    Self { 
+        ecs: world, 
+        runstate: RunState::Start, 
+        burn 
+    }
   }
 
   fn run_systems(&mut self) {
@@ -32,13 +35,12 @@ impl State {
     self.ecs.maintain();
   }
 
-  pub fn generate_map(&mut self) {
+  pub fn generate_map(&mut self) -> Map {
       let mut mapgen = MapGenerator::new();
       mapgen.gen_map();
-      {
-          let mut this_map = self.ecs.write_resource::<Map>();
-          *this_map = mapgen.get_map();
-      }
+      let mut this_map = self.ecs.write_resource::<Map>();
+      *this_map = mapgen.get_map();
+      mapgen.get_map()
   }
 }
 
@@ -68,6 +70,7 @@ impl GameState for State {
             self.runstate = player_input(self, ctx);
         }
 
-        self.renderer.render_all(&self.ecs, ctx);
+        render_all(&self.ecs, ctx);
+        //self.renderer.render_all(&self.ecs, ctx);
     }
 }

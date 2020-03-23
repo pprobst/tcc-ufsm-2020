@@ -11,12 +11,18 @@ pub enum TileType {
     DeepWater,
 }
 
-#[derive(Copy, Clone)]
+impl Default for TileType {
+    fn default() -> TileType {
+        TileType::Empty
+    }
+}
+
+#[derive(Copy, Clone, Default)]
 pub struct Tile {
     pub ttype: TileType,
+    pub block: bool,
     pub visible: bool,
     pub revealed: bool,
-    pub block: bool,
     pub glyph: u8,
     pub fg: RGB
 }
@@ -26,32 +32,27 @@ impl Tile {
         Self {
             ttype: TileType::Wall,
             block: true,
-            visible: false,
-            revealed: false,
             glyph: to_cp437('#'),
             fg: RGB::from_hex("#F9DFA7").expect("Invalid hex string"),
+            ..Default::default()
         }
     }
 
     pub fn floor() -> Self {
         Self {
             ttype: TileType::Floor,
-            block: false,
-            visible: false,
-            revealed: false,
             glyph: to_cp437('.'),
             fg: RGB::from_hex("#F8E6C0").expect("Invalid hex string"),
+            ..Default::default()
         }
     }
 
     pub fn tree() -> Self {
         Self {
             ttype: TileType::Tree,
-            block: false,
-            visible: false,
-            revealed: false,
             glyph: to_cp437('♣'),
             fg: RGB::from_hex("#6ABE89").expect("Invalid hex string"),
+            ..Default::default()
         }
     }
 }

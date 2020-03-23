@@ -23,7 +23,7 @@ impl<'a> System<'a> for VisibilitySystem {
             if fov.dirty {
                 fov.visible_pos.clear();
                 fov.visible_pos = field_of_view(Point::new(pos.x, pos.y), fov.range, &*map);
-                fov.visible_pos.retain(|p| map.contain_pos(*p));
+                fov.visible_pos.retain(|p| map.in_map_bounds(*p));
 
                 let p: Option<&Player> = player.get(e);
                 if let Some(_p) = p {
