@@ -22,6 +22,8 @@ pub fn random_map_gen(map: &mut Map) {
         let x = rng.roll_dice(1, map.width-1);
         let y = rng.roll_dice(1, map.height-1);
         let idx = map.idx(x, y);
-        map.tiles[idx] = Tile::wall();
+        let chance = rng.roll_dice(1, 3);
+        if chance == 1 { map.tiles[idx] = Tile::wall(); }
+        else { map.tiles[idx] = Tile::tree(); }
     }
 }

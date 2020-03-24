@@ -6,19 +6,19 @@ use crate::map_gen::Map;
 
 pub struct Renderer<'a> {
     pub ecs: &'a World,
-    pub ctx: &'a mut BTerm
+    pub term: &'a mut BTerm
 }
 
-pub fn render_all(ecs: &World, ctx: &mut BTerm) {
+pub fn render_all(ecs: &World, term: &mut BTerm) {
     Renderer {
         ecs,
-        ctx,
+        term,
     }.render_all()
 }
 
 impl<'a> Renderer<'a> {
-    /*pub fn new(ecs: &'a World, ctx: &'a mut BTerm) -> Self {
-        Self { ecs, ctx }
+    /*pub fn new(ecs: &'a World, term: &'a mut BTerm) -> Self {
+        Self { ecs, term }
     }*/
     
     pub fn render_all(&mut self) {
@@ -34,7 +34,7 @@ impl<'a> Renderer<'a> {
         //println!("{}, {}", ppos.x, ppos.y);
 
         // Size of the map portion shown on screen.
-        let (cam_x, cam_y) = self.ctx.get_char_size();
+        let (cam_x, cam_y) = self.term.get_char_size();
         //let (cam_x, cam_y) = (64, 50);
 
         let min_x = ppos.x - (cam_x / 2) as i32;
@@ -57,11 +57,11 @@ impl<'a> Renderer<'a> {
             for (x, x2) in (min_x .. max_x).enumerate() { 
                 if map.in_map_bounds_xy(x2, y2) {
                     let idx = map.idx(x2, y2);
-                    let tile = map.tiles[idx];
-                    let mut fg = tile.fg;
-                    if !tile.visible { fg = fg.to_greyscale(); }
-                    if tile.revealed { self.ctx.set(x as i32 + x_offset, y as i32 + y_offset, fg, bg, tile.glyph); }
-                } //else { self.ctx.set(x as i32 + x_offset, y as i32 + y_offset, RGB::named(GRAY), bg, to_cp437('.')); }
+                    let mut tile = map.tiles[idx];
+                    let shadow_color = RGB::from_hex("#8181B0").expect("Invalid hex string");
+                    if !tile.visible { tile.to_color(shadow_color); }
+                    if tile.revealed { self.term.set(x as i32 + x_offset, y as i32 + y_offset, tile.fg, bg, tile.glyph); }
+                } //else { self.term.set(x as i32 + x_offset, y as i32 + y_offset, RGB::named(GRAY), bg, to_cp437('.')); }
             }
         }
         /*
@@ -69,7 +69,7 @@ impl<'a> Renderer<'a> {
             let pos = map.idx_pos(idx);
             let mut fg = tile.fg;
             if !tile.visible { fg = fg.to_greyscale(); }
-            if tile.revealed { self.ctx.set(pos.x, pos.y, fg, bg, tile.glyph); }
+            if tile.revealed { self.term.set(pos.x, pos.y, fg, bg, tile.glyph); }
         }
         */
     }
@@ -85,7 +85,7 @@ impl<'a> Renderer<'a> {
                 let ent_x = pos.x - min_x;
                 let ent_y = pos.y - min_y;
                 if map.in_map_bounds_xy(ent_x, ent_y) {
-                    self.ctx.set(ent_x + x_offset, ent_y + y_offset, render.fg, render.bg, render.glyph);
+                    self.term.set(ent_x + x_offset, ent_y + y_offset, render.fg, render.bg, render.glyph);
                 }
             }
         }

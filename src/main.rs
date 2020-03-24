@@ -16,11 +16,11 @@ pub const WINDOW_HEIGHT: i32 = 60;
 pub const POSTPROCESS: bool = true;
 
 fn main() {
-    let mut context = BTermBuilder::simple(WINDOW_WIDTH, WINDOW_HEIGHT)
+    let mut term = BTermBuilder::simple(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         //.with_font("terminal_10x16.png", 10, 16)
         .build();
-    context.with_post_scanlines(POSTPROCESS);
+    term.with_post_scanlines(POSTPROCESS);
 
     let mut world = World::new();
 
@@ -39,6 +39,6 @@ fn main() {
 
     spawner::spawn_map(&mut gs.ecs, &map);
 
-    bracket_lib::prelude::main_loop(context, gs);
+    bracket_lib::prelude::main_loop(term, gs);
 }
 

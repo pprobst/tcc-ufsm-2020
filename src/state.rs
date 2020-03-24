@@ -45,16 +45,16 @@ impl State {
 }
 
 impl GameState for State {
-    fn tick(&mut self, ctx: &mut BTerm) {
-        ctx.cls();
+    fn tick(&mut self, term: &mut BTerm) {
+        term.cls();
 
         // F3 to enable/disable post-processing effects.
-        match ctx.key {
+        match term.key {
             None => {}
             Some(key) => {
                 if let VirtualKeyCode::F3 = key {
                     self.burn = !self.burn;
-                    ctx.with_post_scanlines(self.burn);
+                    term.with_post_scanlines(self.burn);
                 }
             }
         }
@@ -67,10 +67,10 @@ impl GameState for State {
             self.run_systems();
             self.runstate = RunState::Waiting;
         } else {
-            self.runstate = player_input(self, ctx);
+            self.runstate = player_input(self, term);
         }
 
-        render_all(&self.ecs, ctx);
-        //self.renderer.render_all(&self.ecs, ctx);
+        render_all(&self.ecs, term);
+        //self.renderer.render_all(&self.ecs, term);
     }
 }

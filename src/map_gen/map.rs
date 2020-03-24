@@ -50,6 +50,8 @@ impl Algorithm2D for Map {
 // Automatically prevents FOV from looking behind opaque tiles.
 impl BaseMap for Map {
     fn is_opaque(&self, idx: usize) -> bool {
-        self.tiles[idx as usize].ttype == TileType::Wall
+        let ttype = self.tiles[idx as usize].ttype; 
+
+        ttype == TileType::Wall || ttype == TileType::Tree
     }
 }

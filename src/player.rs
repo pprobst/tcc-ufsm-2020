@@ -41,8 +41,8 @@ fn move_player(dir: Direction, ecs: &mut World) {
     }
 }
 
-pub fn player_input(gs: &mut State, ctx: &mut BTerm) -> RunState {
-    match ctx.key {
+pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
+    match term.key {
         None => { return RunState::Waiting }
         Some(key) => match key {
             // Move East (E).
