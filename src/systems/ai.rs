@@ -35,13 +35,12 @@ impl<'a> System<'a> for HostileAISystem {
                 let a_star = a_star_search(mob_location, player_location, map);
 
                 if a_star.success && a_star.steps.len() > 1 {
-                    // Makes last position is now unblocked.
+                    // Previous position is now unblocked.
                     map.clear_blocker(pos.x, pos.y);
                     pos.x = a_star.steps[1] as i32 % map.width;
                     pos.y = a_star.steps[1] as i32 / map.width;
-                    let idx = map.idx(pos.x, pos.y);
                     // New position is now blocked.
-                    map.tiles[idx].block = true;
+                    map.add_blocker(pos.x, pos.y);
                     fov.dirty = true;
                 }
             }

@@ -45,6 +45,11 @@ impl Map {
         self.tiles[idx].block = false; 
     }
 
+    pub fn add_blocker(&mut self, x: i32, y: i32) {
+        let idx = self.idx(x, y);
+        self.tiles[idx].block = true; 
+    }
+
     fn valid_exit(&self, loc: Point, delta: Point) -> Option<usize> {
         let destination = loc + delta;
         let idx = self.point2d_to_index(destination);
