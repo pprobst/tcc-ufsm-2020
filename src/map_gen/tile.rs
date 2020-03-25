@@ -1,4 +1,4 @@
-use bracket_lib::prelude::{RGB, to_cp437};
+use bracket_lib::prelude::{RGB, to_cp437, BLACK};
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
 pub enum TileType {
@@ -29,6 +29,17 @@ pub struct Tile {
 }
 
 impl Tile {
+    pub fn empty() -> Self {
+        Self {
+            ttype: TileType::Empty,
+            block: false,
+            glyph: to_cp437(' '),
+            fg: RGB::named(BLACK),
+            ..Default::default()
+        }
+    }
+
+ 
     pub fn wall() -> Self {
         Self {
             ttype: TileType::Wall,
@@ -43,7 +54,7 @@ impl Tile {
         Self {
             ttype: TileType::Floor,
             glyph: to_cp437('.'),
-            fg: RGB::from_hex("#ACACAC").expect("Invalid hex string"),
+            fg: RGB::from_hex("#999A9C").expect("Invalid hex string"),
             ..Default::default()
         }
     }

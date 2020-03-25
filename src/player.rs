@@ -61,8 +61,13 @@ pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
             VirtualKeyCode::N | VirtualKeyCode::Numpad3 => move_player(SOUTHEAST, &mut gs.ecs),
             // Move Southwest (SW).
             VirtualKeyCode::B | VirtualKeyCode::Numpad1 => move_player(SOUTHWEST, &mut gs.ecs),
+
+            // Wait (skip turn).
+            VirtualKeyCode::Period => { return RunState::PlayerTurn }
+
             _ => { return RunState::Waiting }
+
         },
     }
-    RunState::Running
+    RunState::PlayerTurn
 }

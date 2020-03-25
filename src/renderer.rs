@@ -43,8 +43,9 @@ impl<'a> Renderer<'a> {
         let max_y = min_y + cam_y as i32;
         //println!("min_x: {}, max_x: {}, min_y: {}, max_y: {}", min_x, max_x, min_y, max_y);
 
-        let x_offset = 15;
-        let y_offset = -7;
+        //let x_offset = 15;
+        let x_offset = 0;
+        let y_offset = -3;
 
         (min_x, max_x, min_y, max_y, x_offset, y_offset)
     }
@@ -58,7 +59,7 @@ impl<'a> Renderer<'a> {
                 if map.in_map_bounds_xy(x2, y2) {
                     let idx = map.idx(x2, y2);
                     let mut tile = map.tiles[idx];
-                    let shadow_color = RGB::from_hex("#8181B0").expect("Invalid hex string");
+                    let shadow_color = RGB::from_hex("#474773").expect("Invalid hex string");
                     if !tile.visible { tile.to_color(shadow_color); }
                     if tile.revealed { self.term.set(x as i32 + x_offset, y as i32 + y_offset, tile.fg, bg, tile.glyph); }
                 } //else { self.term.set(x as i32 + x_offset, y as i32 + y_offset, RGB::named(GRAY), bg, to_cp437('.')); }

@@ -24,6 +24,11 @@ pub struct Player {}
 // Enemies & NPCs.
 pub struct Mob {}
 
+#[derive(Component)]
+pub struct Name {
+    pub name: String
+}
+
 #[derive(Component, PartialEq)]
 // An entity's field of view (fov).
 pub struct Fov {
@@ -36,3 +41,9 @@ pub struct Fov {
 // Entities with this component will "block" movement over them.
 // After all, you can't walk over enemies (unless you're flying!).
 pub struct Blocker {}
+
+#[derive(Component)]
+pub struct Health {
+   pub max_hp: i32,
+   pub hp: i32
+}

@@ -18,12 +18,14 @@ pub fn random_map_gen(map: &mut Map) {
 
     let mut rng = RandomNumberGenerator::new();
 
-    for _i in 0..600 {
+    for _i in 0..640 {
         let x = rng.roll_dice(1, map.width-1);
         let y = rng.roll_dice(1, map.height-1);
         let idx = map.idx(x, y);
         let chance = rng.roll_dice(1, 3);
-        if chance == 1 { map.tiles[idx] = Tile::wall(); }
-        else { map.tiles[idx] = Tile::tree(); }
+        if !map.tiles[idx].block {
+            if chance == 1 { map.tiles[idx] = Tile::wall(); }
+            else { map.tiles[idx] = Tile::tree(); }
+        }
     }
 }

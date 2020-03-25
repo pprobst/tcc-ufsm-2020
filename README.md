@@ -39,9 +39,19 @@ considere que itens marcados já possuem a _estrutura básica_ concluída.
 Ou, _"se sobrar tempo eu faço!"_.
 - [ ] Narrativa procedural;
 - [ ] Sistema de partículas;
-- [ ] Fontes melhores;
+- [ ] Fontes melhores (ttf?);
 - [ ] Otimizações gerais;
 - [ ] Salvar o jogo (tedioso de programar!).
+
+## Problemas conhecidos
+- Alta distorção dos tiles ao usar um tamanho de tile inferior a 16x16.
+    - Muito provavelmente tem a ver com a resolução. Por ora, deixei o jogo
+      ajustado para a resolução do meu laptop: 1366x768, com tiles de tamanho
+      16x16. Não resolve o problema _per se_, mas ao menos não há distorções tão perceptíveis.
+
+## Contribuições
+Se você tiver alguma boa ideia ou sugestão, sinta-se livre para abrir um 
+[_issue_](https://github.com/pprobst/tcc-ufsm-2020/issues/new).
 
 ## Referências e inspirações
 Em breve.

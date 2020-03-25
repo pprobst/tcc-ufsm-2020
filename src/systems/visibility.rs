@@ -21,6 +21,7 @@ impl<'a> System<'a> for VisibilitySystem {
 
         for (e, fov, pos) in (&entities, &mut fov, &pos).join() {
             if fov.dirty {
+                fov.dirty = false;
                 fov.visible_pos.clear();
                 fov.visible_pos = field_of_view(Point::new(pos.x, pos.y), fov.range, &*map);
                 fov.visible_pos.retain(|p| map.in_map_bounds(*p));
@@ -37,8 +38,6 @@ impl<'a> System<'a> for VisibilitySystem {
                         map.tiles[idx].revealed = true;
                     }
                 }
-
-                fov.dirty = false;
             }
         }
     }

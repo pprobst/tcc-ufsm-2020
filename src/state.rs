@@ -5,13 +5,15 @@ use specs::prelude::*;
 use crate::player::*;
 use crate::map_gen::*;
 use crate::renderer::{render_all};
-use crate::systems::{visibility::VisibilitySystem};
+use crate::systems::{visibility::VisibilitySystem, ai::HostileAISystem, mapping::MappingSystem};
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
     Running,
     Waiting,
     Start,
+    PlayerTurn,
+    MobTurn
 }
 
 pub struct State {
@@ -32,6 +34,13 @@ impl State {
   fn run_systems(&mut self) {
     let mut vis = VisibilitySystem{};
     vis.run_now(&self.ecs);
+
+    let mut hostile_ai = HostileAISystem{};
+    hostile_ai.run_now(&self.ecs);
+
+    let mut mapping = MappingSystem{};
+    mapping.run_now(&self.ecs);
+
     self.ecs.maintain();
   }
 
@@ -59,18 +68,37 @@ impl GameState for State {
             }
         }
 
-        // TODO: Change this to a match!
-        if self.runstate == RunState::Start {
-            // Do start stuff
-            self.runstate = RunState::Running;
-        } else if self.runstate == RunState::Running {
-            self.run_systems();
-            self.runstate = RunState::Waiting;
-        } else {
-            self.runstate = player_input(self, term);
+        let mut curr_state;
+        {
+            let runstate = self.ecs.fetch::<RunState>();
+            curr_state = *runstate;
         }
 
+        // State machine.
+        match curr_state {
+            RunState::Start => {
+                curr_state = RunState::Running;
+            }
+            RunState::Running => {
+                self.run_systems();
+                curr_state = RunState::Waiting;
+            }
+            RunState::Waiting => {
+                curr_state = player_input(self, term);
+            }
+            RunState::PlayerTurn => {
+                self.run_systems();
+                curr_state = RunState::MobTurn;
+            }
+            RunState::MobTurn => {
+                self.run_systems();
+                curr_state = RunState::Waiting;
+            }
+        }
+
+        let mut write_state = self.ecs.write_resource::<RunState>();
+        *write_state = curr_state;
+
         render_all(&self.ecs, term);
-        //self.renderer.render_all(&self.ecs, term);
     }
 }
