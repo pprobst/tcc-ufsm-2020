@@ -1,13 +1,13 @@
 use bracket_lib::prelude::*;
 use specs::prelude::*;
-
-//use crate::components::*;
-use crate::player::*;
-use crate::map_gen::*;
-use crate::renderer::{render_all};
-use crate::killer::{remove_dead_entities};
-use crate::systems::{fov::FOVSystem, ai::HostileAISystem, mapping::MappingSystem, 
-    melee_combat::MeleeCombatSystem, damage::DamageSystem};
+use super::{
+    input::*,
+    map_gen::*,
+    renderer::render_all,
+    killer::remove_dead_entities,
+    systems::{fov::FOVSystem, ai::HostileAISystem, mapping::MappingSystem, 
+        melee_combat::MeleeCombatSystem, damage::DamageSystem}
+};
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {

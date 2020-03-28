@@ -1,8 +1,8 @@
 use bracket_lib::prelude::*;
 use specs::prelude::*;
-
-use crate::components::{Position, Renderable};
-use crate::map_gen::Map;
+use super::{
+    Position, Renderable, map_gen::Map
+};
 
 pub struct Renderer<'a> {
     pub ecs: &'a World,

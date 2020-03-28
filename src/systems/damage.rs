@@ -26,8 +26,7 @@ impl<'a> System<'a> for DamageSystem {
                 }
             }
             if victim_stats.health.hp <= 0 {
-                let idx = map.idx(pos.x, pos.y);
-                map.tiles[idx].block = false;
+                map.clear_blocker(pos.x, pos.y);
             }
         }
         damage.clear();

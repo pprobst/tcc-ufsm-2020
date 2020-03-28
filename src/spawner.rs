@@ -1,8 +1,7 @@
 use bracket_lib::prelude::{RandomNumberGenerator, RGB, to_cp437, WHITE, BLACK, Point};
 use specs::prelude::*;
 
-use super::{Position, Renderable, Player, Mob, Name, Fov, Blocker, Health, BaseStats};
-use crate::map_gen::Map;
+use super::{Position, Renderable, Player, Mob, Name, Fov, Blocker, Health, BaseStats, map_gen::Map};
 
 pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs

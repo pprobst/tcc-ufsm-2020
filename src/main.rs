@@ -5,11 +5,13 @@ mod state;
 use state::{State, RunState};
 mod components;
 pub use components::*;
+mod utils;
+mod input;
 mod renderer;
 mod killer;
 mod player;
 mod systems;
-pub mod map_gen;
+mod map_gen;
 mod spawner;
 
 pub const WINDOW_WIDTH: i32 = 75;

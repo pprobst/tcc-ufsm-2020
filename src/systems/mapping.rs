@@ -19,9 +19,8 @@ impl<'a> System<'a> for MappingSystem {
         map.refresh_entities();
         // Iterate through all the entities that have a Position and are Blockers.
         for (ent, pos, _blocker) in (&entities, &pos, &blockers).join() {
+            map.add_blocker(pos.x, pos.y);
             let i = map.idx(pos.x, pos.y);
-            // Blocks the tile in (pos.x, pos.y).
-            map.tiles[i].block = true;
             map.entities[i] = Some(ent.clone());
         }
     }

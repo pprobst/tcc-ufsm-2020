@@ -1,4 +1,4 @@
-use bracket_lib::prelude::{RGB, to_cp437, BLACK};
+use bracket_lib::prelude::{RGB, to_cp437};
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
 pub enum TileType {
@@ -9,9 +9,9 @@ pub enum TileType {
     TallGrass,
     Flower,
     Tree,
-    Mushroom,
-    ShallowWater,
-    DeepWater,
+    //Mushroom,
+    //ShallowWater,
+    //DeepWater,
 }
 
 impl Default for TileType {
@@ -34,6 +34,7 @@ pub struct Tile {
 }
 
 impl Tile {
+    /*
     pub fn empty() -> Self {
         Self {
             ttype: TileType::Empty,
@@ -43,8 +44,8 @@ impl Tile {
             ..Default::default()
         }
     }
+    */
 
- 
     pub fn wall() -> Self {
         Self {
             ttype: TileType::Wall,

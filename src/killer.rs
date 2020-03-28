@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use crate::components::{BaseStats};
+use super::{BaseStats};
 
 pub struct Killer<'a> {
     pub ecs: &'a mut World,
@@ -19,7 +19,7 @@ impl<'a> Killer<'a> {
             let stats = self.ecs.read_storage::<BaseStats>();
 
             for (ent, stats) in (&entities, &stats).join() {
-                if stats.health.hp <= 0 && !stats.god {
+                if stats.health.hp <= 0 {
                     dead.push(ent);
                 }
             }
