@@ -5,9 +5,9 @@ use crate::map_gen::Map;
 
 // See: https://github.com/thebracket/bracket-lib/blob/master/rltk/examples/ex04-fov.rs
 
-pub struct VisibilitySystem {}
+pub struct FOVSystem {}
 
-impl<'a> System<'a> for VisibilitySystem {
+impl<'a> System<'a> for FOVSystem {
     type SystemData = (
         Entities<'a>,
         WriteExpect<'a, Map>,

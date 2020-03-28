@@ -1,6 +1,6 @@
 use bracket_lib::prelude::*;
 use crate::components::Position;
-//use specs::prelude::*;
+use specs::prelude::{Entity};
 use super::{TileType, Tile};
 
 #[derive(Clone)]
@@ -8,16 +8,19 @@ pub struct Map {
     pub tiles: Vec<Tile>,
     pub width: i32,
     pub height: i32,
+    pub entities: Vec<Option<Entity>>
 	//pub spawn_point: (i32, i32),
 	//pub exit_point: (i32, i32),
 }
 
 impl Map {
     pub fn new(width: i32, height: i32) -> Map {
+        let map_size = width*height;
         Self {
-            tiles: vec![Tile::floor(); (width*height) as usize],
+            tiles: vec![Tile::floor(); map_size as usize],
             width,
             height,
+            entities: vec![None; map_size as usize]
         }
     }
 
@@ -48,6 +51,12 @@ impl Map {
     pub fn add_blocker(&mut self, x: i32, y: i32) {
         let idx = self.idx(x, y);
         self.tiles[idx].block = true; 
+    }
+
+    pub fn refresh_entities(&mut self) {
+        for i in 0 .. self.entities.len() {
+            self.entities[i] = None
+        }
     }
 
     fn valid_exit(&self, loc: Point, delta: Point) -> Option<usize> {

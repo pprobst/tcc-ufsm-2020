@@ -24,7 +24,7 @@ pub struct Player {}
 // Enemies & NPCs.
 pub struct Mob {}
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct Name {
     pub name: String
 }
@@ -46,4 +46,58 @@ pub struct Blocker {}
 pub struct Health {
    pub max_hp: i32,
    pub hp: i32
+}
+
+#[derive(Component)]
+pub struct BaseStats {
+    pub health: Health,
+    pub defense: i32,
+    pub attack: i32,
+    pub god: bool // Doesn't die
+}
+
+#[derive(Component)]
+pub struct SufferDamage {
+    pub amount: Vec<(i32, bool)>,
+}
+
+impl SufferDamage {
+    pub fn new_damage(
+        store: &mut WriteStorage<SufferDamage>,
+        victim: Entity,
+        amount: i32,
+        from_player: bool,
+    ) {
+        if let Some(suffering) = store.get_mut(victim) {
+            suffering.amount.push((amount, from_player));
+        } else {
+            let dmg = SufferDamage {
+                amount: vec![(amount, from_player)],
+            };
+            store.insert(victim, dmg).expect("Unable to insert damage");
+        }
+    }
+}
+
+#[derive(Component)]
+pub struct MeleeAttack {
+    pub target: Entity
+}
+
+#[derive(Component)]
+pub struct MissileAttack {
+    pub target: Entity
+}
+
+#[derive(Component)]
+pub struct MeleeWeapon {
+    pub base_damage: i32
+    // special effect?
+}
+
+#[derive(Component)]
+pub struct MissileWeapon {
+    pub base_damage: i32,
+    pub range: i32
+    // special effect?
 }

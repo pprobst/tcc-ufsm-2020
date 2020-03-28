@@ -59,7 +59,7 @@ impl<'a> Renderer<'a> {
                 if map.in_map_bounds_xy(x2, y2) {
                     let idx = map.idx(x2, y2);
                     let mut tile = map.tiles[idx];
-                    let shadow_color = RGB::from_hex("#474773").expect("Invalid hex string");
+                    let shadow_color = RGB::from_hex("#63638C").expect("Invalid hex string");
                     if !tile.visible { tile.to_color(shadow_color); }
                     if tile.revealed { self.term.set(x as i32 + x_offset, y as i32 + y_offset, tile.fg, bg, tile.glyph); }
                 } //else { self.term.set(x as i32 + x_offset, y as i32 + y_offset, RGB::named(GRAY), bg, to_cp437('.')); }

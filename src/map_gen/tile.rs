@@ -5,6 +5,9 @@ pub enum TileType {
     Empty,
     Wall,
     Floor,
+    Grass,
+    TallGrass,
+    Flower,
     Tree,
     Mushroom,
     ShallowWater,
@@ -25,7 +28,9 @@ pub struct Tile {
     pub revealed: bool,
     // https://dwarffortresswiki.org/index.php/Character_table
     pub glyph: u8,
-    pub fg: RGB
+    pub fg: RGB,
+    //pub entities: Vec<Entity> ! Can't have this because we need Copy, and Vec contains a pointer to
+    //                            some variable amount of heap memory.
 }
 
 impl Tile {
@@ -59,12 +64,40 @@ impl Tile {
         }
     }
 
+    pub fn grass() -> Self {
+        Self {
+            ttype: TileType::Grass,
+            glyph: to_cp437(','),
+            fg: RGB::from_hex("#61BE67").expect("Invalid hex string"),
+            ..Default::default()
+        }
+    }
+
+    pub fn tallgrass() -> Self {
+        Self {
+            ttype: TileType::TallGrass,
+            glyph: to_cp437('⌠'),
+            fg: RGB::from_hex("#3EA346").expect("Invalid hex string"),
+            ..Default::default()
+        }
+    } 
+
+    pub fn flower() -> Self {
+        Self {
+            ttype: TileType::Flower,
+            glyph: to_cp437('¥'),
+            fg: RGB::from_hex("#C074AB").expect("Invalid hex string"),
+            ..Default::default()
+        }
+
+    }
+
     pub fn tree() -> Self {
         Self {
             ttype: TileType::Tree,
             block: true,
             glyph: to_cp437('♣'),
-            fg: RGB::from_hex("#6ABE89").expect("Invalid hex string"),
+            fg: RGB::from_hex("#4D9352").expect("Invalid hex string"),
             ..Default::default()
         }
     }

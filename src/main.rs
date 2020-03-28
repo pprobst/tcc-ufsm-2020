@@ -6,6 +6,7 @@ use state::{State, RunState};
 mod components;
 pub use components::*;
 mod renderer;
+mod killer;
 mod player;
 mod systems;
 pub mod map_gen;
@@ -30,6 +31,11 @@ fn main() {
         .with_simple_console(WINDOW_WIDTH, WINDOW_HEIGHT-3, "terminal_12x12.png")
         //.with_fullscreen(true)
         .build();
+    /*
+    let term = BTermBuilder::simple80x50()
+        .with_title("TCC")
+        .build();
+    */
 
     let mut world = World::new();
 
@@ -42,6 +48,12 @@ fn main() {
     world.register::<Fov>();
     world.register::<Blocker>();
     world.register::<Health>();
+    world.register::<BaseStats>();
+    world.register::<SufferDamage>();
+    world.register::<MeleeAttack>();
+    world.register::<MissileAttack>();
+    world.register::<MeleeWeapon>();
+    world.register::<MissileWeapon>();
 
     // Create game state.
     let mut game_state = State::new(world, POSTPROCESS);

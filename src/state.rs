@@ -5,7 +5,9 @@ use specs::prelude::*;
 use crate::player::*;
 use crate::map_gen::*;
 use crate::renderer::{render_all};
-use crate::systems::{visibility::VisibilitySystem, ai::HostileAISystem, mapping::MappingSystem};
+use crate::killer::{remove_dead_entities};
+use crate::systems::{fov::FOVSystem, ai::HostileAISystem, mapping::MappingSystem, 
+    melee_combat::MeleeCombatSystem, damage::DamageSystem};
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -32,7 +34,7 @@ impl State {
   }
 
   fn run_systems(&mut self) {
-    let mut vis = VisibilitySystem{};
+    let mut vis = FOVSystem{};
     vis.run_now(&self.ecs);
 
     let mut hostile_ai = HostileAISystem{};
@@ -40,6 +42,13 @@ impl State {
 
     let mut mapping = MappingSystem{};
     mapping.run_now(&self.ecs);
+
+    let mut melee = MeleeCombatSystem{};
+    melee.run_now(&self.ecs);
+
+    let mut damage = DamageSystem{};
+    damage.run_now(&self.ecs);
+
 
     self.ecs.maintain();
   }
@@ -69,6 +78,7 @@ impl GameState for State {
         }
 
         let mut curr_state;
+        // We need scope because we'll do mutable borrow later.
         {
             let runstate = self.ecs.fetch::<RunState>();
             curr_state = *runstate;
@@ -96,9 +106,12 @@ impl GameState for State {
             }
         }
 
-        let mut write_state = self.ecs.write_resource::<RunState>();
-        *write_state = curr_state;
+        {
+            let mut write_state = self.ecs.write_resource::<RunState>();
+            *write_state = curr_state;
+        }
 
+        remove_dead_entities(&mut self.ecs);
         render_all(&self.ecs, term);
     }
 }
