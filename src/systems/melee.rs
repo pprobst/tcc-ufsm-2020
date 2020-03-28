@@ -2,9 +2,9 @@
 use specs::prelude::*;
 use crate::components::{MeleeAttack, BaseStats, SufferDamage};
 
-pub struct MeleeCombatSystem {}
+pub struct MeleeSystem {}
 
-impl<'a> System<'a> for MeleeCombatSystem {
+impl<'a> System<'a> for MeleeSystem {
     type SystemData = ( 
         Entities<'a>,
         ReadStorage<'a, BaseStats>,

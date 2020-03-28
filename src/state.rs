@@ -6,7 +6,7 @@ use super::{
     renderer::render_all,
     killer::remove_dead_entities,
     systems::{fov::FOVSystem, ai::HostileAISystem, mapping::MappingSystem, 
-        melee_combat::MeleeCombatSystem, damage::DamageSystem}
+        melee::MeleeSystem, damage::DamageSystem}
 };
 
 #[derive(PartialEq, Copy, Clone)]
@@ -43,7 +43,7 @@ impl State {
     let mut mapping = MappingSystem{};
     mapping.run_now(&self.ecs);
 
-    let mut melee = MeleeCombatSystem{};
+    let mut melee = MeleeSystem{};
     melee.run_now(&self.ecs);
 
     let mut damage = DamageSystem{};
