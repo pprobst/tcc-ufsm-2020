@@ -1,4 +1,5 @@
 use bracket_lib::prelude::{RGB, to_cp437};
+use crate::utils::colors::*;
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
 pub enum TileType {
@@ -51,7 +52,7 @@ impl Tile {
             ttype: TileType::Wall,
             block: true,
             glyph: to_cp437('█'),
-            fg: RGB::from_hex("#C7C7C7").expect("Invalid hex string"),
+            fg: to_rgb(WALL_GRAY),
             ..Default::default()
         }
     }
@@ -60,7 +61,7 @@ impl Tile {
         Self {
             ttype: TileType::Floor,
             glyph: to_cp437('.'),
-            fg: RGB::from_hex("#999A9C").expect("Invalid hex string"),
+            fg: to_rgb(FLOOR_GRAY),
             ..Default::default()
         }
     }
@@ -69,7 +70,7 @@ impl Tile {
         Self {
             ttype: TileType::Grass,
             glyph: to_cp437(','),
-            fg: RGB::from_hex("#61BE67").expect("Invalid hex string"),
+            fg: to_rgb(GRASS_GREEN),
             ..Default::default()
         }
     }
@@ -78,7 +79,7 @@ impl Tile {
         Self {
             ttype: TileType::TallGrass,
             glyph: to_cp437('⌠'),
-            fg: RGB::from_hex("#3EA346").expect("Invalid hex string"),
+            fg: to_rgb(GRASS_GREEN_DARKER),
             ..Default::default()
         }
     } 
@@ -87,7 +88,7 @@ impl Tile {
         Self {
             ttype: TileType::Flower,
             glyph: to_cp437('¥'),
-            fg: RGB::from_hex("#C074AB").expect("Invalid hex string"),
+            fg: to_rgb(FLOWER_MAGENTA),
             ..Default::default()
         }
 
@@ -98,7 +99,7 @@ impl Tile {
             ttype: TileType::Tree,
             block: true,
             glyph: to_cp437('♣'),
-            fg: RGB::from_hex("#4D9352").expect("Invalid hex string"),
+            fg: to_rgb(TREE_GREEN),
             ..Default::default()
         }
     }

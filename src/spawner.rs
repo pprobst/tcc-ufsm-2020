@@ -1,7 +1,8 @@
 use bracket_lib::prelude::{RandomNumberGenerator, RGB, to_cp437, WHITE, BLACK, Point};
 use specs::prelude::*;
 
-use super::{Position, Renderable, Player, Mob, Name, Fov, Blocker, Health, BaseStats, map_gen::Map};
+use super::{Position, Renderable, Player, Mob, Name, Fov, Blocker, Health, BaseStats, 
+    map_gen::Map, utils::colors::*};
 
 pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs
@@ -25,7 +26,7 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Position { x, y })
         .with(Renderable {
             glyph: to_cp437('t'),
-            fg: RGB::from_hex("#ED3D3D").expect("Invalid hex string"),
+            fg: to_rgb(BLOOD_RED),
             bg: RGB::named(BLACK),
         })
         .with(Mob{})
