@@ -1,7 +1,7 @@
 use bracket_lib::prelude::*;
 use specs::prelude::*;
 use super::{
-    Position, Renderable, map_gen::Map, utils::colors::*
+    Position, Renderable, Target, map_gen::Map, utils::colors::*
 };
 
 pub struct Renderer<'a> {
@@ -75,18 +75,36 @@ impl<'a> Renderer<'a> {
         */
     }
 
+    fn render_path(&mut self, orig: usize, dest: usize) {
+        let map = self.ecs.fetch::<Map>();
+        let a_star = a_star_search(orig, dest, &*map);
+        for (i, step) in a_star.steps.iter().enumerate() {
+            if i != 0 && i != a_star.steps.len()-1 {
+                let pt = map.idx_pos(*step);
+                self.term.set(pt.x, pt.y, to_rgb(BLOOD_RED), RGB::named(BLACK), to_cp437('∙'));
+            }
+        }
+    }
+
     fn render_entitites(&mut self, min_x: i32, min_y: i32, x_offset: i32, y_offset: i32) {
         let map = self.ecs.fetch::<Map>();
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
-
-        for (pos, render) in (&positions, &renderables).join() {
+        let targets = self.ecs.read_storage::<Target>();
+        let entities = self.ecs.entities();
+        
+        for (pos, render, ent) in (&positions, &renderables, &entities).join() {
             let idx = map.idx(pos.x, pos.y);
             if map.tiles[idx].visible {
                 let ent_x = pos.x - min_x;
                 let ent_y = pos.y - min_y;
                 if map.in_map_bounds_xy(ent_x, ent_y) {
                     self.term.set(ent_x + x_offset, ent_y + y_offset, render.fg, render.bg, render.glyph);
+                    if targets.get(ent).is_some() {
+                        let pt = self.ecs.fetch::<Point>();
+                        let ppos = *pt;
+                        self.render_path(map.idx(ent_x, ent_y + y_offset), map.idx(ppos.x - min_x + x_offset, ppos.y - min_y + y_offset));
+                    }
                 }
             }
         }

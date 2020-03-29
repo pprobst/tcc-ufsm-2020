@@ -6,16 +6,17 @@ use super::{
     renderer::render_all,
     killer::remove_dead_entities,
     systems::{fov::FOVSystem, ai::HostileAISystem, mapping::MappingSystem, 
-        melee::MeleeSystem, damage::DamageSystem}
+        melee::MeleeSystem, missile::MissileSystem, damage::DamageSystem}
 };
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum RunState {
     Running,
     Waiting,
     Start,
     PlayerTurn,
-    MobTurn
+    MobTurn,
+    Targeting
 }
 
 pub struct State {
@@ -45,6 +46,9 @@ impl State {
 
     let mut melee = MeleeSystem{};
     melee.run_now(&self.ecs);
+
+    let mut missile = MissileSystem{};
+    missile.run_now(&self.ecs);
 
     let mut damage = DamageSystem{};
     damage.run_now(&self.ecs);
@@ -103,6 +107,9 @@ impl GameState for State {
             RunState::MobTurn => {
                 self.run_systems();
                 curr_state = RunState::Waiting;
+            }
+            RunState::Targeting => {
+                curr_state = targeting_input(self, term);
             }
         }
 

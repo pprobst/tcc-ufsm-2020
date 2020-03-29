@@ -62,19 +62,12 @@ pub struct SufferDamage {
 }
 
 impl SufferDamage {
-    pub fn new_damage(
-        store: &mut WriteStorage<SufferDamage>,
-        victim: Entity,
-        amount: i32,
-        from_player: bool,
-    ) {
-        if let Some(suffering) = store.get_mut(victim) {
+    pub fn add_damage(dmg_store: &mut WriteStorage<SufferDamage>, victim: Entity, amount: i32, from_player: bool) {
+        if let Some(suffering) = dmg_store.get_mut(victim) {
             suffering.amount.push((amount, from_player));
         } else {
-            let dmg = SufferDamage {
-                amount: vec![(amount, from_player)],
-            };
-            store.insert(victim, dmg).expect("Unable to insert damage");
+            let dmg = SufferDamage { amount: vec![(amount, from_player)] };
+            dmg_store.insert(victim, dmg).expect("Unable to insert damage");
         }
     }
 }
@@ -95,9 +88,18 @@ pub struct MeleeWeapon {
     // special effect?
 }
 
+pub enum AmmoType { Arrow, _32, _9mm }
+
 #[derive(Component)]
 pub struct MissileWeapon {
     pub base_damage: i32,
-    pub range: i32
+    pub range: i32, // Influence on misses
+    pub ammo_type: AmmoType,
+    pub charges: i32
     // special effect?
+}
+
+#[derive(Component)]
+pub struct Target {
+    pub map_idx: usize
 }

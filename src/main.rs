@@ -56,6 +56,7 @@ fn main() {
     world.register::<MissileAttack>();
     world.register::<MeleeWeapon>();
     world.register::<MissileWeapon>();
+    world.register::<Target>();
 
     // Create game state.
     let mut game_state = State::new(world, POSTPROCESS);

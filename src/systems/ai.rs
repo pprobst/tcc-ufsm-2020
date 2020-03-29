@@ -40,7 +40,7 @@ impl<'a> System<'a> for HostileAISystem {
             }
             // https://github.com/thebracket/bracket-lib/blob/master/bracket-pathfinding/examples/astar/main.rs
             else if fov.visible_pos.contains(&ppos) {
-                // TODO: first try missile attack; else chase player.
+                // TODO: if has missile weapon w/ ammo, first try missile attack while fleeing; else chase player.
                 let mob_location = map.idx(pos.x, pos.y);
                 let player_location = map.idx(ppos.x, ppos.y);
                 let a_star = a_star_search(mob_location, player_location, map);

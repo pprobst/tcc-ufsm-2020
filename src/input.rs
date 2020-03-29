@@ -2,7 +2,7 @@ use bracket_lib::prelude::*;
 use super::{
     utils::directions::*,
     state::{State, RunState},
-    player::{move_player}
+    player::*
 };
 
 pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
@@ -26,6 +26,12 @@ pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
             // Move Southwest (SW).
             VirtualKeyCode::B | VirtualKeyCode::Numpad1 => move_player(SOUTHWEST, &mut gs.ecs),
 
+            // Use missile weapon.
+            VirtualKeyCode::F => { return choose_target(&mut gs.ecs, false) },
+
+            // Switch readied weapon.
+            VirtualKeyCode::Z => switch_weapon(&mut gs.ecs),
+
             // Wait (skip turn).
             VirtualKeyCode::Period => { return RunState::PlayerTurn }
 
@@ -35,6 +41,27 @@ pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
     }
     RunState::PlayerTurn
 }
+
+pub fn targeting_input(gs: &mut State, term: &mut BTerm) -> RunState {
+    match term.key {
+        None => { return RunState::Targeting }
+        Some(key) => match key {
+            VirtualKeyCode::K | VirtualKeyCode::Numpad8 | VirtualKeyCode::Up => { return choose_target(&mut gs.ecs, true) },
+            VirtualKeyCode::J | VirtualKeyCode::Numpad2 | VirtualKeyCode::Down => { return choose_target(&mut gs.ecs, false) },
+
+            // Use missile weapon.
+            VirtualKeyCode::F => missile_attack(&mut gs.ecs),
+
+            // Cancel targeting mode.
+            VirtualKeyCode::Escape => { return reset_targeting(&mut gs.ecs) },
+
+            _ => { return RunState::Targeting }
+
+        },
+    }
+    RunState::PlayerTurn
+}
+
 
 /*
 pub fn menu_input(gs: &mut State, term: &mut BTerm) -> RunState {
