@@ -20,8 +20,9 @@ Ou, _"seria bom se eu fizesse tudo isso!_".
 - [x] Sistema de FOV (_field-of-view_);
 - [x] Câmera/viewport;
 - [ ] Implementar uma UI básica e aproveitar para aprimorar os estados de jogo (game states);
-- [ ] Mobs e combate básico;
+- [x] Mobs e estrutura básica do sistema de combate;
 - [ ] Equipamento e inventário;
+- [ ] Combate melhorado;
 - [ ] Sistema de geração de mapas (pipeline) híbrido utilizando
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;
 - [ ] Temáticas diferentes de mapas (ruínas, florestas, aquedutos, etc.);
