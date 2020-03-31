@@ -21,7 +21,7 @@ impl<'a> System<'a> for MissileSystem {
             let victim_stats = base_stats.get(missile.target).unwrap();
             let victim_hp = victim_stats.health.hp;
 
-            if attacker_hp > 0 && victim_hp > 0 && !victim_stats.god {
+            if attacker_hp > 0 && victim_hp > 0 {
                 // TODO: let damage come from weapon stats.
                 let damage = i32::max(0, attacker_stats.attack - victim_stats.defense);
                 SufferDamage::add_damage(

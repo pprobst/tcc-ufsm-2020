@@ -1,4 +1,4 @@
-use bracket_lib::prelude::{RandomNumberGenerator, RGB, to_cp437, WHITE, BLACK, Point};
+use bracket_lib::prelude::{RandomNumberGenerator, RGB, to_cp437, WHITE, BLACK, Point, ColorPair};
 use specs::prelude::*;
 
 use super::{Position, Renderable, Player, Mob, Name, Fov, Blocker, Health, BaseStats, 
@@ -10,8 +10,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Position { x, y })
         .with(Renderable {
             glyph: to_cp437('@'),
-            fg: RGB::named(WHITE),
-            bg: RGB::named(BLACK),
+            color: ColorPair::new(RGB::named(WHITE), RGB::named(BLACK))
         })
         .with(Player{})
         .with(Name { name: "Severian".to_string() })
@@ -24,12 +23,11 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs
         .create_entity()
         .with(Position { x, y })
-        .with(Renderable {
-            glyph: to_cp437('t'),
-            fg: to_rgb(BLOOD_RED),
-            bg: RGB::named(BLACK),
-        })
         .with(Mob{})
+        .with(Renderable{
+            glyph: to_cp437('t'),
+            color: ColorPair::new(to_rgb(BLOOD_RED), RGB::named(BLACK))
+        })
         .with(Name { name: "Test Mob".to_string() })
         .with(Fov { range: 13, visible_pos: Vec::new(), dirty: true })
         .with(Blocker{})

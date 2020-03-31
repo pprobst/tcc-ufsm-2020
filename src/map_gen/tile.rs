@@ -1,4 +1,4 @@
-use bracket_lib::prelude::{RGB, to_cp437};
+use bracket_lib::prelude::{RGB, to_cp437, ColorPair, BLACK};
 use crate::utils::colors::*;
 
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
@@ -29,7 +29,8 @@ pub struct Tile {
     pub revealed: bool,
     // https://dwarffortresswiki.org/index.php/Character_table
     pub glyph: u8,
-    pub fg: RGB,
+    //pub fg: RGB,
+    pub color: ColorPair
     //pub entities: Vec<Entity> ! Can't have this because we need Copy, and Vec contains a pointer to
     //                            some variable amount of heap memory.
 }
@@ -52,7 +53,7 @@ impl Tile {
             ttype: TileType::Wall,
             block: true,
             glyph: to_cp437('█'),
-            fg: to_rgb(WALL_GRAY),
+            color: ColorPair::new(to_rgb(WALL_GRAY), RGB::named(BLACK)),
             ..Default::default()
         }
     }
@@ -61,7 +62,7 @@ impl Tile {
         Self {
             ttype: TileType::Floor,
             glyph: to_cp437('.'),
-            fg: to_rgb(FLOOR_GRAY),
+            color: ColorPair::new(to_rgb(FLOOR_GRAY), RGB::named(BLACK)),
             ..Default::default()
         }
     }
@@ -70,7 +71,7 @@ impl Tile {
         Self {
             ttype: TileType::Grass,
             glyph: to_cp437(','),
-            fg: to_rgb(GRASS_GREEN),
+            color: ColorPair::new(to_rgb(GRASS_GREEN), RGB::named(BLACK)),
             ..Default::default()
         }
     }
@@ -79,7 +80,7 @@ impl Tile {
         Self {
             ttype: TileType::TallGrass,
             glyph: to_cp437('⌠'),
-            fg: to_rgb(GRASS_GREEN_DARKER),
+            color: ColorPair::new(to_rgb(GRASS_GREEN_DARKER), RGB::named(BLACK)),
             ..Default::default()
         }
     } 
@@ -88,7 +89,7 @@ impl Tile {
         Self {
             ttype: TileType::Flower,
             glyph: to_cp437('¥'),
-            fg: to_rgb(FLOWER_MAGENTA),
+            color: ColorPair::new(to_rgb(FLOWER_MAGENTA), RGB::named(BLACK)),
             ..Default::default()
         }
 
@@ -99,12 +100,12 @@ impl Tile {
             ttype: TileType::Tree,
             block: true,
             glyph: to_cp437('♣'),
-            fg: to_rgb(TREE_GREEN),
+            color: ColorPair::new(to_rgb(TREE_GREEN), RGB::named(BLACK)),
             ..Default::default()
         }
     }
 
     pub fn to_color(&mut self, new_fg: RGB) {
-        self.fg = new_fg;
+        self.color.fg = new_fg;
     }
 }

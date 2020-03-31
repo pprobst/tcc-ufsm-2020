@@ -68,7 +68,7 @@ impl State {
 
 impl GameState for State {
     fn tick(&mut self, term: &mut BTerm) {
-        term.cls();
+        //term.cls();
 
         // F3 to enable/disable post-processing effects.
         match term.key {
@@ -120,5 +120,6 @@ impl GameState for State {
 
         remove_dead_entities(&mut self.ecs);
         render_all(&self.ecs, term);
+        render_draw_buffer(term);
     }
 }

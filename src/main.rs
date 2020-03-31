@@ -8,14 +8,21 @@ pub use components::*;
 mod utils;
 mod input;
 mod renderer;
+mod ui;
 mod killer;
 mod player;
 mod systems;
 mod map_gen;
 mod spawner;
 
-pub const WINDOW_WIDTH: i32 = 75;
-pub const WINDOW_HEIGHT: i32 = 39;
+//pub const WINDOW_WIDTH: i32 = 75;
+//pub const WINDOW_HEIGHT: i32 = 39;
+pub const WINDOW_WIDTH: i32 = 80;
+pub const WINDOW_HEIGHT: i32 = 60;
+//pub const X_OFFSET: i32 = 13; // Left box
+//pub const Y_OFFSET: i32 = 5;  // Bottom box
+pub const X_OFFSET: i32 = 18; // Left box
+pub const Y_OFFSET: i32 = 8;  // Bottom box
 pub const TILE_WIDTH: i32 = 16;
 pub const TILE_HEIGHT: i32 = 16;
 
@@ -30,7 +37,7 @@ fn main() {
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
         .with_font("terminal_12x12.png", 12, 12)
-        .with_simple_console(WINDOW_WIDTH, WINDOW_HEIGHT-3, "terminal_12x12.png")
+        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT-Y_OFFSET, "terminal_12x12.png")
         //.with_fullscreen(true)
         .build();
     /*

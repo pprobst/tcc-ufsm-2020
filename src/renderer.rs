@@ -1,7 +1,7 @@
 use bracket_lib::prelude::*;
 use specs::prelude::*;
 use super::{
-    Position, Renderable, Target, map_gen::Map, utils::colors::*
+    X_OFFSET, Y_OFFSET, Position, Renderable, Target, map_gen::Map, utils::colors::*, ui::*
 };
 
 pub struct Renderer<'a> {
@@ -23,8 +23,18 @@ impl<'a> Renderer<'a> {
     
     pub fn render_all(&mut self) {
         let (min_x, max_x, min_y, max_y, x_offset, y_offset) = self.screen_bounds();
-        self.render_map(min_x, max_x, min_y, max_y, x_offset, y_offset);
-        self.render_entitites(min_x, min_y, x_offset, y_offset);
+        let mut draw_batch = DrawBatch::new(); 
+
+        draw_batch.target(0);
+        draw_batch.cls();
+        self.render_map(&mut draw_batch, min_x, max_x, min_y, max_y, x_offset, y_offset);
+        self.render_entitites(&mut draw_batch, min_x, min_y, x_offset, y_offset);
+
+        //draw_batch.target(1);
+        //draw_batch.cls();
+        self.render_ui(&mut draw_batch);
+
+        draw_batch.submit(0);
     }
 
     fn screen_bounds(&mut self) -> (i32, i32, i32, i32, i32, i32) {
@@ -43,16 +53,14 @@ impl<'a> Renderer<'a> {
         let max_y = min_y + cam_y as i32;
         //println!("min_x: {}, max_x: {}, min_y: {}, max_y: {}", min_x, max_x, min_y, max_y);
 
-        //let x_offset = 15;
-        let x_offset = 0;
-        let y_offset = -3;
+        let x_offset = X_OFFSET;
+        let y_offset = -Y_OFFSET;
 
         (min_x, max_x, min_y, max_y, x_offset, y_offset)
     }
 
-    fn render_map(&mut self, min_x: i32, max_x: i32, min_y: i32, max_y: i32, x_offset: i32, y_offset: i32) {
+    fn render_map(&mut self, draw_batch: &mut DrawBatch, min_x: i32, max_x: i32, min_y: i32, max_y: i32, x_offset: i32, y_offset: i32) {
         let map = self.ecs.fetch::<Map>();
-        let bg = RGB::from_f32(0., 0., 0.);
 
         for (y, y2) in (min_y .. max_y).enumerate() {
             for (x, x2) in (min_x .. max_x).enumerate() { 
@@ -61,7 +69,8 @@ impl<'a> Renderer<'a> {
                     let mut tile = map.tiles[idx];
                     let shadow_color = to_rgb(SHADOW);
                     if !tile.visible { tile.to_color(shadow_color); }
-                    if tile.revealed { self.term.set(x as i32 + x_offset, y as i32 + y_offset, tile.fg, bg, tile.glyph); }
+                    //if tile.revealed { self.term.set(x as i32 + x_offset, y as i32 + y_offset, tile.color.fg, tile.color.bg, tile.glyph); }
+                    if tile.revealed { draw_batch.set(Point::new(x as i32 + x_offset, y as i32 + y_offset), tile.color, tile.glyph); }
                 } //else { self.term.set(x as i32 + x_offset, y as i32 + y_offset, RGB::named(GRAY), bg, to_cp437('.')); }
             }
         }
@@ -75,18 +84,22 @@ impl<'a> Renderer<'a> {
         */
     }
 
-    fn render_path(&mut self, orig: usize, dest: usize) {
+    fn render_path(&mut self, draw_batch: &mut DrawBatch, orig: usize, dest: usize) {
         let map = self.ecs.fetch::<Map>();
+        // TODO: don't use A* for this.
         let a_star = a_star_search(orig, dest, &*map);
         for (i, step) in a_star.steps.iter().enumerate() {
-            if i != 0 && i != a_star.steps.len()-1 {
-                let pt = map.idx_pos(*step);
-                self.term.set(pt.x, pt.y, to_rgb(BLOOD_RED), RGB::named(BLACK), to_cp437('∙'));
+            if a_star.steps.len() > 1 {
+                if i != 0 && i != a_star.steps.len()-1 {
+                    let pt = map.idx_pos(*step);
+                    //self.term.set(pt.x, pt.y, to_rgb(BLOOD_RED), RGB::named(BLACK), to_cp437('∙'));
+                    draw_batch.set(pt, ColorPair::new(to_rgb(BLOOD_RED), RGB::named(BLACK)), to_cp437('∙'));
+                }
             }
         }
     }
 
-    fn render_entitites(&mut self, min_x: i32, min_y: i32, x_offset: i32, y_offset: i32) {
+    fn render_entitites(&mut self, draw_batch: &mut DrawBatch, min_x: i32, min_y: i32, x_offset: i32, y_offset: i32) {
         let map = self.ecs.fetch::<Map>();
         let positions = self.ecs.read_storage::<Position>();
         let renderables = self.ecs.read_storage::<Renderable>();
@@ -99,14 +112,20 @@ impl<'a> Renderer<'a> {
                 let ent_x = pos.x - min_x;
                 let ent_y = pos.y - min_y;
                 if map.in_map_bounds_xy(ent_x, ent_y) {
-                    self.term.set(ent_x + x_offset, ent_y + y_offset, render.fg, render.bg, render.glyph);
+                    //self.term.set(ent_x + x_offset, ent_y + y_offset, render.color.fg, render.color.bg, render.glyph);
+                    draw_batch.set(Point::new(ent_x + x_offset, ent_y + y_offset), render.color, render.glyph);
                     if targets.get(ent).is_some() {
                         let pt = self.ecs.fetch::<Point>();
                         let ppos = *pt;
-                        self.render_path(map.idx(ent_x, ent_y + y_offset), map.idx(ppos.x - min_x + x_offset, ppos.y - min_y + y_offset));
+                        self.render_path(draw_batch, map.idx(ent_x + x_offset, ent_y + y_offset), map.idx(ppos.x - min_x + x_offset, ppos.y - min_y + y_offset));
                     }
                 }
             }
         }
+    }
+
+    fn render_ui(&mut self, draw_batch: &mut DrawBatch) {
+       hud::boxes(draw_batch);
+       hud::name_stats(self.ecs, draw_batch);
     }
 }

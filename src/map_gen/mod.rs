@@ -1,6 +1,3 @@
-//use bracket_lib::prelude::*;
-//use crate::components::Position;
-//use specs::prelude::*;
 mod tile;
 use tile::{TileType, Tile};
 pub mod map;

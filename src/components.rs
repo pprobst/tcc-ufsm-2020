@@ -1,4 +1,4 @@
-use bracket_lib::prelude::{RGB, Point};
+use bracket_lib::prelude::{ColorPair, Point, to_cp437, RGB};
 use specs::{prelude::*, Component};
 //use std::collections::HashSet;
 
@@ -13,8 +13,16 @@ pub type Position = Point;
 #[derive(Component)]
 pub struct Renderable {
     pub glyph: u8,
-    pub fg: RGB,
-    pub bg: RGB,
+    pub color: ColorPair
+}
+
+impl Renderable {
+  pub fn new(glyph: char, fg: RGB, bg: RGB) -> Self {
+    Self {
+      glyph: to_cp437(glyph),
+      color: ColorPair::new(fg, bg),
+    }
+  }
 }
 
 #[derive(Component)]
