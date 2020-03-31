@@ -14,9 +14,8 @@ pub const FLOWER_MAGENTA:      (u8, u8, u8)  =  (192,116,171);   // #c074ab
 pub const BLOOD_RED:           (u8, u8, u8)  =  (214,69,69);     // #d64545
 
 // UI
-pub const UI_GRAY:             (u8, u8, u8)  =  (61,61,61);      // #3d3d3d
-pub const UI_CYAN:             (u8, u8, u8)  =  (21,127,161);    // #157Fa1
-
+pub const UI_GRAY:             (u8, u8, u8)  =  (102,102,102);   // #666666
+pub const UI_CYAN:             (u8, u8, u8)  =  (21,127,161);    // #157fa1
 
 pub fn to_rgb(c: (u8, u8, u8)) -> RGB {
     RGB::from_u8(c.0, c.1, c.2)

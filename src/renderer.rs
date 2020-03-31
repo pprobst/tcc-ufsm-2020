@@ -1,7 +1,8 @@
 use bracket_lib::prelude::*;
 use specs::prelude::*;
 use super::{
-    X_OFFSET, Y_OFFSET, Position, Renderable, Target, map_gen::Map, utils::colors::*, ui::*
+    WINDOW_WIDTH, WINDOW_HEIGHT, X_OFFSET, Y_OFFSET, Position, Renderable, Target, 
+    map_gen::Map, utils::colors::*, ui::*
 };
 
 pub struct Renderer<'a> {
@@ -44,8 +45,8 @@ impl<'a> Renderer<'a> {
         //println!("{}, {}", ppos.x, ppos.y);
 
         // Size of the map portion shown on screen.
-        let (cam_x, cam_y) = self.term.get_char_size();
-        //let (cam_x, cam_y) = (64, 50);
+        //let (cam_x, cam_y) = self.term.get_char_size();
+        let (cam_x, cam_y) = (WINDOW_WIDTH-X_OFFSET, WINDOW_HEIGHT-Y_OFFSET);
 
         let min_x = ppos.x - (cam_x / 2) as i32;
         let max_x = min_x + cam_x as i32;

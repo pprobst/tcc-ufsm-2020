@@ -22,7 +22,7 @@ pub const WINDOW_HEIGHT: i32 = 60;
 //pub const X_OFFSET: i32 = 13; // Left box
 //pub const Y_OFFSET: i32 = 5;  // Bottom box
 pub const X_OFFSET: i32 = 18; // Left box
-pub const Y_OFFSET: i32 = 8;  // Bottom box
+pub const Y_OFFSET: i32 = 7;  // Bottom box
 pub const TILE_WIDTH: i32 = 16;
 pub const TILE_HEIGHT: i32 = 16;
 
