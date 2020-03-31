@@ -11,7 +11,7 @@ máquina](https://doc.rust-lang.org/book/ch01-01-installation.html).
 Após isso, baixe este repositório e execute no terminal o comando ```cargo run```.
 
 ## Main Quest
-Ou, _"seria bom se eu fizesse tudo isso!_".
+Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
 - [x] Estruturar o básico do básico do [bracket-lib](https://github.com/thebracket/bracket-lib) 
   (RLTK);
 - [x] Movimento do jogador @;
@@ -21,11 +21,11 @@ Ou, _"seria bom se eu fizesse tudo isso!_".
 - [x] Câmera/viewport;
 - [ ] Implementar uma UI básica e aproveitar para aprimorar os estados de jogo (game states);
 - [x] Mobs e estrutura básica do sistema de combate;
-- [ ] Equipamento e inventário;
-- [ ] Combate melhorado;
 - [ ] Sistema de geração de mapas (pipeline) híbrido utilizando
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;
 - [ ] Temáticas diferentes de mapas (ruínas, florestas, aquedutos, etc.);
+- [ ] Equipamento e inventário;
+- [ ] Combate melhorado;
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
 - [ ] Sistema de serialização/desserialização usando RON +
   serde;
@@ -44,11 +44,11 @@ Ou, _"se sobrar tempo eu faço!"_.
 - [ ] Otimizações gerais;
 - [ ] Salvar o jogo (tedioso de programar!).
 
-## Problemas conhecidos
-- Alta distorção dos tiles ao usar um tamanho de tile inferior a 16x16.
-    - Muito provavelmente tem a ver com a resolução. Por ora, deixei o jogo
-      ajustado para a resolução do meu laptop: 1366x768, com tiles de tamanho
-      16x16. Não resolve o problema _per se_, mas ao menos não há distorções tão perceptíveis.
+## Problemas conhecidos, etc.
+- Alta distorção dos tiles dependendo da resolução.
+    - TODO: ajustar tamanho do tile de acordo com a resolução do usuário.
+- Ainda não entendi muito bem como usar os consoles "extras" do bracket-lib.
+  - Como setar mais de uma fonte em consoles diferentes?
 
 ## Contribuições
 Se você tiver alguma boa ideia ou sugestão, sinta-se livre para abrir um 
