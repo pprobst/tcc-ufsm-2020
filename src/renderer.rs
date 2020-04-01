@@ -85,10 +85,11 @@ impl<'a> Renderer<'a> {
         */
     }
 
-    fn render_path(&mut self, draw_batch: &mut DrawBatch, orig: Point, dest: Point, render: Renderable) {
+    fn render_line_path(&mut self, draw_batch: &mut DrawBatch, orig: Point, dest: Point, render: Renderable) {
         let points = line2d_vector(orig, dest);
-        for (i, pt) in points.iter().enumerate() {
-            if points.len() > 1 {
+        //let points = line2d_bresenham(orig, dest);
+        if points.len() > 1 {
+            for (i, pt) in points.iter().enumerate() {
                 if i == 0 {
                     draw_batch.set(*pt, ColorPair::new(render.color.fg, to_rgb(SELECTED_TARGET)), render.glyph);
                 }
@@ -117,9 +118,9 @@ impl<'a> Renderer<'a> {
                     if targets.get(ent).is_some() {
                         let pt = self.ecs.fetch::<Point>();
                         let ppos = *pt;
-                        self.render_path(draw_batch, Point::new(ent_x + x_offset, ent_y + y_offset), 
-                                         Point::new(ppos.x - min_x + x_offset, ppos.y - min_y + y_offset), 
-                                         *render);
+                        self.render_line_path(draw_batch, Point::new(ent_x + x_offset, ent_y + y_offset), 
+                                              Point::new(ppos.x - min_x + x_offset, ppos.y - min_y + y_offset), 
+                                              *render);
                     }
                 }
             }
