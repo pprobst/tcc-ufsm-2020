@@ -85,16 +85,15 @@ impl<'a> Renderer<'a> {
         */
     }
 
-    fn render_path(&mut self, draw_batch: &mut DrawBatch, orig: usize, dest: usize) {
-        let map = self.ecs.fetch::<Map>();
-        // TODO: don't use A* for this.
-        let a_star = a_star_search(orig, dest, &*map);
-        for (i, step) in a_star.steps.iter().enumerate() {
-            if a_star.steps.len() > 1 {
-                if i != 0 && i != a_star.steps.len()-1 {
-                    let pt = map.idx_pos(*step);
-                    //self.term.set(pt.x, pt.y, to_rgb(BLOOD_RED), RGB::named(BLACK), to_cp437('∙'));
-                    draw_batch.set(pt, ColorPair::new(to_rgb(BLOOD_RED), RGB::named(BLACK)), to_cp437('∙'));
+    fn render_path(&mut self, draw_batch: &mut DrawBatch, orig: Point, dest: Point, render: Renderable) {
+        let points = line2d_vector(orig, dest);
+        for (i, pt) in points.iter().enumerate() {
+            if points.len() > 1 {
+                if i == 0 {
+                    draw_batch.set(*pt, ColorPair::new(render.color.fg, to_rgb(SELECTED_TARGET)), render.glyph);
+                }
+                else if i != 0 && i != points.len()-1 {
+                    draw_batch.set(*pt, ColorPair::new(to_rgb(BLOOD_RED), RGB::named(BLACK)), to_cp437('∙'));
                 }
             }
         }
@@ -118,7 +117,9 @@ impl<'a> Renderer<'a> {
                     if targets.get(ent).is_some() {
                         let pt = self.ecs.fetch::<Point>();
                         let ppos = *pt;
-                        self.render_path(draw_batch, map.idx(ent_x + x_offset, ent_y + y_offset), map.idx(ppos.x - min_x + x_offset, ppos.y - min_y + y_offset));
+                        self.render_path(draw_batch, Point::new(ent_x + x_offset, ent_y + y_offset), 
+                                         Point::new(ppos.x - min_x + x_offset, ppos.y - min_y + y_offset), 
+                                         *render);
                     }
                 }
             }

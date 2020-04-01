@@ -61,6 +61,8 @@ pub fn choose_target(ecs: &mut World, up: bool) -> RunState {
     let mut targets = ecs.write_storage::<Target>();
     let entities = ecs.entities();
 
+    if vis_targets.len() < 1 { return RunState::Waiting }
+
     let mut curr_target: Option<Entity> = None;
 
     for (e, _t) in (&entities, &targets).join() {

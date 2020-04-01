@@ -10,7 +10,7 @@ pub struct Position {
 
 pub type Position = Point;
 
-#[derive(Component)]
+#[derive(Component, Copy, Clone)]
 pub struct Renderable {
     pub glyph: u8,
     pub color: ColorPair

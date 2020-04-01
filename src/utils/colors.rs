@@ -13,6 +13,9 @@ pub const TREE_GREEN:          (u8, u8, u8)  =  (77,147,82);     // #4d9352
 pub const FLOWER_MAGENTA:      (u8, u8, u8)  =  (192,116,171);   // #c074ab
 pub const BLOOD_RED:           (u8, u8, u8)  =  (214,69,69);     // #d64545
 
+// Targeting
+pub const SELECTED_TARGET:     (u8, u8, u8)  =  (66,66,66);     // #d64545
+
 // UI
 pub const UI_GRAY:             (u8, u8, u8)  =  (102,102,102);   // #666666
 pub const UI_CYAN:             (u8, u8, u8)  =  (21,127,161);    // #157fa1
