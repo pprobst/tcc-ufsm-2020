@@ -8,8 +8,9 @@ pub use components::*;
 mod utils;
 mod input;
 mod renderer;
-mod ui;
 mod killer;
+mod ui;
+mod log;
 mod player;
 mod systems;
 mod map_gen;
@@ -28,16 +29,17 @@ pub const TILE_HEIGHT: i32 = 16;
 
 pub const POSTPROCESS: bool = false;
 
-embedded_resource!(TILE_FONT, "../resources/terminal_12x12.png");
+//embedded_resource!(TILE_FONT, "../resources/vga8x16.png");
 
 fn main() {
-    link_resource!(TILE_FONT, "resources/terminal_12x12");
+    //link_resource!(TILE_FONT, "resources/terminal_12x12");
     let term = BTermBuilder::new()
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
         .with_font("terminal_12x12.png", 12, 12)
         .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT-Y_OFFSET, "terminal_12x12.png")
+        //.with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT/2, "terminal_12x12.png")
         //.with_fullscreen(true)
         .build();
     /*
@@ -68,7 +70,7 @@ fn main() {
     // Create game state.
     let mut game_state = State::new(world, POSTPROCESS);
 
-    // Generate map.
+    // Insert map into the ECS and generate it.
     game_state.ecs.insert(map_gen::Map::new(80, 80));
     let map = game_state.generate_map();
 
@@ -77,6 +79,11 @@ fn main() {
 
     // Insert initial state (Start) on the ECS.
     game_state.ecs.insert(RunState::Start);
+
+    // Insert the Log into the ECS.
+    let mut log = log::Log::new();
+    log.add("Test test test 1", RGB::named(WHITE));
+    game_state.ecs.insert(log);
 
     bracket_lib::prelude::main_loop(term, game_state);
 }

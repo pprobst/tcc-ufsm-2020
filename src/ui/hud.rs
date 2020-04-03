@@ -2,10 +2,12 @@ use bracket_lib::prelude::*;
 use specs::prelude::*;
 use crate::utils::colors::*;
 use crate::components::{Name, BaseStats};
-use super::{WINDOW_WIDTH, WINDOW_HEIGHT, X_OFFSET, Y_OFFSET};
+use super::{WINDOW_WIDTH, WINDOW_HEIGHT, X_OFFSET, Y_OFFSET, Log};
 
 const X: i32 = WINDOW_WIDTH;
 const Y: i32 = WINDOW_HEIGHT;
+const MSG_HEIGHT_MIN: i32 = Y-Y_OFFSET*2; 
+const MSG_HEIGHT_MAX: i32 = Y-Y_OFFSET-1; 
 
 pub fn boxes(draw_batch: &mut DrawBatch) {
     let black = RGB::named(BLACK);
@@ -48,4 +50,19 @@ pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
         ColorPair::new(red, black)
     );
     draw_batch.print_color(Point::new(bar_end+1, y+2), phealth, ColorPair::new(white, black));
+}
+
+pub fn game_log(ecs: &World, draw_batch: &mut DrawBatch) {
+    let log = ecs.fetch::<Log>(); 
+    let mut y = MSG_HEIGHT_MIN+1;
+
+    for &(ref msg, color) in log.messages.iter().rev() {
+        //println!("{}", msg);
+        //println!("{}, {}", y, Y-Y_OFFSET-2);
+        if y < MSG_HEIGHT_MAX {
+            draw_batch.print_color(Point::new(X_OFFSET+1, y), msg, 
+                                   ColorPair::new(color, RGB::named(BLACK)));
+        }
+        y += 1;
+    }
 }

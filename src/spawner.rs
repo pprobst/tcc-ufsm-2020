@@ -15,7 +15,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Player{})
         .with(Name { name: "Severian".to_string() })
         .with(Fov { range: 15, visible_pos: Vec::new(), dirty: true })
-        .with(BaseStats{ health: Health { max_hp: 15, hp: 15 }, defense: 3, attack: 5, god: true})
+        .with(BaseStats{ health: Health { max_hp: 15, hp: 15 }, defense: 3, attack: 6, god: true})
         .build()
 }
 

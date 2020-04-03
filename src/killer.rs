@@ -1,5 +1,6 @@
+use bracket_lib::prelude::{RGB, YELLOW, RED};
 use specs::prelude::*;
-use super::{BaseStats};
+use super::{BaseStats, Name, Player, log::Log};
 
 pub struct Killer<'a> {
     pub ecs: &'a mut World,
@@ -17,10 +18,19 @@ impl<'a> Killer<'a> {
         {
             let entities = self.ecs.entities();
             let stats = self.ecs.read_storage::<BaseStats>();
+            let names = self.ecs.read_storage::<Name>();
+            let player = self.ecs.read_storage::<Player>();
+            let mut log = self.ecs.fetch_mut::<Log>();
 
-            for (ent, stats) in (&entities, &stats).join() {
+            for (ent, stats, name) in (&entities, &stats, &names).join() {
                 if stats.health.hp <= 0 {
-                    dead.push(ent);
+                    let p: Option<&Player> = player.get(ent);
+                    if let Some(_p) = p {
+                        log.add("You died...", RGB::named(RED));
+                    } else {
+                        log.add(format!("{} dies.", &name.name), RGB::named(YELLOW));
+                        dead.push(ent);
+                    }
                 }
             }
         }

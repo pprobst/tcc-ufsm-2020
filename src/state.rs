@@ -6,7 +6,7 @@ use super::{
     renderer::render_all,
     killer::remove_dead_entities,
     systems::{fov::FOVSystem, ai::HostileAISystem, mapping::MappingSystem, 
-        melee::MeleeSystem, missile::MissileSystem, damage::DamageSystem}
+        melee::MeleeSystem, missile::MissileSystem, damage::DamageSystem},
 };
 
 #[derive(Debug, PartialEq, Copy, Clone)]
