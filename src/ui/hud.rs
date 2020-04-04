@@ -4,11 +4,20 @@ use crate::utils::colors::*;
 use crate::components::{Name, BaseStats};
 use super::{WINDOW_WIDTH, WINDOW_HEIGHT, X_OFFSET, Y_OFFSET, Log};
 
+/*
+ * 
+ * hud.rs
+ * ------
+ * Responsible for rendering and defining the player's HUD.
+ *
+ */
+
 const X: i32 = WINDOW_WIDTH;
 const Y: i32 = WINDOW_HEIGHT;
 const MSG_HEIGHT_MIN: i32 = Y-Y_OFFSET*2; 
 const MSG_HEIGHT_MAX: i32 = Y-Y_OFFSET-1; 
 
+/// Renders the UI skeleton.
 pub fn boxes(draw_batch: &mut DrawBatch) {
     let black = RGB::named(BLACK);
     let gray = to_rgb(UI_GRAY);
@@ -22,6 +31,7 @@ pub fn boxes(draw_batch: &mut DrawBatch) {
     draw_batch.set(Point::new(X_OFFSET, 0), ColorPair::new(gray, black), to_cp437('┬'));
 }
 
+/// Renders the player's name and their possible stats.
 pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
     let black = RGB::named(BLACK);
     let white = RGB::named(WHITE);
@@ -52,6 +62,7 @@ pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
     draw_batch.print_color(Point::new(bar_end+1, y+2), phealth, ColorPair::new(white, black));
 }
 
+/// Renders messages from the log structure.
 pub fn game_log(ecs: &World, draw_batch: &mut DrawBatch) {
     let log = ecs.fetch::<Log>(); 
     let mut y = MSG_HEIGHT_MIN+1;

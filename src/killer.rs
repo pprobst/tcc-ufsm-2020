@@ -2,10 +2,19 @@ use bracket_lib::prelude::{RGB, YELLOW, RED};
 use specs::prelude::*;
 use super::{BaseStats, Name, Player, log::Log};
 
+/*
+ *
+ * killer.rs
+ * ---------
+ * Works as a "cleaner" by deleting the dead entities from the world.
+ *
+ */
+
 pub struct Killer<'a> {
     pub ecs: &'a mut World,
 }
 
+/// Remove all the dead entities from the ECS.
 pub fn remove_dead_entities(ecs: &mut World) {
     Killer {
         ecs,

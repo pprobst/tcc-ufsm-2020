@@ -16,7 +16,7 @@ mod systems;
 mod map_gen;
 mod spawner;
 
-//pub const WINDOW_WIDTH: i32 = 75;
+//pub const WINDOW_WIDTH: i32 = 63;
 //pub const WINDOW_HEIGHT: i32 = 39;
 pub const WINDOW_WIDTH: i32 = 80;
 pub const WINDOW_HEIGHT: i32 = 60;
@@ -24,8 +24,8 @@ pub const WINDOW_HEIGHT: i32 = 60;
 //pub const Y_OFFSET: i32 = 5;  // Bottom box
 pub const X_OFFSET: i32 = 18; // Left box
 pub const Y_OFFSET: i32 = 7;  // Bottom box
-pub const TILE_WIDTH: i32 = 16;
-pub const TILE_HEIGHT: i32 = 16;
+pub const TILE_WIDTH: i32 = 12;
+pub const TILE_HEIGHT: i32 = 12;
 
 pub const POSTPROCESS: bool = false;
 

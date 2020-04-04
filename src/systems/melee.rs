@@ -3,6 +3,15 @@ use specs::prelude::*;
 use crate::components::{MeleeAttack, BaseStats, SufferDamage, Name};
 use crate::log::Log;
 
+/*
+ *
+ * melee.rs
+ * --------
+ * Resposible for managing every melee (physical) attack performed.
+ *
+ */
+
+
 pub struct MeleeSystem {}
 
 impl<'a> System<'a> for MeleeSystem {

@@ -5,6 +5,14 @@ use super::{
     map_gen::Map, utils::colors::*, ui::*
 };
 
+/*
+ *
+ * renderer.rs
+ * -----------
+ * Controls the rendering of everything on the screen.
+ *
+ */
+
 pub struct Renderer<'a> {
     pub ecs: &'a World,
     pub term: &'a mut BTerm
@@ -22,6 +30,10 @@ impl<'a> Renderer<'a> {
         Self { ecs, term }
     }*/
     
+    /// Renders all the elements of the game.
+    /// * Map;
+    /// * Entities;
+    /// * UI.
     pub fn render_all(&mut self) {
         let (min_x, max_x, min_y, max_y, x_offset, y_offset) = self.screen_bounds();
         let mut draw_batch = DrawBatch::new(); 
@@ -60,6 +72,22 @@ impl<'a> Renderer<'a> {
         (min_x, max_x, min_y, max_y, x_offset, y_offset)
     }
 
+    /// Renders a targeting path between an origin point and a destiny point.
+    fn render_line_path(&mut self, draw_batch: &mut DrawBatch, orig: Point, dest: Point, render: Renderable) {
+        let points = line2d_vector(orig, dest);
+        //let points = line2d_bresenham(orig, dest);
+        if points.len() > 1 {
+            for (i, pt) in points.iter().enumerate() {
+                if i == 0 {
+                    draw_batch.set(*pt, ColorPair::new(render.color.fg, to_rgb(SELECTED_TARGET)), render.glyph);
+                }
+                else if i != 0 && i != points.len()-1 {
+                    draw_batch.set(*pt, ColorPair::new(to_rgb(BLOOD_RED), RGB::named(BLACK)), to_cp437('∙'));
+                }
+            }
+        }
+    }
+
     fn render_map(&mut self, draw_batch: &mut DrawBatch, min_x: i32, max_x: i32, min_y: i32, max_y: i32, x_offset: i32, y_offset: i32) {
         let map = self.ecs.fetch::<Map>();
 
@@ -83,21 +111,6 @@ impl<'a> Renderer<'a> {
             if tile.revealed { self.term.set(pos.x, pos.y, fg, bg, tile.glyph); }
         }
         */
-    }
-
-    fn render_line_path(&mut self, draw_batch: &mut DrawBatch, orig: Point, dest: Point, render: Renderable) {
-        let points = line2d_vector(orig, dest);
-        //let points = line2d_bresenham(orig, dest);
-        if points.len() > 1 {
-            for (i, pt) in points.iter().enumerate() {
-                if i == 0 {
-                    draw_batch.set(*pt, ColorPair::new(render.color.fg, to_rgb(SELECTED_TARGET)), render.glyph);
-                }
-                else if i != 0 && i != points.len()-1 {
-                    draw_batch.set(*pt, ColorPair::new(to_rgb(BLOOD_RED), RGB::named(BLACK)), to_cp437('∙'));
-                }
-            }
-        }
     }
 
     fn render_entitites(&mut self, draw_batch: &mut DrawBatch, min_x: i32, min_y: i32, x_offset: i32, y_offset: i32) {

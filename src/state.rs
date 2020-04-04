@@ -9,6 +9,14 @@ use super::{
         melee::MeleeSystem, missile::MissileSystem, damage::DamageSystem},
 };
 
+/*
+ * 
+ * state.rs
+ * --------
+ * Controls the running systems, game states and other main functions at every tick. 
+ *
+ */
+
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum RunState {
     Running,

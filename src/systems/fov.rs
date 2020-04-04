@@ -3,6 +3,14 @@ use specs::prelude::*;
 use crate::components::{Position, Fov, Player};
 use crate::map_gen::Map;
 
+/*
+ *
+ * fov.rs
+ * ------
+ * Manages the entities field-of-view (FOV, "what we/they see").
+ *
+ */
+
 // See: https://github.com/thebracket/bracket-lib/blob/master/rltk/examples/ex04-fov.rs
 
 pub struct FOVSystem {}

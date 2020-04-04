@@ -3,6 +3,14 @@ use specs::prelude::*;
 use crate::components::{MissileAttack, BaseStats, SufferDamage, Name};
 use crate::log::Log;
 
+/*
+ *
+ * missile.rs
+ * ----------
+ * Resposible for managing every missile (ranged) attack performed.
+ *
+ */
+
 pub struct MissileSystem {}
 
 impl<'a> System<'a> for MissileSystem {

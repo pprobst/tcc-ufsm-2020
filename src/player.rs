@@ -14,6 +14,15 @@ use super::{
 };
 use std::cmp::Ordering;
 
+/*
+ *
+ * player.rs
+ * ---------
+ * Contains all the actions performed by the player.
+ *
+ */
+
+/// Tries to move the player, performing melee attacks if needed.
 pub fn move_player(dir: Direction, ecs: &mut World) {
     let mut pos_ = ecs.write_storage::<Position>();
     let mut player_ = ecs.write_storage::<Player>();
@@ -28,7 +37,7 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
         let dir_y = dir.delta_y as i32;
         let dest = map.idx(pos.x + dir_x, pos.y + dir_y);
 
-        // Tries melee.
+        // Tries melee if you're trying to move into a occupied tile.
         for ent in map.entities[dest].iter() {
             //let t = stats.get(*ent);
             let t = mobs.get(*ent);
@@ -56,11 +65,13 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
     }
 }
 
+/// Cycles between the player's visible targets.
 pub fn choose_target(ecs: &mut World, up: bool) -> RunState {
     let vis_targets = visible_targets(ecs);
     let mut targets = ecs.write_storage::<Target>();
     let entities = ecs.entities();
 
+    // Just return a waiting state if there aren't any visible targets.
     if vis_targets.len() < 1 { return RunState::Waiting }
 
     let mut curr_target: Option<Entity> = None;
@@ -97,7 +108,9 @@ pub fn choose_target(ecs: &mut World, up: bool) -> RunState {
     RunState::Targeting
 }
 
+/// Performs a missile (ranged) attack to the selected entity.
 pub fn missile_attack(ecs: &mut World) {
+    // TODO: First check if the player readied weapon is ranged.
     let entities = ecs.entities();
     let mut targets = ecs.write_storage::<Target>();
 
@@ -116,13 +129,14 @@ pub fn missile_attack(ecs: &mut World) {
     } 
 }
 
+/// Cancels targeting, returning a Waiting state.
 pub fn reset_targeting(ecs: &mut World) -> RunState {
     let mut targets = ecs.write_storage::<Target>();
     targets.clear();
     RunState::Waiting
 }
 
-// Returns all the visibe targets in the player's FOV ordered by distance to the player (cresc.).
+/// Returns all the visibe targets in the player's FOV ordered by distance to the player (cresc.).
 fn visible_targets(ecs: &mut World) -> Vec<(Entity, f32, usize)> {
     let player = ecs.read_storage::<Player>();
     let fov = ecs.read_storage::<Fov>();
@@ -150,5 +164,6 @@ fn visible_targets(ecs: &mut World) -> Vec<(Entity, f32, usize)> {
     visible_targets
 }
 
+/// Switches between the two readied weapons.
 pub fn switch_weapon(ecs: &mut World) {
 }

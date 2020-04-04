@@ -1,7 +1,13 @@
 use bracket_lib::prelude::RGB;
 
 /*
+ *
+ * colors.rs
+ * ---------
  * Just a file to store my colors in case I don't want to use bracket's RGB::named colors.
+ *
+ * In the future, this will be substituted by using a JSON/RON of colors.
+ *
  */
 
 pub const SHADOW:              (u8, u8, u8)  =  (99,99,140);     // #63638c

@@ -1,3 +1,11 @@
+/*
+ *
+ * directions.rs
+ * -------------
+ * Making directions constants so it'll be easier to manage player movement etc.
+ *
+ */
+
 pub struct Direction {
     pub delta_x: i8,
     pub delta_y: i8

@@ -3,6 +3,14 @@ use specs::prelude::*;
 use crate::components::{SufferDamage, BaseStats, Position};
 use crate::map_gen::Map;
 
+/*
+ *
+ * damage.rs
+ * ---------
+ * Manages everything regarding damage.
+ *
+ */
+
 pub struct DamageSystem {}
 
 impl<'a> System<'a> for DamageSystem {
@@ -21,7 +29,7 @@ impl<'a> System<'a> for DamageSystem {
         for (damage, _ent, victim_stats, pos) in (&damage, &entities, &mut stats, &position).join() {
             if !victim_stats.god {
                 for dmg in damage.amount.iter() {
-                    println!("{}", victim_stats.health.hp);
+                    //println!("{}", victim_stats.health.hp);
                     victim_stats.health.hp -= dmg.0;
                 }
             }

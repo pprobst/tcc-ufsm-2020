@@ -2,11 +2,13 @@ use bracket_lib::prelude::{ColorPair, Point, to_cp437, RGB};
 use specs::{prelude::*, Component};
 //use std::collections::HashSet;
 
-/*#[derive(Component)]
-pub struct Position {
-    pub x: i32,
-    pub y: i32,
-}*/
+/*
+ *
+ * components.rs
+ * -------------
+ * Contains all the possible ECS components.
+ *
+ */
 
 pub type Position = Point;
 

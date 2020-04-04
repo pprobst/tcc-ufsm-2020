@@ -2,6 +2,14 @@ use specs::prelude::*;
 use crate::components::{Position, Blocker};
 use crate::map_gen::Map;
 
+/*
+ *
+ * mapping.rs
+ * ----------
+ * Responsible for managing the entities on the map tiles.
+ *
+ */
+
 pub struct MappingSystem {}
 
 impl<'a> System<'a> for MappingSystem {

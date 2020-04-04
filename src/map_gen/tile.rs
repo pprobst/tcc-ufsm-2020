@@ -1,6 +1,14 @@
 use bracket_lib::prelude::{RGB, to_cp437, ColorPair, BLACK};
 use crate::utils::colors::*;
 
+/*
+ *
+ * tile.rs
+ * -------
+ * Basic structure of every map tile.
+ *
+ */
+
 #[derive(PartialEq, Eq, Hash, Copy, Clone)]
 pub enum TileType {
     Empty,

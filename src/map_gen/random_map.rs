@@ -1,7 +1,14 @@
 use bracket_lib::prelude::{RandomNumberGenerator};
 use super::{Map, Tile};
 
-// Just a test!
+/*
+ *
+ * random_map.rs
+ * -------------
+ * Generates a random map just for testing.
+ *
+ */
+
 pub fn random_map_gen(map: &mut Map) {
     for x in 1..map.width {
         let idx1 = map.idx(x, 1);

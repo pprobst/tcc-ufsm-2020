@@ -4,6 +4,14 @@ use crate::components::{Position, Mob, Fov, MeleeAttack};
 use crate::state::{RunState};
 use crate::map_gen::Map;
 
+/*
+ *
+ * ai.rs
+ * -----
+ * Manages the mobs' AI.
+ *
+ */
+
 pub struct HostileAISystem {}
 
 impl<'a> System<'a> for HostileAISystem {

@@ -1,8 +1,15 @@
 use bracket_lib::prelude::{RandomNumberGenerator, RGB, to_cp437, WHITE, BLACK, Point, ColorPair};
 use specs::prelude::*;
-
 use super::{Position, Renderable, Player, Mob, Name, Fov, Blocker, Health, BaseStats, 
     map_gen::Map, utils::colors::*};
+
+/*
+ *
+ * spawner.rs
+ * ----------
+ * Controls basic spawning of entities and inserts them into the ECS.
+ *
+ */
 
 pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs

@@ -5,6 +5,15 @@ use super::{
     player::*
 };
 
+/*
+ *
+ * inputs.rs
+ * ---------
+ * Contains all the valid inputs for a given game state.
+ *
+ */
+
+/// Valid inputs while playing normally.
 pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
     match term.key {
         None => { return RunState::Waiting }
@@ -42,6 +51,7 @@ pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
     RunState::PlayerTurn
 }
 
+/// Valid inputs while in Targeting mode.
 pub fn targeting_input(gs: &mut State, term: &mut BTerm) -> RunState {
     match term.key {
         None => { return RunState::Targeting }

@@ -3,6 +3,14 @@ use crate::components::Position;
 use specs::prelude::{Entity};
 use super::{TileType, Tile};
 
+/*
+ *
+ * map.rs
+ * ------
+ * Basic structure of a map/level.
+ *
+ */
+
 #[derive(Clone)]
 pub struct Map {
     pub tiles: Vec<Tile>,
@@ -24,10 +32,12 @@ impl Map {
         }
     }
 
+    /// Returns a map index from a given x, y coordinate.
     pub fn idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize
     }
 
+    /// Returns a Point(x, y) from a given map index.
     pub fn idx_pos(&self, idx: usize) -> Position {
         let idx_32 = idx as i32;
         let y = idx_32 / self.width;
@@ -35,19 +45,23 @@ impl Map {
         Position::new(x, y)
     }
 
+    /// Checks if a certain position (Point) is in the map.
     pub fn in_map_bounds(&self, p: Position) -> bool {
         p.x > 0 && p.x < self.width-1 && p.y > 0 && p.y < self.height-1
     }
 
+    /// Checks if a certain x, y coordinate is in the map.
     pub fn in_map_bounds_xy(&self, x: i32, y: i32) -> bool {
         x > 0 && x < self.width-1 && y > 0 && y < self.height-1
     }
 
+    /// Makes a tile passable.
     pub fn clear_blocker(&mut self, x: i32, y: i32) {
         let idx = self.idx(x, y);
         self.tiles[idx].block = false; 
     }
 
+    /// Makes a tile non-passable.
     pub fn add_blocker(&mut self, x: i32, y: i32) {
         let idx = self.idx(x, y);
         self.tiles[idx].block = true; 

@@ -1,8 +1,13 @@
 use bracket_lib::prelude::{RGB};
 
-// Based on: 
-// -> http://tomassedovic.github.io/roguelike-tutorial/part-7-gui.html
-// (for now, there's no reason to over-engineer this)
+/*
+ *
+ * log.rs
+ * ------
+ * The basic structure of the game log.
+ *
+ * Based on http://tomassedovic.github.io/roguelike-tutorial/part-7-gui.html
+ */
 
 pub struct Log {
     pub messages: Vec<(String, RGB)>
