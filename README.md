@@ -40,17 +40,14 @@ considere que itens marcados já possuem a _estrutura básica_ concluída.
 Ou, _"se sobrar tempo eu faço!"_.
 - [ ] Narrativa procedural;
 - [ ] Sistema de partículas;
-- [ ] Fontes melhores;
 - [ ] Otimizações gerais;
 - [ ] Salvar o jogo (tedioso de programar!).
 
 ## Problemas conhecidos, etc.
-- Alta distorção dos tiles dependendo da resolução.
+- Distorção dos tiles dependendo da resolução.
     - TODO: ajustar tamanho do tile de acordo com a resolução do usuário.
 - Ainda não entendi muito bem como usar os consoles "extras" do bracket-lib.
   - Como setar mais de uma fonte em consoles diferentes?
-- O bracket_lib não parece lidar muito bem com fontes (PNG) com fundo diferente
-  de preto, mas acho que a próxima versão corrigirá isso.
 
 ## Contribuições
 Se você tiver alguma boa ideia ou sugestão, sinta-se livre para abrir um 
