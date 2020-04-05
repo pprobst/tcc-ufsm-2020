@@ -16,15 +16,15 @@ mod systems;
 mod map_gen;
 mod spawner;
 
-//pub const WINDOW_WIDTH: i32 = 63;
-//pub const WINDOW_HEIGHT: i32 = 39;
 pub const WINDOW_WIDTH: i32 = 80;
 pub const WINDOW_HEIGHT: i32 = 60;
+//pub const WINDOW_WIDTH: i32 = 79;
+//pub const WINDOW_HEIGHT: i32 = 39;
 //pub const X_OFFSET: i32 = 13; // Left box
 //pub const Y_OFFSET: i32 = 5;  // Bottom box
 pub const X_OFFSET: i32 = 18; // Left box
 pub const Y_OFFSET: i32 = 7;  // Bottom box
-pub const TILE_WIDTH: i32 = 12;
+pub const TILE_WIDTH: i32 = 10;
 pub const TILE_HEIGHT: i32 = 12;
 
 pub const POSTPROCESS: bool = false;
@@ -37,8 +37,8 @@ fn main() -> BError {
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
-        .with_font("terminal_12x12.png", 12, 12)
-        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT-Y_OFFSET, "terminal_12x12.png")
+        .with_font("Nice-curses-10x12.png", 10, 12)
+        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT-Y_OFFSET, "Nice-curses-10x12.png")
         //.with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT/2, "terminal_12x12.png")
         //.with_fullscreen(true)
         .build()?;
