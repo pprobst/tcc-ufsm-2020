@@ -33,7 +33,7 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Mob{})
         .with(Renderable{
             glyph: to_cp437('t'),
-            color: ColorPair::new(to_rgb(BLOOD_RED), RGB::named(BLACK))
+            color: ColorPair::new(RGB::from_hex(BLOOD_RED).unwrap(), RGB::named(BLACK))
         })
         .with(Name { name: "Test Mob".to_string() })
         .with(Fov { range: 15, visible_pos: Vec::new(), dirty: true })

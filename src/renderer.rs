@@ -47,7 +47,8 @@ impl<'a> Renderer<'a> {
         //draw_batch.cls();
         self.render_ui(&mut draw_batch);
 
-        draw_batch.submit(0);
+        draw_batch.submit(0).expect("Batch error");
+        render_draw_buffer(self.term).expect("Render error");
     }
 
     fn screen_bounds(&mut self) -> (i32, i32, i32, i32, i32, i32) {
@@ -79,10 +80,10 @@ impl<'a> Renderer<'a> {
         if points.len() > 1 {
             for (i, pt) in points.iter().enumerate() {
                 if i == 0 {
-                    draw_batch.set(*pt, ColorPair::new(render.color.fg, to_rgb(SELECTED_TARGET)), render.glyph);
+                    draw_batch.set(*pt, ColorPair::new(render.color.fg, RGB::from_hex(SELECTED_TARGET).unwrap()), render.glyph);
                 }
                 else if i != 0 && i != points.len()-1 {
-                    draw_batch.set(*pt, ColorPair::new(to_rgb(BLOOD_RED), RGB::named(BLACK)), to_cp437('∙'));
+                    draw_batch.set(*pt, ColorPair::new(RGB::from_hex(BLOOD_RED).unwrap(), RGB::named(BLACK)), to_cp437('∙'));
                 }
             }
         }
@@ -96,8 +97,7 @@ impl<'a> Renderer<'a> {
                 if map.in_map_bounds_xy(x2, y2) {
                     let idx = map.idx(x2, y2);
                     let mut tile = map.tiles[idx];
-                    let shadow_color = to_rgb(SHADOW);
-                    if !tile.visible { tile.to_color(shadow_color); }
+                    if !tile.visible { tile.shadowed(); }
                     //if tile.revealed { self.term.set(x as i32 + x_offset, y as i32 + y_offset, tile.color.fg, tile.color.bg, tile.glyph); }
                     if tile.revealed { draw_batch.set(Point::new(x as i32 + x_offset, y as i32 + y_offset), tile.color, tile.glyph); }
                 } //else { self.term.set(x as i32 + x_offset, y as i32 + y_offset, RGB::named(GRAY), bg, to_cp437('.')); }

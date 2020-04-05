@@ -106,9 +106,9 @@ impl BaseMap for Map {
     }
 
     // A* needs this or it won't work!
-    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
-        let mut exits = Vec::new();
-        let location = self.idx_pos(idx);
+    fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {
+        let mut exits = SmallVec::new();
+        let location = self.index_to_point2d(idx);
 
         if let Some(idx) = self.valid_exit(location, Point::new(-1, 0)) {
             exits.push((idx, 1.0))
@@ -126,10 +126,10 @@ impl BaseMap for Map {
         if let Some(idx) = self.valid_exit(location, Point::new(-1, -1)) {
             exits.push((idx, 1.4))
         }
-        if let Some(idx) = self.valid_exit(location, Point::new(1, -1)) {
+        if let Some(idx) = self.valid_exit(location, Point::new(-1, 1)) {
             exits.push((idx, 1.4))
         }
-        if let Some(idx) = self.valid_exit(location, Point::new(-1, 1)) {
+        if let Some(idx) = self.valid_exit(location, Point::new(1, -1)) {
             exits.push((idx, 1.4))
         }
         if let Some(idx) = self.valid_exit(location, Point::new(1, 1)) {

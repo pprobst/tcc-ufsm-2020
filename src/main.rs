@@ -31,7 +31,7 @@ pub const POSTPROCESS: bool = false;
 
 //embedded_resource!(TILE_FONT, "../resources/vga8x16.png");
 
-fn main() {
+fn main() -> BError {
     //link_resource!(TILE_FONT, "resources/terminal_12x12");
     let term = BTermBuilder::new()
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
@@ -41,7 +41,7 @@ fn main() {
         .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT-Y_OFFSET, "terminal_12x12.png")
         //.with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT/2, "terminal_12x12.png")
         //.with_fullscreen(true)
-        .build();
+        .build()?;
     /*
     let term = BTermBuilder::simple80x50()
         .with_title("TCC")
@@ -85,6 +85,6 @@ fn main() {
     log.add("Test test test 1", RGB::named(WHITE));
     game_state.ecs.insert(log);
 
-    bracket_lib::prelude::main_loop(term, game_state);
+    bracket_lib::prelude::main_loop(term, game_state)
 }
 

@@ -14,7 +14,7 @@ pub type Position = Point;
 
 #[derive(Component, Copy, Clone)]
 pub struct Renderable {
-    pub glyph: u8,
+    pub glyph: u16,
     pub color: ColorPair
 }
 

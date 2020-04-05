@@ -20,7 +20,7 @@ const MSG_HEIGHT_MAX: i32 = Y-Y_OFFSET-1;
 /// Renders the UI skeleton.
 pub fn boxes(draw_batch: &mut DrawBatch) {
     let black = RGB::named(BLACK);
-    let gray = to_rgb(UI_GRAY);
+    let gray = RGB::from_hex(UI_GRAY).unwrap();
 
     draw_batch.draw_hollow_box(Rect::with_size(0, 0, X-1, Y-Y_OFFSET-1), ColorPair::new(gray, black)); // Screen borders
     draw_batch.draw_hollow_box(Rect::with_size(0, 0, X_OFFSET, Y-Y_OFFSET-1), ColorPair::new(gray, black)); // Left box
@@ -35,8 +35,8 @@ pub fn boxes(draw_batch: &mut DrawBatch) {
 pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
     let black = RGB::named(BLACK);
     let white = RGB::named(WHITE);
-    let red = to_rgb(BLOOD_RED);
-    let cyan = to_rgb(UI_CYAN);
+    let red = RGB::from_hex(BLOOD_RED).unwrap();
+    let cyan = RGB::from_hex(UI_CYAN).unwrap();
     let player = ecs.fetch::<Entity>();
     let names = ecs.read_storage::<Name>();
     let stats = ecs.read_storage::<BaseStats>();

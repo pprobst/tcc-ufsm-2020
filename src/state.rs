@@ -128,6 +128,5 @@ impl GameState for State {
 
         remove_dead_entities(&mut self.ecs);
         render_all(&self.ecs, term);
-        render_draw_buffer(term);
     }
 }
