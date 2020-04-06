@@ -30,15 +30,13 @@ pub enum RunState {
 pub struct State {
     pub ecs: World,
     pub runstate: RunState,
-    pub burn: bool,
 }
 
 impl State {
-  pub fn new(world: World, burn: bool) -> Self {
+  pub fn new(world: World) -> Self {
     Self { 
         ecs: world, 
         runstate: RunState::Start, 
-        burn 
     }
   }
 
@@ -83,8 +81,7 @@ impl GameState for State {
             None => {}
             Some(key) => {
                 if let VirtualKeyCode::F3 = key {
-                    self.burn = !self.burn;
-                    term.with_post_scanlines(self.burn);
+                    term.with_post_scanlines(false);
                 }
             }
         }

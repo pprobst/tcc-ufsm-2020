@@ -28,7 +28,7 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
 - [ ] Sistema de serialização/desserialização usando RON +
   serde para mobs, itens e cores.
-- [ ] Combate melhorado;
+- [ ] Combate melhorado (e.g. torná-lo estocástico);
 - [ ] Itens únicos com efeitos aleatórios;
 - [ ] Sistema de IA relativamente avançada para os mobs.
 

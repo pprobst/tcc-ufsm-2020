@@ -24,10 +24,8 @@ pub const WINDOW_HEIGHT: i32 = 60;
 //pub const Y_OFFSET: i32 = 5;  // Bottom box
 pub const X_OFFSET: i32 = 18; // Left box
 pub const Y_OFFSET: i32 = 7;  // Bottom box
-pub const TILE_WIDTH: i32 = 10;
+pub const TILE_WIDTH: i32 = 12;
 pub const TILE_HEIGHT: i32 = 12;
-
-pub const POSTPROCESS: bool = false;
 
 //embedded_resource!(TILE_FONT, "../resources/vga8x16.png");
 
@@ -37,10 +35,10 @@ fn main() -> BError {
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
-        .with_font("Nice-curses-10x12.png", 10, 12)
-        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT-Y_OFFSET, "Nice-curses-10x12.png")
-        //.with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT/2, "terminal_12x12.png")
-        //.with_fullscreen(true)
+        .with_font("16x16-RogueYun-AgmEdit.png", 16, 16)
+        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT-Y_OFFSET, "16x16-RogueYun-AgmEdit.png")
+        .with_fullscreen(true)
+        .with_fps_cap(60.0)
         .build()?;
     /*
     let term = BTermBuilder::simple80x50()
@@ -68,7 +66,7 @@ fn main() -> BError {
     world.register::<Target>();
 
     // Create game state.
-    let mut game_state = State::new(world, POSTPROCESS);
+    let mut game_state = State::new(world);
 
     // Insert map into the ECS and generate it.
     game_state.ecs.insert(map_gen::Map::new(80, 80));
