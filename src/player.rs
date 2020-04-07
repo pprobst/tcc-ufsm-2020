@@ -67,7 +67,7 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
 
 /// Cycles between the player's visible targets.
 pub fn choose_target(ecs: &mut World, up: bool) -> RunState {
-    let vis_targets = visible_targets(ecs);
+    let vis_targets = visible_targets(ecs, true);
     let mut targets = ecs.write_storage::<Target>();
     let entities = ecs.entities();
 
@@ -136,8 +136,8 @@ pub fn reset_targeting(ecs: &mut World) -> RunState {
     RunState::Waiting
 }
 
-/// Returns all the visibe targets in the player's FOV ordered by distance to the player (cresc.).
-fn visible_targets(ecs: &mut World) -> Vec<(Entity, f32, usize)> {
+/// Returns all the visible and/or hittable targets in the player's FOV ordered by distance to the player (cresc.).
+fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, usize)> {
     let player = ecs.read_storage::<Player>();
     let fov = ecs.read_storage::<Fov>();
     let map = ecs.fetch::<Map>();
@@ -152,9 +152,23 @@ fn visible_targets(ecs: &mut World) -> Vec<(Entity, f32, usize)> {
             for ent in map.entities[idx].iter() {
                 let t = mobs.get(*ent);
                 if let Some(_t) = t {
-                    let ppos = positions.get(*player_ent).unwrap();
-                    let dist = DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), Point::new(ppos.x, ppos.y));
-                    visible_targets.push((*ent, dist, idx));
+                    let mobpos = Point::new(pos.x, pos.y);
+                    let player_pos = positions.get(*player_ent).unwrap();
+                    let ppos =  Point::new(player_pos.x, player_pos.y);
+                    let mut can_hit = true;
+                    if hittable {
+                        let points = line2d_vector(ppos, mobpos);
+                        //let points = line2d_bresenham(ppos, mobpos);
+                        for pt in points.iter().take(points.len()-1) {
+                            let i = map.idx(pt.x, pt.y);
+                            // if there's a blocker in the aim line, you can't hit the entity.
+                            if map.tiles[i].block { can_hit = false; }
+                        }
+                    }
+                    if can_hit {
+                        let dist = DistanceAlg::Pythagoras.distance2d(mobpos, ppos);
+                        visible_targets.push((*ent, dist, idx));
+                    }
                 }
             }
         } 

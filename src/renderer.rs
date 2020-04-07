@@ -79,10 +79,10 @@ impl<'a> Renderer<'a> {
         //let points = line2d_bresenham(orig, dest);
         if points.len() > 1 {
             for (i, pt) in points.iter().enumerate() {
-                if i == 0 {
+                if i == points.len()-1 {
                     draw_batch.set(*pt, ColorPair::new(render.color.fg, RGB::from_hex(SELECTED_TARGET).unwrap()), render.glyph);
                 }
-                else if i != 0 && i != points.len()-1 {
+                else if i != 0 {
                     draw_batch.set(*pt, ColorPair::new(RGB::from_hex(BLOOD_RED).unwrap(), RGB::named(BLACK)), to_cp437('∙'));
                 }
             }
@@ -131,8 +131,8 @@ impl<'a> Renderer<'a> {
                     if targets.get(ent).is_some() {
                         let pt = self.ecs.fetch::<Point>();
                         let ppos = *pt;
-                        self.render_line_path(draw_batch, Point::new(ent_x + x_offset, ent_y + y_offset), 
-                                              Point::new(ppos.x - min_x + x_offset, ppos.y - min_y + y_offset), 
+                        self.render_line_path(draw_batch, Point::new(ppos.x - min_x + x_offset, ppos.y - min_y + y_offset),
+                                              Point::new(ent_x + x_offset, ent_y + y_offset), 
                                               *render);
                     }
                 }
