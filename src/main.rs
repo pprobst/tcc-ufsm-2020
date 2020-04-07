@@ -35,8 +35,8 @@ fn main() -> BError {
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
-        .with_font("16x16-RogueYun-AgmEdit.png", 16, 16)
-        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT-Y_OFFSET, "16x16-RogueYun-AgmEdit.png")
+        .with_font("Cheepicus-8x8x2.png", 16, 16)
+        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT-Y_OFFSET, "Cheepicus-8x8x2.png")
         .with_fullscreen(true)
         .with_fps_cap(60.0)
         .build()?;
