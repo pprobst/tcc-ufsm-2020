@@ -111,5 +111,5 @@ pub struct MissileWeapon {
 
 #[derive(Component)]
 pub struct Target {
-    pub map_idx: usize
+    pub covered: bool
 }

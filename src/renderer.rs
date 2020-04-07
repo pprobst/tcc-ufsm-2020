@@ -74,7 +74,7 @@ impl<'a> Renderer<'a> {
     }
 
     /// Renders a targeting path between an origin point and a destiny point.
-    fn render_line_path(&mut self, draw_batch: &mut DrawBatch, orig: Point, dest: Point, render: Renderable) {
+    fn render_line_path(&mut self, draw_batch: &mut DrawBatch, orig: Point, dest: Point, render: Renderable, covered: bool) {
         let points = line2d_vector(orig, dest);
         //let points = line2d_bresenham(orig, dest);
         if points.len() > 1 {
@@ -83,7 +83,8 @@ impl<'a> Renderer<'a> {
                     draw_batch.set(*pt, ColorPair::new(render.color.fg, RGB::from_hex(SELECTED_TARGET).unwrap()), render.glyph);
                 }
                 else if i != 0 {
-                    draw_batch.set(*pt, ColorPair::new(RGB::from_hex(BLOOD_RED).unwrap(), RGB::named(BLACK)), to_cp437('∙'));
+                    if !covered { draw_batch.set(*pt, ColorPair::new(RGB::from_hex(BLOOD_RED).unwrap(), RGB::named(BLACK)), to_cp437('∙')); }
+                    else { draw_batch.set(*pt, ColorPair::new(RGB::from_hex(WALL_GRAY).unwrap(), RGB::named(BLACK)), to_cp437('∙')); }
                 }
             }
         }
@@ -98,7 +99,6 @@ impl<'a> Renderer<'a> {
                     let idx = map.idx(x2, y2);
                     let mut tile = map.tiles[idx];
                     if !tile.visible { tile.shadowed(); }
-                    //if tile.revealed { self.term.set(x as i32 + x_offset, y as i32 + y_offset, tile.color.fg, tile.color.bg, tile.glyph); }
                     if tile.revealed { draw_batch.set(Point::new(x as i32 + x_offset, y as i32 + y_offset), tile.color, tile.glyph); }
                 } //else { self.term.set(x as i32 + x_offset, y as i32 + y_offset, RGB::named(GRAY), bg, to_cp437('.')); }
             }
@@ -128,12 +128,14 @@ impl<'a> Renderer<'a> {
                 if map.in_map_bounds_xy(ent_x, ent_y) {
                     //self.term.set(ent_x + x_offset, ent_y + y_offset, render.color.fg, render.color.bg, render.glyph);
                     draw_batch.set(Point::new(ent_x + x_offset, ent_y + y_offset), render.color, render.glyph);
-                    if targets.get(ent).is_some() {
+                    let target = targets.get(ent);
+                    if let Some(_target) = target {
+                        let cover = _target.covered;
                         let pt = self.ecs.fetch::<Point>();
                         let ppos = *pt;
                         self.render_line_path(draw_batch, Point::new(ppos.x - min_x + x_offset, ppos.y - min_y + y_offset),
                                               Point::new(ent_x + x_offset, ent_y + y_offset), 
-                                              *render);
+                                              *render, cover);
                     }
                 }
             }

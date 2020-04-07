@@ -93,16 +93,16 @@ pub fn choose_target(ecs: &mut World, up: bool) -> RunState {
 
         if !up && idx > 0 {
             let tgt = vis_targets[idx-1];
-            targets.insert(tgt.0, Target{ map_idx: tgt.2 }).expect("Insert fail");
+            targets.insert(tgt.0, Target{ covered: tgt.2 }).expect("Insert fail");
         } else {
             if idx+1 > vis_targets.len()-1 { idx = 0; }
             else  { idx += 1; }
             let tgt = vis_targets[idx];
-            targets.insert(tgt.0, Target{ map_idx: tgt.2 }).expect("Insert fail");
+            targets.insert(tgt.0, Target{ covered: tgt.2 }).expect("Insert fail");
         } 
     } else { // If there's not a target select already, select the first closest visible.
         let first_target = vis_targets[0];
-        targets.insert(first_target.0, Target{ map_idx: first_target.2 }).expect("Insert fail");
+        targets.insert(first_target.0, Target{ covered: first_target.2 }).expect("Insert fail");
     }
 
     RunState::Targeting
@@ -120,13 +120,16 @@ pub fn missile_attack(ecs: &mut World) {
         curr_target = Some(e);
     }
 
-    targets.clear();
-
     if let Some(target) = curr_target {
-        let player = ecs.fetch::<Entity>();
         let mut missile_attack = ecs.write_storage::<MissileAttack>();
-        missile_attack.insert(*player, MissileAttack{ target }).expect("Missile attack insertion failed");
+        let player = ecs.fetch::<Entity>();
+        let t = targets.get(target);
+        if !t.unwrap().covered { 
+            missile_attack.insert(*player, MissileAttack{ target }).expect("Missile attack insertion failed"); 
+        }
     } 
+
+    targets.clear();
 }
 
 /// Cancels targeting, returning a Waiting state.
@@ -137,7 +140,7 @@ pub fn reset_targeting(ecs: &mut World) -> RunState {
 }
 
 /// Returns all the visible and/or hittable targets in the player's FOV ordered by distance to the player (cresc.).
-fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, usize)> {
+fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> {
     let player = ecs.read_storage::<Player>();
     let fov = ecs.read_storage::<Fov>();
     let map = ecs.fetch::<Map>();
@@ -145,7 +148,7 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, usize)>
     let positions = ecs.read_storage::<Position>();
     let player_ent = ecs.fetch::<Entity>();
 
-    let mut visible_targets: Vec<(Entity, f32, usize)> = Vec::new(); // (entity, distance, map_idx)
+    let mut visible_targets: Vec<(Entity, f32, bool)> = Vec::new(); // (entity, distance, map_idx)
     for (_player, fov) in (&player, &fov).join() {
        for pos in fov.visible_pos.iter() {
            let idx = map.idx(pos.x, pos.y);
@@ -155,20 +158,18 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, usize)>
                     let mobpos = Point::new(pos.x, pos.y);
                     let player_pos = positions.get(*player_ent).unwrap();
                     let ppos =  Point::new(player_pos.x, player_pos.y);
-                    let mut can_hit = true;
+                    let mut covered = false;
                     if hittable {
                         let points = line2d_vector(ppos, mobpos);
                         //let points = line2d_bresenham(ppos, mobpos);
                         for pt in points.iter().take(points.len()-1) {
                             let i = map.idx(pt.x, pt.y);
                             // if there's a blocker in the aim line, you can't hit the entity.
-                            if map.tiles[i].block { can_hit = false; }
+                            if map.tiles[i].block { covered = true; }
                         }
                     }
-                    if can_hit {
-                        let dist = DistanceAlg::Pythagoras.distance2d(mobpos, ppos);
-                        visible_targets.push((*ent, dist, idx));
-                    }
+                    let dist = DistanceAlg::Pythagoras.distance2d(mobpos, ppos);
+                    visible_targets.push((*ent, dist, covered));
                 }
             }
         } 
