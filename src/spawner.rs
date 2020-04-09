@@ -43,7 +43,7 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
 }
 
 pub fn spawn_map(ecs: &mut World, map: &Map) {
-    let idx = map.idx(map.width/2, map.height/2);
+    let idx = map.idx(map.width/2+2, map.height/2+2);
     let pt = map.idx_pos(idx);
     ecs.insert(Point::new(pt.x, pt.y));
     let player = player(ecs, pt.x, pt.y);

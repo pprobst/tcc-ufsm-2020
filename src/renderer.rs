@@ -18,11 +18,11 @@ pub struct Renderer<'a> {
     pub term: &'a mut BTerm
 }
 
-pub fn render_all(ecs: &World, term: &mut BTerm) {
+pub fn render_all(ecs: &World, term: &mut BTerm, show_map: bool) {
     Renderer {
         ecs,
         term,
-    }.render_all()
+    }.render_all(show_map)
 }
 
 impl<'a> Renderer<'a> {
@@ -34,18 +34,20 @@ impl<'a> Renderer<'a> {
     /// * Map;
     /// * Entities;
     /// * UI.
-    pub fn render_all(&mut self) {
+    pub fn render_all(&mut self, show_map: bool) {
         let (min_x, max_x, min_y, max_y, x_offset, y_offset) = self.screen_bounds();
         let mut draw_batch = DrawBatch::new(); 
 
         draw_batch.target(0);
         draw_batch.cls();
-        self.render_map(&mut draw_batch, min_x, max_x, min_y, max_y, x_offset, y_offset);
-        self.render_entitites(&mut draw_batch, min_x, min_y, x_offset, y_offset);
+        self.render_map(&mut draw_batch, show_map, min_x, max_x, min_y, max_y, x_offset, y_offset);
+        if !show_map {
+            self.render_entitites(&mut draw_batch, min_x, min_y, x_offset, y_offset);
 
-        //draw_batch.target(1);
-        //draw_batch.cls();
-        self.render_ui(&mut draw_batch);
+            //draw_batch.target(1);
+            //draw_batch.cls();
+            self.render_ui(&mut draw_batch);
+        }
 
         draw_batch.submit(0).expect("Batch error");
         render_draw_buffer(self.term).expect("Render error");
@@ -90,8 +92,17 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    fn render_map(&mut self, draw_batch: &mut DrawBatch, min_x: i32, max_x: i32, min_y: i32, max_y: i32, x_offset: i32, y_offset: i32) {
-        let map = self.ecs.fetch::<Map>();
+    fn render_map(&mut self, draw_batch: &mut DrawBatch, show_map: bool, min_x: i32, max_x: i32, min_y: i32, max_y: i32, x_offset: i32, y_offset: i32) {
+        let mut map = self.ecs.fetch_mut::<Map>();
+
+        if show_map {
+            let _map = map.clone();
+            for (idx, tile) in map.tiles.iter_mut().enumerate() {
+                let pos = _map.idx_pos(idx);
+                draw_batch.set(Point::new(pos.x, pos.y), tile.color, tile.glyph);
+            }
+            return
+        }
 
         for (y, y2) in (min_y .. max_y).enumerate() {
             for (x, x2) in (min_x .. max_x).enumerate() { 
@@ -103,14 +114,6 @@ impl<'a> Renderer<'a> {
                 } //else { self.term.set(x as i32 + x_offset, y as i32 + y_offset, RGB::named(GRAY), bg, to_cp437('.')); }
             }
         }
-        /*
-        for (idx, tile) in map.tiles.iter().enumerate() {
-            let pos = map.idx_pos(idx);
-            let mut fg = tile.fg;
-            if !tile.visible { fg = fg.to_greyscale(); }
-            if tile.revealed { self.term.set(pos.x, pos.y, fg, bg, tile.glyph); }
-        }
-        */
     }
 
     fn render_entitites(&mut self, draw_batch: &mut DrawBatch, min_x: i32, min_y: i32, x_offset: i32, y_offset: i32) {

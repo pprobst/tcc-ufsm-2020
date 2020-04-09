@@ -69,8 +69,9 @@ fn main() -> BError {
     let mut game_state = State::new(world);
 
     // Insert map into the ECS and generate it.
-    game_state.ecs.insert(map_gen::Map::new(80, 80));
-    let map = game_state.generate_map();
+    let (height, width) = (80, 60);
+    game_state.ecs.insert(map_gen::Map::new(height, width));
+    let map = game_state.generate_map(height, width);
 
     // Spawn entities on the map.
     spawner::spawn_map(&mut game_state.ecs, &map);

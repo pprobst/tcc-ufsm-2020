@@ -17,6 +17,8 @@ use super::{
  *
  */
 
+const SHOW_MAP: bool = true;
+
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum RunState {
     Running,
@@ -24,12 +26,14 @@ pub enum RunState {
     Start,
     PlayerTurn,
     MobTurn,
-    Targeting
+    Targeting,
+    Mapgen
 }
 
 pub struct State {
     pub ecs: World,
     pub runstate: RunState,
+    pub show_map: bool
 }
 
 impl State {
@@ -37,6 +41,7 @@ impl State {
     Self { 
         ecs: world, 
         runstate: RunState::Start, 
+        show_map: SHOW_MAP,
     }
   }
 
@@ -63,8 +68,8 @@ impl State {
     self.ecs.maintain();
   }
 
-  pub fn generate_map(&mut self) -> Map {
-      let mut mapgen = MapGenerator::new();
+  pub fn generate_map(&mut self, width: i32, height: i32) -> Map {
+      let mut mapgen = MapGenerator::new(width, height);
       mapgen.gen_map();
       let mut this_map = self.ecs.write_resource::<Map>();
       *this_map = mapgen.get_map();
@@ -96,7 +101,8 @@ impl GameState for State {
         // State machine.
         match curr_state {
             RunState::Start => {
-                curr_state = RunState::Running;
+                if self.show_map { curr_state = RunState::Mapgen; }
+                else { curr_state = RunState::Running; }
             }
             RunState::Running => {
                 self.run_systems();
@@ -116,6 +122,17 @@ impl GameState for State {
             RunState::Targeting => {
                 curr_state = targeting_input(self, term);
             }
+            RunState::Mapgen => {
+                match term.key {
+                    None => {}
+                    Some(key) => {
+                        if let VirtualKeyCode::Return = key {
+                            self.show_map = false;
+                            curr_state = RunState::Running;
+                        }
+                    }
+                }
+            }
         }
 
         {
@@ -124,6 +141,6 @@ impl GameState for State {
         }
 
         remove_dead_entities(&mut self.ecs);
-        render_all(&self.ecs, term);
+        render_all(&self.ecs, term, self.show_map);
     }
 }

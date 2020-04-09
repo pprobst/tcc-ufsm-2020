@@ -14,6 +14,7 @@ use super::{TileType, Tile};
 #[derive(Clone)]
 pub struct Map {
     pub tiles: Vec<Tile>,
+    pub size: i32,
     pub width: i32,
     pub height: i32,
     pub entities: Vec<Option<Entity>>
@@ -25,7 +26,8 @@ impl Map {
     pub fn new(width: i32, height: i32) -> Map {
         let map_size = width*height;
         Self {
-            tiles: vec![Tile::floor(); map_size as usize],
+            tiles: vec![Tile::wall(); map_size as usize],
+            size: map_size,
             width,
             height,
             entities: vec![None; map_size as usize]
