@@ -7,7 +7,7 @@ keywords = ["game", "roguelike"]
 categories = ["games"]
 
 [dependencies]
-bracket-lib = { git = "https://github.com/thebracket/bracket-lib", optional = true, default-features = false, features = ["threaded", "specs"] }
+bracket-lib = { version = "0.8", optional = true, default-features = false, features = ["threaded", "specs"] }
 specs = { version = "0.16.1", features = ["specs-derive"] }
 
 [features]
