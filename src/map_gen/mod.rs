@@ -1,12 +1,12 @@
-use super::{Position};
+use super::{Position, Point};
 mod tile;
 use tile::{TileType, Tile};
 pub mod map;
 pub use map::Map;
-//mod random_map;
-//use random_map::*;
 mod random_walk;
 use random_walk::*;
+mod cellular_automata;
+use cellular_automata::*;
 
 pub struct MapGenerator {
     pub map: Map
@@ -20,8 +20,11 @@ impl MapGenerator {
     }
 
     pub fn gen_map(&mut self) {
-        let mut walker = RandomWalker::new(0.2, true);
+        //self.map.make_chaotic(45);
+        let mut walker = RandomWalker::new(0.4, false, false);
         walker.generate(&mut self.map);
+        let mut cell_automata = CellularAutomata::new(15, 6);
+        cell_automata.generate(&mut self.map);
         //random_map_gen(&mut self.map);
         // future: apply_theme(map)
         println!("Map generated!");

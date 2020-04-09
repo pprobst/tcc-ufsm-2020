@@ -75,6 +75,7 @@ impl Tile {
         }
     }
 
+    #[allow(dead_code)]
     pub fn grass() -> Self {
         Self {
             ttype: TileType::Grass,
@@ -84,6 +85,7 @@ impl Tile {
         }
     }
 
+    #[allow(dead_code)]
     pub fn tallgrass() -> Self {
         Self {
             ttype: TileType::TallGrass,
@@ -93,6 +95,7 @@ impl Tile {
         }
     } 
 
+    #[allow(dead_code)]
     pub fn flower() -> Self {
         Self {
             ttype: TileType::Flower,
@@ -103,6 +106,7 @@ impl Tile {
 
     }
 
+    #[allow(dead_code)]
     pub fn tree() -> Self {
         Self {
             ttype: TileType::Tree,

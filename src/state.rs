@@ -126,6 +126,9 @@ impl GameState for State {
                 match term.key {
                     None => {}
                     Some(key) => {
+                        if let VirtualKeyCode::Space = key {
+                            self.generate_map(80, 60);
+                        }
                         if let VirtualKeyCode::Return = key {
                             self.show_map = false;
                             curr_state = RunState::Running;

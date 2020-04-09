@@ -9,7 +9,7 @@
  */
 
 pub const SHADOW:              &str = "#2f2f4fff";
-pub const WALL_GRAY:           &str = "#c7c7c7";
+pub const WALL_GRAY:           &str = "#949494";
 pub const FLOOR_GRAY:          &str = "#333333";
 pub const GRASS_GREEN:         &str = "#61be67";
 pub const GRASS_GREEN_DARKER:  &str = "#3ea346";

@@ -1,7 +1,7 @@
 use bracket_lib::prelude::{ColorPair, Point, to_cp437, RGB};
 use specs::{prelude::*, Component};
 use crate::utils::directions::Direction;
-use std::ops::AddAssign;
+use std::ops::{AddAssign, Add};
 //use std::collections::HashSet;
 
 /*
@@ -22,6 +22,18 @@ impl AddAssign<Direction> for Point {
         };
     }
 }
+
+impl Add<Direction> for Point {
+    type Output = Self;
+
+    fn add(self, other: Direction) -> Self {
+        Self {
+            x: self.x + other.delta_x as i32,
+            y: self.y + other.delta_y as i32,
+        }
+    }
+}
+
 
 #[derive(Component, Copy, Clone)]
 pub struct Renderable {

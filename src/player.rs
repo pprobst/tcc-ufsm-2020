@@ -179,6 +179,8 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> 
     visible_targets
 }
 
+// TODO
 /// Switches between the two readied weapons.
-pub fn switch_weapon(ecs: &mut World) {
+#[allow(dead_code)]
+pub fn switch_weapon(_ecs: &mut World) {
 }

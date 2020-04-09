@@ -34,11 +34,30 @@ impl Map {
         }
     }
 
+    /// Makes map chaotic with a chance of floor_chance to change a tile to floor.
+    /// Used in mapgen algorithms that require a "chaotic map" like Cellular Automata.
+    #[allow(dead_code)]
+    pub fn make_chaotic(&mut self, floor_chance: u8) {
+        let mut rng = RandomNumberGenerator::new();
+        let floor = Tile::floor();
+
+        for mut _tile in self.tiles.iter_mut() {
+           let chance = rng.range(1, 101);
+           if chance <= floor_chance { 
+               *_tile = floor; 
+           }
+        }
+    }
+
     /// Returns a map index from a given x, y coordinate.
     pub fn idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize
     }
 
+    /// Returns a map index from a given Point.
+    pub fn idx_pt(&self, point: Point) -> usize {
+        (point.y as usize * self.width as usize) + point.x as usize
+    }
     /// Returns a Point(x, y) from a given map index.
     pub fn idx_pos(&self, idx: usize) -> Position {
         let idx_32 = idx as i32;
