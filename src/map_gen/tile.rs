@@ -120,4 +120,8 @@ impl Tile {
     pub fn shadowed(&mut self) {
         self.color.fg = RGBA::from_hex(SHADOW).unwrap();
     }
+
+    pub fn change_glyph(&mut self, newglyph: char) {
+        self.glyph = to_cp437(newglyph);
+    }
 }

@@ -111,7 +111,7 @@ impl<'a> Renderer<'a> {
                     let mut tile = map.tiles[idx];
                     if !tile.visible { tile.shadowed(); }
                     if tile.revealed { draw_batch.set(Point::new(x as i32 + x_offset, y as i32 + y_offset), tile.color, tile.glyph); }
-                } //else { self.term.set(x as i32 + x_offset, y as i32 + y_offset, RGB::named(GRAY), bg, to_cp437('.')); }
+                } //else { draw_batch.set(Point::new(x as i32 + x_offset, y as i32 + y_offset), ColorPair::new(RGB::from_hex(WALL_GRAY).unwrap(), RGB::named(BLACK)), to_cp437('#')); }
             }
         }
     }

@@ -40,8 +40,8 @@ impl RandomWalker {
     }
     pub fn generate(&mut self, map: &mut Map) {
         let mut rng = RandomNumberGenerator::new();
-        let w = map.width;
-        let h = map.height;
+        let w = map.width-1;
+        let h = map.height-1;
 
         let mut n_floor_tiles = map.tiles.iter().filter(|tile| tile.ttype == TileType::Floor).count();
         let needed_floor_tiles = (self.percent * map.size as f32) as usize;
@@ -71,10 +71,10 @@ impl RandomWalker {
                         6 => { if self.can_walk_diagonally { walker.pos += SOUTHEAST; } }
                         _ => { if self.can_walk_diagonally { walker.pos += SOUTHWEST; } }
                     }
-                }
-                if map.tiles[idx].ttype == TileType::Wall {
-                    map.tiles[idx] = Tile::floor();
-                    n_floor_tiles += 1;
+                    if map.tiles[idx].ttype == TileType::Wall {
+                        map.tiles[idx] = Tile::floor();
+                        n_floor_tiles += 1;
+                    }
                 }
                 walker.life -= 1; 
             }

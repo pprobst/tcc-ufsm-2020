@@ -2,6 +2,7 @@ use bracket_lib::prelude::*;
 use crate::components::Position;
 use specs::prelude::{Entity};
 use super::{TileType, Tile};
+use crate::utils::directions::*;
 
 /*
  *
@@ -49,6 +50,88 @@ impl Map {
         }
     }
 
+    /// Add solid borders to the map.
+    pub fn add_borders(&mut self) {
+        let mut idx;
+        for x in 1 .. self.width {
+            idx = self.idx(x, 1);
+            self.tiles[idx] = Tile::wall();   
+            idx = self.idx(x, self.height-1);
+            self.tiles[idx] = Tile::wall();   
+        }
+        for y in 1 .. self.height {
+            idx = self.idx(1, y);
+            self.tiles[idx] = Tile::wall();   
+            idx = self.idx(self.width-1, y);
+            self.tiles[idx] = Tile::wall();   
+        }
+    }
+
+    pub fn pretty_walls(&mut self) {
+        for y in 1 .. self.height {
+            for x in 1 .. self.width {
+                let idx = self.idx(x, y);
+                if self.tiles[idx].ttype == TileType::Wall {
+                    let glyph = self.get_wall_glyph(x, y);
+                    self.tiles[idx].change_glyph(glyph);
+                }
+            } 
+        }
+    }
+
+    fn get_wall_glyph(&self, x: i32, y: i32) -> char {
+        if !self.in_map_bounds_xy(x, y) { return '█' }
+        let curr_pt = Point { x, y };
+        let mut bitmask: u8 = 0;
+
+        // See: https://waa.ai/TY6r
+        let north = curr_pt + NORTH;
+        let south = curr_pt + SOUTH;
+        let west = curr_pt + WEST;
+        let east = curr_pt + EAST;
+
+        if self.in_map_bounds(north) {
+            if self.tiles[self.idx_pt(north)].ttype == TileType::Wall {
+                bitmask += 1;
+            }
+        }
+        if self.in_map_bounds(south) {
+            if self.tiles[self.idx_pt(south)].ttype == TileType::Wall {
+                bitmask += 2;
+            }
+        }
+        if self.in_map_bounds(west) {
+            if self.tiles[self.idx_pt(west)].ttype == TileType::Wall {
+                bitmask += 4;
+            }
+        }
+        if self.in_map_bounds(east) {
+            if self.tiles[self.idx_pt(east)].ttype == TileType::Wall {
+                bitmask += 8;
+            }
+        }
+
+        match bitmask {
+            0  => { '█' }
+            1  => { '║' }
+            2  => { '║' }
+            3  => { '║' }
+            4  => { '═' }
+            5  => { '╝' }
+            6  => { '╗' }
+            7  => { '╣' }
+            8  => { '═' }
+            9  => { '╚' }
+            10 => { '╔' }
+            11 => { '╠' }
+            12 => { '═' }
+            13 => { '╩' }
+            14 => { '╦' }
+            15 => { '╬' }
+            _  => { '█' }
+        }
+    }
+
     /// Returns a map index from a given x, y coordinate.
     pub fn idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize
@@ -68,12 +151,12 @@ impl Map {
 
     /// Checks if a certain position (Point) is in the map.
     pub fn in_map_bounds(&self, p: Position) -> bool {
-        p.x > 0 && p.x < self.width-1 && p.y > 0 && p.y < self.height-1
+        p.x > 0 && p.x < self.width && p.y > 0 && p.y < self.height
     }
 
     /// Checks if a certain x, y coordinate is in the map.
     pub fn in_map_bounds_xy(&self, x: i32, y: i32) -> bool {
-        x > 0 && x < self.width-1 && y > 0 && y < self.height-1
+        x > 0 && x < self.width && y > 0 && y < self.height
     }
 
     /// Makes a tile passable.

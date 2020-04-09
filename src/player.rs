@@ -60,6 +60,7 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
             let mut player_pos = ecs.write_resource::<Point>();
             player_pos.x = pos.x;
             player_pos.y = pos.y;
+            println!("{}, {}", pos.x, pos.y);
             fov.dirty = true;
         }
     }

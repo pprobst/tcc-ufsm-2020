@@ -4,7 +4,7 @@ use crate::utils::directions::*;
 /*
  *
  * cellular_automata.rs
- * -------------
+ * --------------------
  * Cellular Automata cave generation.
  * http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels
  * https://github.com/vurmux/urizen/blob/master/urizen/generators/dungeons/dungeon_cellular.py
