@@ -46,8 +46,6 @@ Ou, _"se sobrar tempo eu faço!"_.
 ## Problemas conhecidos, etc.
 - Distorção dos tiles dependendo da resolução.
     - TODO: ajustar tamanho do tile de acordo com a resolução do usuário.
-- Ainda não entendi muito bem como usar os consoles "extras" do bracket-lib.
-  - Como setar mais de uma fonte em consoles diferentes?
 
 ## Contribuições
 Se você tiver alguma boa ideia ou sugestão, sinta-se livre para abrir um 
