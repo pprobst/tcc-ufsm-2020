@@ -21,9 +21,9 @@ impl MapGenerator {
 
     pub fn gen_map(&mut self) {
         //self.map.make_chaotic(45);
-        let mut walker = RandomWalker::new(0.45, false, false);
+        let mut walker = RandomWalker::new(0.40, false, false);
         walker.generate(&mut self.map);
-        let mut cell_automata = CellularAutomata::new(15, 4);
+        let mut cell_automata = CellularAutomata::new(15, 5);
         cell_automata.generate(&mut self.map);
         self.map.add_borders();
         self.map.pretty_walls();

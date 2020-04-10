@@ -17,9 +17,9 @@ mod map_gen;
 mod spawner;
 
 pub const X_OFFSET: i32 = 18; // Left box
-pub const Y_OFFSET: i32 = 7;  // Bottom box
+pub const Y_OFFSET: i32 = 10;  // Bottom box
 pub const WINDOW_WIDTH: i32 = 80;
-pub const WINDOW_HEIGHT: i32 = 60+Y_OFFSET;
+pub const WINDOW_HEIGHT: i32 = 60;
 //pub const WINDOW_HEIGHT: i32 = 80+Y_OFFSET;
 pub const TILE_WIDTH: i32 = 12;
 pub const TILE_HEIGHT: i32 = 12;
@@ -33,7 +33,9 @@ fn main() -> BError {
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
         .with_font("Cheepicus-8x8x2.png", 16, 16)
-        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT-Y_OFFSET, "Cheepicus-8x8x2.png")
+        .with_font("Zilk-16x16.png", 16, 16)
+        .with_simple_console(WINDOW_WIDTH, WINDOW_HEIGHT, "Cheepicus-8x8x2.png")
+        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT, "Zilk-16x16.png")
         .with_fullscreen(true)
         .with_fps_cap(60.0)
         .build()?;

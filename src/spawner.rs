@@ -21,7 +21,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         })
         .with(Player{})
         .with(Name { name: "Severian".to_string() })
-        .with(Fov { range: 15, visible_pos: Vec::new(), dirty: true })
+        .with(Fov { range: 20, visible_pos: Vec::new(), dirty: true })
         .with(BaseStats{ health: Health { max_hp: 15, hp: 15 }, defense: 3, attack: 6, god: true})
         .build()
 }
@@ -36,7 +36,7 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
             color: ColorPair::new(RGB::from_hex(BLOOD_RED).unwrap(), RGB::named(BLACK))
         })
         .with(Name { name: "Test Mob".to_string() })
-        .with(Fov { range: 15, visible_pos: Vec::new(), dirty: true })
+        .with(Fov { range: 20, visible_pos: Vec::new(), dirty: true })
         .with(Blocker{})
         .with(BaseStats{ health: Health { max_hp: 7, hp: 7 }, defense: 3, attack: 5, god: false})
         .build()

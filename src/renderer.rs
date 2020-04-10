@@ -44,8 +44,8 @@ impl<'a> Renderer<'a> {
         if !show_map {
             self.render_entitites(&mut draw_batch, min_x, min_y, x_offset, y_offset);
 
-            //draw_batch.target(1);
-            //draw_batch.cls();
+            draw_batch.target(1);
+            draw_batch.cls();
             self.render_ui(&mut draw_batch);
         }
 
@@ -61,7 +61,7 @@ impl<'a> Renderer<'a> {
 
         // Size of the map portion shown on screen.
         //let (cam_x, cam_y) = self.term.get_char_size();
-        let (cam_x, cam_y) = (WINDOW_WIDTH-X_OFFSET, WINDOW_HEIGHT-Y_OFFSET);
+        let (cam_x, cam_y) = (WINDOW_WIDTH-X_OFFSET, WINDOW_HEIGHT+Y_OFFSET);
 
         let min_x = ppos.x - (cam_x / 2) as i32;
         let max_x = min_x + cam_x as i32;
@@ -70,9 +70,9 @@ impl<'a> Renderer<'a> {
         //println!("min_x: {}, max_x: {}, min_y: {}, max_y: {}", min_x, max_x, min_y, max_y);
 
         let x_offset = X_OFFSET;
-        let y_offset = -Y_OFFSET;
+        let y_offset = Y_OFFSET;
 
-        (min_x, max_x, min_y, max_y, x_offset, y_offset)
+        (min_x, max_x, min_y, max_y-y_offset, x_offset, -y_offset)
     }
 
     /// Renders a targeting path between an origin point and a destiny point.
