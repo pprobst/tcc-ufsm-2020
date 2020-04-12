@@ -6,6 +6,7 @@ use crate::utils::directions::*;
  * cellular_automata.rs
  * --------------------
  * Cellular Automata cave generation.
+ *
  * http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels
  * https://github.com/vurmux/urizen/blob/master/urizen/generators/dungeons/dungeon_cellular.py
  */
@@ -13,14 +14,15 @@ use crate::utils::directions::*;
 #[allow(dead_code)]
 pub struct CellularAutomata { 
     pub n_iterations: u8,
-    pub n_walls_rule: u8
+    pub n_walls_rule: u8,
+    pub open_halls: bool
 }
 
 #[allow(dead_code)]
 impl CellularAutomata {
-    pub fn new(n_iterations: u8, n_walls_rule: u8) -> Self {
+    pub fn new(n_iterations: u8, n_walls_rule: u8, open_halls: bool) -> Self {
         Self {
-            n_iterations, n_walls_rule
+            n_iterations, n_walls_rule, open_halls
         }
     }
     pub fn generate(&mut self, map: &mut Map) {
@@ -37,7 +39,7 @@ impl CellularAutomata {
                     let mut wall_counter = 0;
                     let curr_pt = Point::new(x, y);
                     let curr_idx = map.idx(x, y);
-                    // Moore neighbourhood.
+                    // Moore neighborhood.
                     if map.tiles[map.idx_pt(curr_pt)].block { wall_counter += 1; }
                     if map.tiles[map.idx_pt(curr_pt + EAST)].block { wall_counter += 1; }
                     if map.tiles[map.idx_pt(curr_pt + WEST)].block { wall_counter += 1; }
@@ -48,8 +50,7 @@ impl CellularAutomata {
                     if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].block { wall_counter += 1; }
                     if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].block { wall_counter += 1; }
 
-                    //if wall_counter >= self.n_walls_rule || wall_counter < 1 { 
-                    if wall_counter >= self.n_walls_rule { 
+                    if wall_counter >= self.n_walls_rule || (wall_counter < 1 && !self.open_halls) { 
                         tiles[curr_idx] = Tile::wall();
                     } else { 
                         tiles[curr_idx] = Tile::floor(); 

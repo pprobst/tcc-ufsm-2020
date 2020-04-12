@@ -7,6 +7,7 @@ use crate::utils::directions::*;
  * random_walk.rs
  * --------------
  * Random Walk algorithm, with some nice additions.
+ *
  * http://www.roguebasin.com/index.php?title=Random_Walk_Cave_Generation
  *
  */
@@ -26,7 +27,7 @@ struct Walker {
 pub struct RandomWalker {
     percent: f32,
     grouped_walkers: bool,
-    can_walk_diagonally: bool
+    can_walk_diagonally: bool,
 }
 
 #[allow(dead_code)]
@@ -52,9 +53,9 @@ impl RandomWalker {
         while n_floor_tiles < needed_floor_tiles {
             let mut walker;
             if self.grouped_walkers {
-                walker = Walker{ size: rng.range(1, 3), life: rng.range(300, 500), pos: Position::new(w/2, h/2) };
+                walker = Walker{ size: rng.range(1, 3), life: rng.range(200, 500), pos: Position::new(w/2, h/2) };
             } else {
-                walker = Walker{ size: rng.range(1, 3), life: rng.range(300, 500), pos: Position::new(rng.range(2, w-1), rng.range(2, h-1)) };
+                walker = Walker{ size: rng.range(1, 3), life: rng.range(200, 500), pos: Position::new(rng.range(2, w-1), rng.range(2, h-1)) };
             }
             _n_walkers += 1;
             while walker.life > 0 {
