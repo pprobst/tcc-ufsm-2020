@@ -33,14 +33,13 @@ impl MapGenerator {
     pub fn gen_map(&mut self) {
         let mut rng = RandomNumberGenerator::new();
         //self.map.make_chaotic(45);
-        /*let mut walker = RandomWalker::new(0.40, false, false, false);
+        let mut walker = RandomWalker::new(0.40, false, false);
         walker.generate(&mut self.map, &mut rng);
-        let mut cell_automata = CellularAutomata::new(12, 5);
+        let mut cell_automata = CellularAutomata::new(12, 5, true);
         cell_automata.generate(&mut self.map);
-        */
-        let mut bsp = BSPDungeon::new(10, false);
-        bsp.generate(&mut self.map, &mut rng);
-        bsp.build_tunnels_left(&mut self.map, &mut rng);
+        //let mut bsp = BSPDungeon::new(10, false);
+        //bsp.generate(&mut self.map, &mut rng);
+        //bsp.build_tunnels_left(&mut self.map, &mut rng);
         self.map.add_borders();
         self.map.pretty_walls();
         //random_map_gen(&mut self.map);

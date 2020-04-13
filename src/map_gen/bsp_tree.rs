@@ -12,6 +12,7 @@ use super::{Map, Room, common::*};
  *
  * See also:
  * - http://www.roguebasin.com/index.php?title=Basic_BSP_Dungeon_generation
+ * - https://gamedevelopment.tutsplus.com/tutorials/how-to-use-bsp-trees-to-generate-game-maps--gamedev-12268
  * - https://github.com/vurmux/urizen/blob/master/urizen/generators/dungeons/dungeon_bsp_tree.py
  *
  */
