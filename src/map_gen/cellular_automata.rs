@@ -16,14 +16,15 @@ use crate::utils::directions::*;
 pub struct CellularAutomata { 
     pub n_iterations: u8, // the more iterations we have, the smoother the map will be
     pub n_walls_rule: u8,
+    pub min_cave_size: usize,
     pub open_halls: bool
 }
 
 #[allow(dead_code)]
 impl CellularAutomata {
-    pub fn new(n_iterations: u8, n_walls_rule: u8, open_halls: bool) -> Self {
+    pub fn new(n_iterations: u8, n_walls_rule: u8, min_cave_size: usize, open_halls: bool) -> Self {
         Self {
-            n_iterations, n_walls_rule, open_halls
+            n_iterations, n_walls_rule, min_cave_size, open_halls
         }
     }
 
@@ -66,13 +67,66 @@ impl CellularAutomata {
         // TODO 
         // - [x] Get list of all caves.
         // - [ ] Connect all caves.
-        let caves = self.get_all_caves(map);
+        let mut main_caves = self.get_all_caves(map);
+        let mut lesser_caves = main_caves.clone();
 
-        println!("Quant of caves: {}", caves.len());
-        for cave in caves.iter() {
-            for idx in cave.iter() {
-                // Just paint as shadowed to see if flood-fill is working.
-                map.tiles[idx.clone()].shadowed();
+        // Get caves < min_cave_size.
+        lesser_caves.retain(|a| a.len() < self.min_cave_size);
+
+        // Get caves >= min_cave_size and sort them by size (decresc.).
+        main_caves.retain(|a| a.len() >= self.min_cave_size);
+        main_caves.sort_by(|a, b| b.len().cmp(&a.len()));
+
+        self.fill_caves(map, lesser_caves);
+        self.connect_caves(map, main_caves);
+    }
+
+    /// Connect with tunnels the caves that have >= than the minimum size.
+    fn connect_caves(&self, map: &mut Map, caves: Vec<Vec<usize>>) {
+        // Algorithm idea:
+        // - get the two points (x, y) that are the closest between two caves
+        // - make a tunnel between then
+        let mut cave_pts: Vec<Vec<Point>> = Vec::new();
+        let mut pts: Vec<Point> = Vec::new();
+
+        // Populate the vector cave_pts (same as before, but considering the
+        // coordinates on the map instead of the index).
+        for cave in caves {
+            for idx in cave {
+                let pt = map.idx_pos(idx);
+                if self.is_probably_edge(pt, map) {
+                    map.tiles[idx].shadowed();
+                    // TODO: continue this.
+                    //pts.push(pt);
+                }
+            }
+            //cave_pts.push(pts);
+        }
+    }
+
+    /// Returns true if the point is probably an edge of a region.
+    /// While not 100% accurate (it detects blockers not only on edges), 
+    /// it cuts our distance computations by a lot!
+    fn is_probably_edge(&self, pt: Point, map: &mut Map) -> bool {
+        let east = pt + EAST;
+        let west = pt + WEST;
+        let north = pt + NORTH;
+        let south = pt + SOUTH;
+
+        if map.in_map_bounds(east) && map.tiles[map.idx_pt(east)].block { return true; }
+        if map.in_map_bounds(west) && map.tiles[map.idx_pt(west)].block { return true; }
+        if map.in_map_bounds(north) && map.tiles[map.idx_pt(north)].block { return true; }
+        if map.in_map_bounds(south) && map.tiles[map.idx_pt(south)].block { return true; }
+
+        return false;
+    }
+
+    /// Fill with wall tiles the caves that have < than the minimum size.
+    // idea: maybe fill them with water tiles for a nice twist?
+    fn fill_caves(&self, map: &mut Map, caves: Vec<Vec<usize>>) {
+        for cave in caves {
+            for idx in cave {
+                map.tiles[idx] = Tile::wall();
             }
         }
     }

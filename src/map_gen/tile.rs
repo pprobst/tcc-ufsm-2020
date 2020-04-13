@@ -29,7 +29,7 @@ impl Default for TileType {
     }
 }
 
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, Default, PartialEq)]
 pub struct Tile {
     pub ttype: TileType,
     pub block: bool,

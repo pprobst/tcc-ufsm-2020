@@ -35,7 +35,7 @@ impl MapGenerator {
         //self.map.make_chaotic(45);
         let mut walker = RandomWalker::new(0.40, false, false);
         walker.generate(&mut self.map, &mut rng);
-        let mut cell_automata = CellularAutomata::new(12, 5, true);
+        let mut cell_automata = CellularAutomata::new(12, 5, 80, true);
         cell_automata.generate(&mut self.map);
         //let mut bsp = BSPDungeon::new(10, false);
         //bsp.generate(&mut self.map, &mut rng);
