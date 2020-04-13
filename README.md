@@ -24,7 +24,7 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
 - [ ] Alguns métodos construtivos de geração de mapas:
     - [x] Random Walkers;
     - [x] Cellular Automata;
-        - [ ] Assegurar conectividade.
+        - [x] Assegurar conectividade.
     - [x] BSP (binary space partitioning) trees;
     - [ ] Tunnelers/Diggers https://www.gridsagegames.com/blog/2014/06/mapgen-tunneling-algorithm/
 - [ ] Sistema de geração de mapas (pipeline) híbrido utilizando

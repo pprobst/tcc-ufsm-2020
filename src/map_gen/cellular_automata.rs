@@ -1,4 +1,5 @@
-use super::{Map, Tile, TileType, Point};
+use bracket_lib::prelude::DistanceAlg;
+use super::{Map, Tile, TileType, Point, common::make_exact_tunnel};
 use crate::utils::directions::*;
 
 /*
@@ -64,16 +65,13 @@ impl CellularAutomata {
 
         map.tiles = tiles.clone();
 
-        // TODO 
-        // - [x] Get list of all caves.
-        // - [ ] Connect all caves.
         let mut main_caves = self.get_all_caves(map);
         let mut lesser_caves = main_caves.clone();
 
         // Get caves < min_cave_size.
         lesser_caves.retain(|a| a.len() < self.min_cave_size);
 
-        // Get caves >= min_cave_size and sort them by size (decresc.).
+        // Get caves >= min_cave_size and sort them by size (decresc. because better connection).
         main_caves.retain(|a| a.len() >= self.min_cave_size);
         main_caves.sort_by(|a, b| b.len().cmp(&a.len()));
 
@@ -87,21 +85,39 @@ impl CellularAutomata {
         // - get the two points (x, y) that are the closest between two caves
         // - make a tunnel between then
         let mut cave_pts: Vec<Vec<Point>> = Vec::new();
-        let mut pts: Vec<Point> = Vec::new();
 
         // Populate the vector cave_pts (same as before, but considering the
         // coordinates on the map instead of the index).
         for cave in caves {
+            let mut pts: Vec<Point> = Vec::new();
             for idx in cave {
                 let pt = map.idx_pos(idx);
                 if self.is_probably_edge(pt, map) {
-                    map.tiles[idx].shadowed();
-                    // TODO: continue this.
-                    //pts.push(pt);
+                    pts.push(pt);
                 }
             }
-            //cave_pts.push(pts);
+            cave_pts.push(pts);
         }
+
+        for i in 0 .. cave_pts.len()-1 {
+            let this_cave = &cave_pts[i]; 
+            let other_cave = &cave_pts[i+1]; 
+            let mut shortest_dist = other_cave.len();
+            let mut this_idx = 0;
+            let mut other_idx = 0;
+            for j in 0 .. this_cave.len()-1 {
+                for k in 0 .. other_cave.len()-1 {
+                    let d = DistanceAlg::Pythagoras.distance2d(this_cave[j], other_cave[k]) as usize;
+                    if d < shortest_dist { 
+                        this_idx = j;
+                        other_idx = k;
+                        shortest_dist = d; 
+                    }
+                }
+            }
+            make_exact_tunnel(map, this_cave[this_idx].x, this_cave[this_idx].y, 
+                              other_cave[other_idx].x, other_cave[other_idx].y);
+         }
     }
 
     /// Returns true if the point is probably an edge of a region.
