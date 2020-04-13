@@ -1,4 +1,4 @@
-use super::{Map, Tile, Room, TileType};
+use super::{Map, Tile, Room};
 
 /*
  * 
@@ -45,33 +45,6 @@ pub fn create_v_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32) -> Vec<usize> {
         let idx = map.idx(x, y);
         make_floor(map, idx);
         tunnel.push(idx);
-    }
-
-    tunnel
-}
-
-pub fn create_tunnel(map: &mut Map, x1: i32, y1: i32, x2: i32, y2: i32) -> Vec<usize> {
-    let mut tunnel = Vec::new();
-
-    let mut x = x1;
-    let mut y = y1;
-
-    while x != x2 || y != y2 {
-        if x < x2 {
-            x += 1;
-        } else if x > x2 {
-            x -= 1;
-        } else if y < y2 {
-            y += 1;
-        } else if y > y2 {
-            y -= 1;
-        }
-
-        let idx = map.idx(x, y);
-        if map.tiles[idx].ttype != TileType::Floor {
-            tunnel.push(idx);
-            make_floor(map, idx);
-        }
     }
 
     tunnel
