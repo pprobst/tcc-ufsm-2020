@@ -1,4 +1,4 @@
-use super::{Map, Tile, Point};
+use super::{Map, Tile, TileType, Point};
 use crate::utils::directions::*;
 
 /*
@@ -9,11 +9,12 @@ use crate::utils::directions::*;
  *
  * http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels
  * https://github.com/vurmux/urizen/blob/master/urizen/generators/dungeons/dungeon_cellular.py
+ * https://github.com/SPIGS/Polymorph/blob/master/src/level_generation/cellular_automata.rs
  */
 
 #[allow(dead_code)]
 pub struct CellularAutomata { 
-    pub n_iterations: u8,
+    pub n_iterations: u8, // the more iterations we have, the smoother the map will be
     pub n_walls_rule: u8,
     pub open_halls: bool
 }
@@ -25,6 +26,7 @@ impl CellularAutomata {
             n_iterations, n_walls_rule, open_halls
         }
     }
+
     pub fn generate(&mut self, map: &mut Map) {
         let w = map.width-1;
         let h = map.height-1;
@@ -50,7 +52,7 @@ impl CellularAutomata {
                     if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].block { wall_counter += 1; }
                     if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].block { wall_counter += 1; }
 
-                    if wall_counter >= self.n_walls_rule || (wall_counter < 1 && !self.open_halls) { 
+                    if wall_counter >= self.n_walls_rule || (wall_counter == 0 && !self.open_halls) { 
                         tiles[curr_idx] = Tile::wall();
                     } else { 
                         tiles[curr_idx] = Tile::floor(); 
@@ -58,6 +60,75 @@ impl CellularAutomata {
                 }
             }
         }
+
         map.tiles = tiles.clone();
+
+        // TODO 
+        // - [x] Get list of all caves.
+        // - [ ] Connect all caves.
+        let caves = self.get_all_caves(map);
+
+        println!("Quant of caves: {}", caves.len());
+        for cave in caves.iter() {
+            for idx in cave.iter() {
+                // Just paint as shadowed to see if flood-fill is working.
+                map.tiles[idx.clone()].shadowed();
+            }
+        }
+    }
+
+    /// Gets a list of all separated caves on the map.
+    fn get_all_caves(&self, map: &mut Map) -> Vec<Vec<usize>> {
+        let w = map.width;
+        let h = map.height;
+        let mut caves: Vec<Vec<usize>> = Vec::new();
+        let mut marked_map: Vec<bool> = vec![false; map.size as usize];
+
+        for y in 1 .. h-1 {
+            for x in 1 .. w-1 {
+                let idx = map.idx(x, y);
+                if !marked_map[idx] && map.tiles[idx].ttype == TileType::Floor {
+                    let new_cave = self.get_cave(idx, map);
+
+                    for idx in new_cave.iter() {
+                        marked_map[*idx] = true;
+                    }
+
+                    caves.push(new_cave);
+                }
+            }
+        }
+
+        caves
+    }
+
+    /// Gets a cave using the flood-fill algorithm.
+    fn get_cave(&self, start_idx: usize, map: &mut Map) -> Vec<usize> {
+        use std::collections::VecDeque;
+        let mut cave_tiles: Vec<usize> = Vec::new();
+        let mut marked_map: Vec<bool> = vec![false; map.size as usize];
+        let mut queue: VecDeque<usize> = VecDeque::new();
+
+        queue.push_back(start_idx);
+        marked_map[start_idx] = true;
+
+        while !queue.is_empty() {
+            let tile = queue.pop_front().unwrap();
+            cave_tiles.push(tile);
+            let pt = map.idx_pos(tile);
+            for y in pt.y-1 .. pt.y+2 {
+                for x in pt.x-1 .. pt.x+2 {
+                    let idx = map.idx(x, y);
+                    if map.in_map_bounds_xy(x, y) && (y == pt.y || x == pt.x) {
+                        if !marked_map[idx] && map.tiles[idx].ttype == TileType::Floor {
+                            marked_map[idx] = true;
+                            queue.push_back(idx);
+                        }
+                    }
+                }
+            }
+        }
+
+        cave_tiles
     }
 }
