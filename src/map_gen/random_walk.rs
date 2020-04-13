@@ -39,8 +39,7 @@ impl RandomWalker {
             can_walk_diagonally
         }
     }
-    pub fn generate(&mut self, map: &mut Map) {
-        let mut rng = RandomNumberGenerator::new();
+    pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
         let w = map.width-1;
         let h = map.height-1;
 

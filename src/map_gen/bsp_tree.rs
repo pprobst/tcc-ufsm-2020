@@ -20,7 +20,7 @@ use super::{Map, Room, common::*};
 pub struct BSPDungeon { 
     pub rooms: Vec<Room>, // nodes (rooms)
     pub optimal_block_size: i32,
-    pub connected: bool
+    pub connected: bool,
 }
 
 #[allow(dead_code)]
@@ -29,18 +29,17 @@ impl BSPDungeon {
         Self {
             rooms: vec![],
             optimal_block_size,
-            connected
+            connected,
         }
     }
 
-    pub fn generate(&mut self, map: &mut Map) {
+    pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
         let w = map.width-1;
         let h = map.height-1;
-        let mut rng = RandomNumberGenerator::new();
 
         let mut root = Node::new(1, 1, w, h, self.optimal_block_size);
-        root.gen(&mut rng);
-        root.make_rooms(&mut rng, self.connected);
+        root.gen(rng);
+        root.make_rooms(rng, self.connected);
 
         for node in root.iter() {
             if node.is_leaf() {
@@ -50,13 +49,51 @@ impl BSPDungeon {
                 }
             }
         }
+    }
 
-        // TODO: add connections/tunnels between rooms.
+    pub fn build_tunnels_left(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) -> Vec<Vec<usize>> {
+        self.rooms.sort_by(|a, b| a.x1.cmp(&b.x1));
+        self.build_tunnels(map, rng)
+    }
+
+    pub fn build_tunnels(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) -> Vec<Vec<usize>> {
+        let mut tunnels = Vec::new();
+
+        for i in 0 .. self.rooms.len()-1 {
+            let room = self.rooms[i];
+            let other = self.rooms[i+1];
+            let room_c = room.center();
+            let other_c = other.center();
+
+            match rng.range(0, 3) {
+                0 => {
+                    if room_c.x <= other_c.x {
+                        tunnels.push(create_h_tunnel(map, room_c.x, other_c.x, room_c.y));
+                    } else { tunnels.push(create_h_tunnel(map, other_c.x, room_c.x, room_c.y)); }
+
+                    if room_c.y <= other_c.y {
+                        tunnels.push(create_v_tunnel(map, room_c.y, other_c.y, other_c.x));
+                    } else { tunnels.push(create_v_tunnel(map, other_c.y, room_c.y, other_c.x)); }
+                }
+                _ => {
+                    if room_c.y <= other_c.y {
+                        tunnels.push(create_v_tunnel(map, room_c.y, other_c.y, other_c.x));
+                    } else { tunnels.push(create_v_tunnel(map, other_c.y, room_c.y, other_c.x)); }
+
+                    if room_c.x <= other_c.x {
+                        tunnels.push(create_h_tunnel(map, room_c.x, other_c.x, room_c.y));
+                    } else { tunnels.push(create_h_tunnel(map, other_c.x, room_c.x, room_c.y)); }
+                }
+            }
+        }
+
+        tunnels 
     }
 
     pub fn get_rooms(&self) -> Vec<Room> {
         self.rooms.clone() 
     }
+
 } 
 
 pub struct Node {
@@ -155,8 +192,8 @@ impl Node {
             if connected {  
                 self.room = Some(Room::with_size(self.x, self.y, self.w, self.h));
             } else {
-                let min_room_width = 5;
-                let min_room_height = 5;
+                let min_room_width = 4;
+                let min_room_height = 4;
                 let width = rng.range(min_room_width, self.w);
                 let height = rng.range(min_room_height, self.h);
                 let x = rng.range(0, self.w-width);
