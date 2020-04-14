@@ -32,17 +32,26 @@ impl MapGenerator {
 
     pub fn gen_map(&mut self) {
         let mut rng = RandomNumberGenerator::new();
+
+        // Run make_chaotic if we don't have a prior map for the Cellular Automata.
         //self.map.make_chaotic(45);
-        let mut walker = RandomWalker::new(0.40, false, false);
+
+        // If we create a walker with (0.45, true, false) and after that we run
+        // Cellular Automata with (12, 5, 50, false), we get linear organic
+        // dungeons. Then, if we run a BSP generator, it'll become like 
+        // cave with man-made rooms!
+        let mut walker = RandomWalker::new(0.45, true, false);
         walker.generate(&mut self.map, &mut rng);
-        let mut cell_automata = CellularAutomata::new(12, 5, 80, true);
+
+        let mut cell_automata = CellularAutomata::new(12, 5, 50, false);
         cell_automata.generate(&mut self.map);
-        //let mut bsp = BSPDungeon::new(10, false);
-        //bsp.generate(&mut self.map, &mut rng);
-        //bsp.build_tunnels_left(&mut self.map, &mut rng);
+
+        let mut bsp = BSPDungeon::new(8, false);
+        bsp.generate(&mut self.map, &mut rng);
+        bsp.build_tunnels(&mut self.map, &mut rng);
+
         self.map.add_borders();
         self.map.pretty_walls();
-        //random_map_gen(&mut self.map);
         // future: apply_theme(map)
         println!("Map generated!");
     }

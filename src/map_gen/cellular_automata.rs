@@ -1,5 +1,5 @@
 use bracket_lib::prelude::DistanceAlg;
-use super::{Map, Tile, TileType, Point, common::make_exact_tunnel};
+use super::{Map, Tile, TileType, Point, common::{make_exact_tunnel}};
 use crate::utils::directions::*;
 
 /*
@@ -116,7 +116,8 @@ impl CellularAutomata {
                 }
             }
             make_exact_tunnel(map, this_cave[this_idx].x, this_cave[this_idx].y, 
-                              other_cave[other_idx].x, other_cave[other_idx].y);
+                              other_cave[other_idx].x, other_cave[other_idx].y,
+                              true);
          }
     }
 

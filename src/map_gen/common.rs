@@ -1,3 +1,4 @@
+use bracket_lib::prelude::RandomNumberGenerator;
 use super::{Map, Tile, Room};
 
 /*
@@ -51,7 +52,7 @@ pub fn create_v_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32) -> Vec<usize> {
 }
 
 #[allow(dead_code)]
-pub fn make_exact_tunnel(map: &mut Map, x1: i32, y1: i32, x2: i32, y2: i32) {
+pub fn make_exact_tunnel(map: &mut Map, x1: i32, y1: i32, x2: i32, y2: i32, natural: bool) {
     let mut x = x1;
     let mut y = y1;
 
@@ -68,8 +69,26 @@ pub fn make_exact_tunnel(map: &mut Map, x1: i32, y1: i32, x2: i32, y2: i32) {
 
         let idx = map.idx(x, y);
         make_floor(map, idx);
+
+        if natural {
+            let mut rng = RandomNumberGenerator::new();
+            let sign_x = rng.range(0, 2);
+            let sign_y = rng.range(0, 2);
+            let add_x = if sign_x < 1 { 1 } else { -1 };
+            let add_y = if sign_y < 1 { 1 } else { -1 };
+            if map.in_map_bounds_xy(x+add_x, y+add_y) {
+                let mut idx2 = map.idx(x+add_x, y+add_y);
+                make_floor(map, idx2);
+                let one_more = rng.range(0, 3);
+                if one_more < 1 && map.in_map_bounds_xy(x+(add_x*2), y+(add_y*2)) {
+                    idx2 = map.idx(x+(add_x*2), y+(add_y)*2);
+                    make_floor(map, idx2);
+                }
+            }
+        }
     }
 }
+
 
 /// Makes the given index on the map a Floor tile.
 fn make_floor(map: &mut Map, idx: usize) {

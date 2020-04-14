@@ -67,6 +67,7 @@ impl Map {
         }
     }
 
+    #[allow(dead_code)]
     pub fn pretty_walls(&mut self) {
         for y in 1 .. self.height {
             for x in 1 .. self.width {
@@ -79,6 +80,7 @@ impl Map {
         }
     }
 
+    #[allow(dead_code)]
     fn get_wall_glyph(&self, x: i32, y: i32) -> char {
         if !self.in_map_bounds_xy(x, y) { return '█' }
         let curr_pt = Point { x, y };
