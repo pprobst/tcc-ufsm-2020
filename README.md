@@ -26,7 +26,7 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
     - [x] Cellular Automata;
         - [x] Assegurar conectividade.
     - [x] BSP (binary space partitioning) trees;
-    - [ ] Tunnelers/Diggers https://www.gridsagegames.com/blog/2014/06/mapgen-tunneling-algorithm/
+    - [ ] Tunnelers/Diggers, see [here](https://www.gridsagegames.com/blog/2014/06/mapgen-tunneling-algorithm/) and [here](http://www.roguebasin.com/index.php?title=Dungeon-Building_Algorithm).
 - [ ] Sistema de geração de mapas (pipeline) híbrido utilizando
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;
 - [ ] Temáticas diferentes de mapas (ruínas, florestas, aquedutos, etc.);
