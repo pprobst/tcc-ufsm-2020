@@ -40,20 +40,9 @@ impl CellularAutomata {
         for _i in 0 .. self.n_iterations {
             for y in 1 .. h {
                 for x in 1 .. w {
-                    let mut wall_counter = 0;
                     let curr_pt = Point::new(x, y);
                     let curr_idx = map.idx(x, y);
-                    // Moore neighborhood.
-                    if map.tiles[map.idx_pt(curr_pt)].block { wall_counter += 1; }
-                    if map.tiles[map.idx_pt(curr_pt + EAST)].block { wall_counter += 1; }
-                    if map.tiles[map.idx_pt(curr_pt + WEST)].block { wall_counter += 1; }
-                    if map.tiles[map.idx_pt(curr_pt + NORTH)].block { wall_counter += 1; }
-                    if map.tiles[map.idx_pt(curr_pt + SOUTH)].block { wall_counter += 1; }
-                    if map.tiles[map.idx_pt(curr_pt + NORTHEAST)].block { wall_counter += 1; }
-                    if map.tiles[map.idx_pt(curr_pt + NORTHWEST)].block { wall_counter += 1; }
-                    if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].block { wall_counter += 1; }
-                    if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].block { wall_counter += 1; }
-
+                    let wall_counter = self.count_neighbor_blockers(map, curr_pt);
                     if wall_counter >= self.n_walls_rule || (wall_counter == 0 && !self.open_halls) { 
                         tiles[curr_idx] = Tile::wall();
                     } else { 
@@ -77,6 +66,23 @@ impl CellularAutomata {
 
         self.fill_caves(map, lesser_caves);
         self.connect_caves(map, main_caves);
+    }
+
+    fn count_neighbor_blockers(&self, map: &mut Map, curr_pt: Point) -> u8{
+        let mut wall_counter = 0;
+
+        // Moore neighborhood.
+        if map.tiles[map.idx_pt(curr_pt)].block { wall_counter += 1; } // avoid many single tile blockers
+        if map.tiles[map.idx_pt(curr_pt + EAST)].block { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + WEST)].block { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + NORTH)].block { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + SOUTH)].block { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + NORTHEAST)].block { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + NORTHWEST)].block { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].block { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].block { wall_counter += 1; }
+
+        wall_counter
     }
 
     /// Connect with tunnels the caves that have >= than the minimum size.

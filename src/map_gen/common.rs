@@ -79,7 +79,7 @@ pub fn make_exact_tunnel(map: &mut Map, x1: i32, y1: i32, x2: i32, y2: i32, natu
             if map.in_map_bounds_xy(x+add_x, y+add_y) {
                 let mut idx2 = map.idx(x+add_x, y+add_y);
                 make_floor(map, idx2);
-                let one_more = rng.range(0, 3);
+                let one_more = rng.range(0, 4);
                 if one_more < 1 && map.in_map_bounds_xy(x+(add_x*2), y+(add_y*2)) {
                     idx2 = map.idx(x+(add_x*2), y+(add_y)*2);
                     make_floor(map, idx2);
