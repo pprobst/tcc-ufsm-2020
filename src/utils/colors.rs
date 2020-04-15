@@ -9,6 +9,9 @@
  */
 
 pub const SHADOW:              &str = "#2f2f4fff";
+pub const SHALLOW_BLUE:        &str = "#005fafff";
+pub const DEEP_BLUE:           &str = "#004d8bff";
+pub const WATER_BLUE:          &str = "#0069be";
 pub const WALL_GRAY:           &str = "#949494";
 pub const FLOOR_GRAY:          &str = "#333333";
 pub const GRASS_GREEN:         &str = "#61be67";

@@ -19,6 +19,7 @@ pub struct MapGenerator {
     pub map: Map,
     pub rooms: Option<Vec<Room>>,
     pub tunnels: Option<Vec<Vec<usize>>>,
+    pub caves: Option<Vec<Vec<usize>>>,
 }
 
 impl MapGenerator {
@@ -27,6 +28,7 @@ impl MapGenerator {
            map: Map::new(width, height),
            rooms: None,
            tunnels: None,
+           caves: None,
         }
     }
 
@@ -61,7 +63,7 @@ impl MapGenerator {
         //bsp.build_tunnels(&mut self.map, &mut rng);
 
         self.map.add_borders();
-        self.map.pretty_walls();
+        //self.map.pretty_walls();
         // future: apply_theme(map)
         println!("Map generated!");
     }

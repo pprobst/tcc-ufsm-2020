@@ -134,6 +134,20 @@ impl Map {
         }
     }
 
+    pub fn paint_tile(&mut self, idx: usize, ttype: TileType) {
+        match ttype {
+            TileType::Floor => { self.tiles[idx] = Tile::floor(); }
+            TileType::Tree => { self.tiles[idx] = Tile::tree(); }
+            TileType::Wall => { self.tiles[idx] = Tile::wall(); }
+            TileType::ShallowWater => { self.tiles[idx] = Tile::shallow_water(); }
+            TileType::DeepWater => { self.tiles[idx] = Tile::deep_water(); }
+            TileType::Grass => { self.tiles[idx] = Tile::grass(); }
+            TileType::TallGrass => { self.tiles[idx] = Tile::tallgrass(); }
+            TileType::Flower => { self.tiles[idx] = Tile::flower(); }
+            _ => { self.tiles[idx] = Tile::floor(); }
+        }
+    }
+
     /// Returns a map index from a given x, y coordinate.
     pub fn idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize

@@ -19,8 +19,8 @@ pub enum TileType {
     Flower,
     Tree,
     //Mushroom,
-    //ShallowWater,
-    //DeepWater,
+    ShallowWater,
+    DeepWater,
 }
 
 impl Default for TileType {
@@ -39,7 +39,7 @@ pub struct Tile {
     pub glyph: u16,
     //pub fg: RGB,
     pub color: ColorPair
-    //pub entities: Vec<Entity> ! Can't have this because we need Copy, and Vec contains a pointer to
+    //pub entities: Vec<Entity> ! Can't have this because we need Copy, an Vec contains a pointer to
     //                            some variable amount of heap memory.
 }
 
@@ -103,7 +103,6 @@ impl Tile {
             color: ColorPair::new(RGB::from_hex(FLOWER_MAGENTA).unwrap(), RGB::named(BLACK)),
             ..Default::default()
         }
-
     }
 
     #[allow(dead_code)]
@@ -113,6 +112,26 @@ impl Tile {
             block: true,
             glyph: to_cp437('♣'),
             color: ColorPair::new(RGB::from_hex(TREE_GREEN).unwrap(), RGB::named(BLACK)),
+            ..Default::default()
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn deep_water() -> Self {
+        Self {
+            ttype: TileType::DeepWater,
+            glyph: to_cp437('~'),
+            color: ColorPair::new(RGB::from_hex(WATER_BLUE).unwrap(), RGBA::from_hex(DEEP_BLUE).unwrap()),
+            ..Default::default()
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn shallow_water() -> Self {
+        Self {
+            ttype: TileType::ShallowWater,
+            glyph: to_cp437('~'),
+            color: ColorPair::new(RGB::from_hex(WATER_BLUE).unwrap(), RGBA::from_hex(SHALLOW_BLUE).unwrap()),
             ..Default::default()
         }
     }

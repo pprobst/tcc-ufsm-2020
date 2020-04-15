@@ -40,12 +40,21 @@ impl CellularAutomata {
         for _i in 0 .. self.n_iterations {
             for y in 1 .. h {
                 for x in 1 .. w {
+                    let mut flag = false;
                     let curr_pt = Point::new(x, y);
                     let curr_idx = map.idx(x, y);
-                    let wall_counter = self.count_neighbor_blockers(map, curr_pt);
+                    let wall_counter = self.count_neighbor_tile(map, curr_pt, TileType::Wall);
+                    let water_counter = self.count_neighbor_tile(map, curr_pt, TileType::ShallowWater);
                     if wall_counter >= self.n_walls_rule || (wall_counter == 0 && !self.open_halls) { 
                         tiles[curr_idx] = Tile::wall();
-                    } else { 
+                        flag = true;
+                    } if water_counter == 4 {
+                        tiles[curr_idx] = Tile::shallow_water();
+                        flag = true;
+                    } if water_counter >= 6 { 
+                        tiles[curr_idx] = Tile::deep_water();
+                        flag = true;
+                    } if flag == false { 
                         tiles[curr_idx] = Tile::floor(); 
                     }
                 }
@@ -64,23 +73,23 @@ impl CellularAutomata {
         main_caves.retain(|a| a.len() >= self.min_cave_size);
         main_caves.sort_by(|a, b| b.len().cmp(&a.len()));
 
-        self.fill_caves(map, lesser_caves);
+        self.fill_caves(map, lesser_caves, TileType::ShallowWater);
         self.connect_caves(map, main_caves);
     }
 
-    fn count_neighbor_blockers(&self, map: &mut Map, curr_pt: Point) -> u8{
+    fn count_neighbor_tile(&self, map: &mut Map, curr_pt: Point, tt: TileType) -> u8{
         let mut wall_counter = 0;
 
         // Moore neighborhood.
-        if map.tiles[map.idx_pt(curr_pt)].block { wall_counter += 1; } // avoid many single tile blockers
-        if map.tiles[map.idx_pt(curr_pt + EAST)].block { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + WEST)].block { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + NORTH)].block { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + SOUTH)].block { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + NORTHEAST)].block { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + NORTHWEST)].block { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].block { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].block { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt)].ttype == tt  { wall_counter += 1; } // avoid many single tile blockers
+        if map.tiles[map.idx_pt(curr_pt + EAST)].ttype == tt { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + WEST)].ttype == tt { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + NORTH)].ttype == tt { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + SOUTH)].ttype == tt { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + NORTHEAST)].ttype == tt { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + NORTHWEST)].ttype == tt { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].ttype == tt { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].ttype == tt { wall_counter += 1; }
 
         wall_counter
     }
@@ -123,7 +132,7 @@ impl CellularAutomata {
             }
             make_exact_tunnel(map, this_cave[this_idx].x, this_cave[this_idx].y, 
                               other_cave[other_idx].x, other_cave[other_idx].y,
-                              true);
+                              TileType::Floor, true);
          }
     }
 
@@ -146,10 +155,10 @@ impl CellularAutomata {
 
     /// Fill with wall tiles the caves that have < than the minimum size.
     // idea: maybe fill them with water tiles for a nice twist?
-    fn fill_caves(&self, map: &mut Map, caves: Vec<Vec<usize>>) {
+    fn fill_caves(&self, map: &mut Map, caves: Vec<Vec<usize>>, ttype: TileType) {
         for cave in caves {
             for idx in cave {
-                map.tiles[idx] = Tile::wall();
+                map.paint_tile(idx, ttype);
             }
         }
     }
