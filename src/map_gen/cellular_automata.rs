@@ -18,14 +18,15 @@ pub struct CellularAutomata {
     pub n_iterations: u8, // the more iterations we have, the smoother the map will be
     pub n_walls_rule: u8,
     pub min_cave_size: usize,
-    pub open_halls: bool
+    pub open_halls: bool,
+    pub dry_caves: bool
 }
 
 #[allow(dead_code)]
 impl CellularAutomata {
-    pub fn new(n_iterations: u8, n_walls_rule: u8, min_cave_size: usize, open_halls: bool) -> Self {
+    pub fn new(n_iterations: u8, n_walls_rule: u8, min_cave_size: usize, open_halls: bool, dry_caves: bool) -> Self {
         Self {
-            n_iterations, n_walls_rule, min_cave_size, open_halls
+            n_iterations, n_walls_rule, min_cave_size, open_halls, dry_caves
         }
     }
 
@@ -48,10 +49,10 @@ impl CellularAutomata {
                     if wall_counter >= self.n_walls_rule || (wall_counter == 0 && !self.open_halls) { 
                         tiles[curr_idx] = Tile::wall();
                         flag = true;
-                    } if water_counter == 4 {
+                    } if water_counter >= 3 && water_counter < 5 {
                         tiles[curr_idx] = Tile::shallow_water();
                         flag = true;
-                    } if water_counter >= 6 { 
+                    } if water_counter >= 5 { 
                         tiles[curr_idx] = Tile::deep_water();
                         flag = true;
                     } if flag == false { 
@@ -69,11 +70,21 @@ impl CellularAutomata {
         // Get caves < min_cave_size.
         lesser_caves.retain(|a| a.len() < self.min_cave_size);
 
-        // Get caves >= min_cave_size and sort them by size (decresc. because better connection).
+        // Get caves >= min_cave_size
         main_caves.retain(|a| a.len() >= self.min_cave_size);
         main_caves.sort_by(|a, b| b.len().cmp(&a.len()));
 
-        self.fill_caves(map, lesser_caves, TileType::ShallowWater);
+        for cave in lesser_caves { 
+            if self.dry_caves { self.fill_cave(map, cave, TileType::Wall); }
+            else { self.fill_cave(map, cave, TileType::ShallowWater); }
+        }
+
+        if main_caves.len() > 2 && !self.dry_caves {
+            let last_main_cave = main_caves[main_caves.len()-1].clone();
+            self.fill_cave(map, last_main_cave, TileType::ShallowWater);
+        }
+
+        main_caves.sort_by(|a, b| a[0].cmp(&b[0]));
         self.connect_caves(map, main_caves);
     }
 
@@ -155,11 +166,9 @@ impl CellularAutomata {
 
     /// Fill with wall tiles the caves that have < than the minimum size.
     // idea: maybe fill them with water tiles for a nice twist?
-    fn fill_caves(&self, map: &mut Map, caves: Vec<Vec<usize>>, ttype: TileType) {
-        for cave in caves {
-            for idx in cave {
-                map.paint_tile(idx, ttype);
-            }
+    fn fill_cave(&self, map: &mut Map, cave: Vec<usize>, ttype: TileType) {
+        for idx in cave {
+            map.paint_tile(idx, ttype);
         }
     }
 
