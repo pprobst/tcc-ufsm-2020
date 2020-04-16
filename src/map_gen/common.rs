@@ -1,8 +1,8 @@
+use super::{Map, Room, TileType};
 use bracket_lib::prelude::RandomNumberGenerator;
-use super::{Map, TileType, Room};
 
 /*
- * 
+ *
  * common.rs
  * ---------
  * Contains some general code that can be used by various map generators.
@@ -34,7 +34,7 @@ pub fn create_h_tunnel(map: &mut Map, x1: i32, x2: i32, y: i32) -> Vec<usize> {
         tunnel.push(idx);
     }
 
-   tunnel
+    tunnel
 }
 
 /// Creates a vertical tunnel and returns it.
@@ -42,7 +42,7 @@ pub fn create_h_tunnel(map: &mut Map, x1: i32, x2: i32, y: i32) -> Vec<usize> {
 pub fn create_v_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32) -> Vec<usize> {
     let mut tunnel = Vec::new();
 
-    for y in y1.min(y2) .. (y1.max(y2) + 1) {
+    for y in y1.min(y2)..(y1.max(y2) + 1) {
         let idx = map.idx(x, y);
         map.paint_tile(idx, TileType::Floor);
         tunnel.push(idx);
@@ -52,7 +52,15 @@ pub fn create_v_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32) -> Vec<usize> {
 }
 
 #[allow(dead_code)]
-pub fn make_exact_tunnel(map: &mut Map, x1: i32, y1: i32, x2: i32, y2: i32, ttype: TileType, natural: bool) {
+pub fn make_exact_tunnel(
+    map: &mut Map,
+    x1: i32,
+    y1: i32,
+    x2: i32,
+    y2: i32,
+    ttype: TileType,
+    natural: bool,
+) {
     let mut x = x1;
     let mut y = y1;
 
@@ -68,7 +76,9 @@ pub fn make_exact_tunnel(map: &mut Map, x1: i32, y1: i32, x2: i32, y2: i32, ttyp
         }
 
         let idx = map.idx(x, y);
-        if map.tiles[idx].ttype != TileType::ShallowWater && map.tiles[idx].ttype != TileType::DeepWater {
+        if map.tiles[idx].ttype != TileType::ShallowWater
+            && map.tiles[idx].ttype != TileType::DeepWater
+        {
             map.paint_tile(idx, ttype);
 
             if natural {
@@ -77,14 +87,18 @@ pub fn make_exact_tunnel(map: &mut Map, x1: i32, y1: i32, x2: i32, y2: i32, ttyp
                 let sign_y = rng.range(0, 3);
                 let add_x = if sign_x < 1 { 1 } else { -1 };
                 let add_y = if sign_y < 1 { 1 } else { -1 };
-                if map.in_map_bounds_xy(x+add_x, y+add_y) {
-                    let mut idx2 = map.idx(x+add_x, y+add_y);
-                    if map.tiles[idx2].ttype != TileType::ShallowWater && map.tiles[idx2].ttype != TileType::DeepWater {
+                if map.in_map_bounds_xy(x + add_x, y + add_y) {
+                    let mut idx2 = map.idx(x + add_x, y + add_y);
+                    if map.tiles[idx2].ttype != TileType::ShallowWater
+                        && map.tiles[idx2].ttype != TileType::DeepWater
+                    {
                         map.paint_tile(idx2, ttype);
                         let one_more = rng.range(0, 5);
-                        if one_more < 1 && map.in_map_bounds_xy(x+(add_x*2), y+(add_y*2)) {
-                            idx2 = map.idx(x+(add_x*2), y+(add_y)*2);
-                            if map.tiles[idx2].ttype != TileType::ShallowWater && map.tiles[idx2].ttype != TileType::DeepWater {
+                        if one_more < 1 && map.in_map_bounds_xy(x + (add_x * 2), y + (add_y * 2)) {
+                            idx2 = map.idx(x + (add_x * 2), y + (add_y) * 2);
+                            if map.tiles[idx2].ttype != TileType::ShallowWater
+                                && map.tiles[idx2].ttype != TileType::DeepWater
+                            {
                                 map.paint_tile(idx2, ttype);
                             }
                         }

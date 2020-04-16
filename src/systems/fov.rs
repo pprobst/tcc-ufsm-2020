@@ -1,7 +1,7 @@
+use crate::components::{Fov, Player, Position};
+use crate::map_gen::Map;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
-use crate::components::{Position, Fov, Player};
-use crate::map_gen::Map;
 
 /*
  *
@@ -21,7 +21,7 @@ impl<'a> System<'a> for FOVSystem {
         WriteExpect<'a, Map>,
         WriteStorage<'a, Fov>,
         ReadStorage<'a, Position>,
-        ReadStorage<'a, Player>
+        ReadStorage<'a, Player>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -37,8 +37,10 @@ impl<'a> System<'a> for FOVSystem {
                 let p: Option<&Player> = player.get(e);
                 if let Some(_p) = p {
                     // Reset visible tiles in map.tiles.
-                    for tile in map.tiles.iter_mut() { tile.visible = false };
-                    // For each visible position (point) in visible_pos, mark the same position 
+                    for tile in map.tiles.iter_mut() {
+                        tile.visible = false
+                    }
+                    // For each visible position (point) in visible_pos, mark the same position
                     // as visible and revealed in the map tiles.
                     for pos in fov.visible_pos.iter() {
                         let idx = map.idx(pos.x, pos.y);

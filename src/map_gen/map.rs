@@ -1,8 +1,8 @@
-use bracket_lib::prelude::*;
+use super::{Tile, TileType};
 use crate::components::Position;
-use specs::prelude::{Entity};
-use super::{TileType, Tile};
 use crate::utils::directions::*;
+use bracket_lib::prelude::*;
+use specs::prelude::Entity;
 
 /*
  *
@@ -18,20 +18,19 @@ pub struct Map {
     pub size: i32,
     pub width: i32,
     pub height: i32,
-    pub entities: Vec<Option<Entity>>
-	//pub spawn_point: (i32, i32),
-	//pub exit_point: (i32, i32),
+    pub entities: Vec<Option<Entity>>, //pub spawn_point: (i32, i32),
+                                       //pub exit_point: (i32, i32)
 }
 
 impl Map {
     pub fn new(width: i32, height: i32) -> Map {
-        let map_size = width*height;
+        let map_size = width * height;
         Self {
             tiles: vec![Tile::wall(); map_size as usize],
             size: map_size,
             width,
             height,
-            entities: vec![None; map_size as usize]
+            entities: vec![None; map_size as usize],
         }
     }
 
@@ -43,46 +42,48 @@ impl Map {
         let floor = Tile::floor();
 
         for mut _tile in self.tiles.iter_mut() {
-           let chance = rng.range(1, 101);
-           if chance <= floor_chance { 
-               *_tile = floor; 
-           }
+            let chance = rng.range(1, 101);
+            if chance <= floor_chance {
+                *_tile = floor;
+            }
         }
     }
 
     /// Add solid borders to the map.
     pub fn add_borders(&mut self) {
         let mut idx;
-        for x in 1 .. self.width {
+        for x in 1..self.width {
             idx = self.idx(x, 1);
-            self.tiles[idx] = Tile::wall();   
-            idx = self.idx(x, self.height-1);
-            self.tiles[idx] = Tile::wall();   
+            self.tiles[idx] = Tile::wall();
+            idx = self.idx(x, self.height - 1);
+            self.tiles[idx] = Tile::wall();
         }
-        for y in 1 .. self.height {
+        for y in 1..self.height {
             idx = self.idx(1, y);
-            self.tiles[idx] = Tile::wall();   
-            idx = self.idx(self.width-1, y);
-            self.tiles[idx] = Tile::wall();   
+            self.tiles[idx] = Tile::wall();
+            idx = self.idx(self.width - 1, y);
+            self.tiles[idx] = Tile::wall();
         }
     }
 
     #[allow(dead_code)]
     pub fn pretty_walls(&mut self) {
-        for y in 1 .. self.height {
-            for x in 1 .. self.width {
+        for y in 1..self.height {
+            for x in 1..self.width {
                 let idx = self.idx(x, y);
                 if self.tiles[idx].ttype == TileType::Wall {
                     let glyph = self.get_wall_glyph(x, y);
                     self.tiles[idx].change_glyph(glyph);
                 }
-            } 
+            }
         }
     }
 
     #[allow(dead_code)]
     fn get_wall_glyph(&self, x: i32, y: i32) -> char {
-        if !self.in_map_bounds_xy(x, y) { return '█' }
+        if !self.in_map_bounds_xy(x, y) {
+            return '█';
+        }
         let curr_pt = Point { x, y };
         let mut bitmask: u8 = 0;
 
@@ -114,37 +115,55 @@ impl Map {
         }
 
         match bitmask {
-            0  => { '█' }
-            1  => { '║' }
-            2  => { '║' }
-            3  => { '║' }
-            4  => { '═' }
-            5  => { '╝' }
-            6  => { '╗' }
-            7  => { '╣' }
-            8  => { '═' }
-            9  => { '╚' }
-            10 => { '╔' }
-            11 => { '╠' }
-            12 => { '═' }
-            13 => { '╩' }
-            14 => { '╦' }
-            15 => { '╬' }
-            _  => { '█' }
+            0 => '█',
+            1 => '║',
+            2 => '║',
+            3 => '║',
+            4 => '═',
+            5 => '╝',
+            6 => '╗',
+            7 => '╣',
+            8 => '═',
+            9 => '╚',
+            10 => '╔',
+            11 => '╠',
+            12 => '═',
+            13 => '╩',
+            14 => '╦',
+            15 => '╬',
+            _ => '█',
         }
     }
 
     pub fn paint_tile(&mut self, idx: usize, ttype: TileType) {
         match ttype {
-            TileType::Floor => { self.tiles[idx] = Tile::floor(); }
-            TileType::Tree => { self.tiles[idx] = Tile::tree(); }
-            TileType::Wall => { self.tiles[idx] = Tile::wall(); }
-            TileType::ShallowWater => { self.tiles[idx] = Tile::shallow_water(); }
-            TileType::DeepWater => { self.tiles[idx] = Tile::deep_water(); }
-            TileType::Grass => { self.tiles[idx] = Tile::grass(); }
-            TileType::TallGrass => { self.tiles[idx] = Tile::tallgrass(); }
-            TileType::Flower => { self.tiles[idx] = Tile::flower(); }
-            _ => { self.tiles[idx] = Tile::floor(); }
+            TileType::Floor => {
+                self.tiles[idx] = Tile::floor();
+            }
+            TileType::Tree => {
+                self.tiles[idx] = Tile::tree();
+            }
+            TileType::Wall => {
+                self.tiles[idx] = Tile::wall();
+            }
+            TileType::ShallowWater => {
+                self.tiles[idx] = Tile::shallow_water();
+            }
+            TileType::DeepWater => {
+                self.tiles[idx] = Tile::deep_water();
+            }
+            TileType::Grass => {
+                self.tiles[idx] = Tile::grass();
+            }
+            TileType::TallGrass => {
+                self.tiles[idx] = Tile::tallgrass();
+            }
+            TileType::Flower => {
+                self.tiles[idx] = Tile::flower();
+            }
+            _ => {
+                self.tiles[idx] = Tile::floor();
+            }
         }
     }
 
@@ -178,17 +197,17 @@ impl Map {
     /// Makes a tile passable.
     pub fn clear_blocker(&mut self, x: i32, y: i32) {
         let idx = self.idx(x, y);
-        self.tiles[idx].block = false; 
+        self.tiles[idx].block = false;
     }
 
     /// Makes a tile non-passable.
     pub fn add_blocker(&mut self, x: i32, y: i32) {
         let idx = self.idx(x, y);
-        self.tiles[idx].block = true; 
+        self.tiles[idx].block = true;
     }
 
     pub fn refresh_entities(&mut self) {
-        for i in 0 .. self.entities.len() {
+        for i in 0..self.entities.len() {
             self.entities[i] = None
         }
     }
@@ -213,15 +232,14 @@ impl Algorithm2D for Map {
 // https://github.com/thebracket/bracket-lib/tree/master/bracket-pathfinding
 // https://github.com/thebracket/bracket-lib/blob/master/bracket-pathfinding/examples/astar/common.rs
 impl BaseMap for Map {
-
-    /* 
-     * Dijkstra and A-Star need to know what exits are valid from a tile, and the 
+    /*
+     * Dijkstra and A-Star need to know what exits are valid from a tile, and the
      * "cost" of moving to that tile (most of the time you can use 1.0).
      * */
 
     // Automatically prevents FOV from looking behind opaque tiles.
     fn is_opaque(&self, idx: usize) -> bool {
-        let ttype = self.tiles[idx as usize].ttype; 
+        let ttype = self.tiles[idx as usize].ttype;
         ttype == TileType::Wall || ttype == TileType::Tree
     }
 
@@ -260,7 +278,6 @@ impl BaseMap for Map {
     }
 
     fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
-        DistanceAlg::Pythagoras
-           .distance2d(self.idx_pos(idx1), self.idx_pos(idx2))
+        DistanceAlg::Pythagoras.distance2d(self.idx_pos(idx1), self.idx_pos(idx2))
     }
 }

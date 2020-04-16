@@ -1,6 +1,6 @@
-use specs::prelude::*;
-use crate::components::{Position, Blocker};
+use crate::components::{Blocker, Position};
 use crate::map_gen::Map;
+use specs::prelude::*;
 
 /*
  *
@@ -19,7 +19,7 @@ impl<'a> System<'a> for MappingSystem {
         ReadStorage<'a, Blocker>,
         WriteExpect<'a, Map>,
     );
-    
+
     fn run(&mut self, data: Self::SystemData) {
         let (entities, pos, blockers, mut map) = data;
         let map = &mut *map;

@@ -1,6 +1,6 @@
-use bracket_lib::prelude::DistanceAlg;
-use super::{Map, Tile, TileType, Point, common::{make_exact_tunnel}};
+use super::{common::make_exact_tunnel, Map, Point, Tile, TileType};
 use crate::utils::directions::*;
+use bracket_lib::prelude::DistanceAlg;
 
 /*
  *
@@ -14,49 +14,64 @@ use crate::utils::directions::*;
  */
 
 #[allow(dead_code)]
-pub struct CellularAutomata { 
-    pub n_iterations: u8, // the more iterations we have, the smoother the map will be
-    pub n_walls_rule: u8,
-    pub min_cave_size: usize,
-    pub open_halls: bool,
-    pub dry_caves: bool
+pub struct CellularAutomata {
+    n_iterations: u8, // the more iterations we have, the smoother the map will be
+    n_walls_rule: u8,
+    min_cave_size: usize,
+    open_halls: bool,
+    dry_caves: bool,
 }
 
 #[allow(dead_code)]
 impl CellularAutomata {
-    pub fn new(n_iterations: u8, n_walls_rule: u8, min_cave_size: usize, open_halls: bool, dry_caves: bool) -> Self {
+    pub fn new(
+        n_iterations: u8,
+        n_walls_rule: u8,
+        min_cave_size: usize,
+        open_halls: bool,
+        dry_caves: bool,
+    ) -> Self {
         Self {
-            n_iterations, n_walls_rule, min_cave_size, open_halls, dry_caves
+            n_iterations,
+            n_walls_rule,
+            min_cave_size,
+            open_halls,
+            dry_caves,
         }
     }
 
     pub fn generate(&mut self, map: &mut Map) {
-        let w = map.width-1;
-        let h = map.height-1;
+        let w = map.width - 1;
+        let h = map.height - 1;
 
         // We need to make a clone here because the already replaced cells MUST NOT
         // affect the current cell.
         let mut tiles = map.tiles.clone();
 
-        for _i in 0 .. self.n_iterations {
-            for y in 1 .. h {
-                for x in 1 .. w {
+        for _i in 0..self.n_iterations {
+            for y in 1..h {
+                for x in 1..w {
                     let mut flag = false;
                     let curr_pt = Point::new(x, y);
                     let curr_idx = map.idx(x, y);
                     let wall_counter = self.count_neighbor_tile(map, curr_pt, TileType::Wall);
-                    let water_counter = self.count_neighbor_tile(map, curr_pt, TileType::ShallowWater);
-                    if wall_counter >= self.n_walls_rule || (wall_counter == 0 && !self.open_halls) { 
+                    let water_counter =
+                        self.count_neighbor_tile(map, curr_pt, TileType::ShallowWater);
+                    if wall_counter >= self.n_walls_rule || (wall_counter == 0 && !self.open_halls)
+                    {
                         tiles[curr_idx] = Tile::wall();
                         flag = true;
-                    } if water_counter >= 3 && water_counter < 5 {
+                    }
+                    if water_counter >= 3 && water_counter < 5 {
                         tiles[curr_idx] = Tile::shallow_water();
                         flag = true;
-                    } if water_counter >= 5 { 
+                    }
+                    if water_counter >= 5 {
                         tiles[curr_idx] = Tile::deep_water();
                         flag = true;
-                    } if flag == false { 
-                        tiles[curr_idx] = Tile::floor(); 
+                    }
+                    if flag == false {
+                        tiles[curr_idx] = Tile::floor();
                     }
                 }
             }
@@ -74,13 +89,16 @@ impl CellularAutomata {
         main_caves.retain(|a| a.len() >= self.min_cave_size);
         main_caves.sort_by(|a, b| b.len().cmp(&a.len()));
 
-        for cave in lesser_caves { 
-            if self.dry_caves { self.fill_cave(map, cave, TileType::Wall); }
-            else { self.fill_cave(map, cave, TileType::ShallowWater); }
+        for cave in lesser_caves {
+            if self.dry_caves {
+                self.fill_cave(map, cave, TileType::Wall);
+            } else {
+                self.fill_cave(map, cave, TileType::ShallowWater);
+            }
         }
 
         if main_caves.len() > 2 && !self.dry_caves {
-            let last_main_cave = main_caves[main_caves.len()-1].clone();
+            let last_main_cave = main_caves[main_caves.len() - 1].clone();
             self.fill_cave(map, last_main_cave, TileType::ShallowWater);
         }
 
@@ -88,19 +106,37 @@ impl CellularAutomata {
         self.connect_caves(map, main_caves);
     }
 
-    fn count_neighbor_tile(&self, map: &mut Map, curr_pt: Point, tt: TileType) -> u8{
+    fn count_neighbor_tile(&self, map: &mut Map, curr_pt: Point, tt: TileType) -> u8 {
         let mut wall_counter = 0;
 
         // Moore neighborhood.
-        if map.tiles[map.idx_pt(curr_pt)].ttype == tt  { wall_counter += 1; } // avoid many single tile blockers
-        if map.tiles[map.idx_pt(curr_pt + EAST)].ttype == tt { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + WEST)].ttype == tt { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + NORTH)].ttype == tt { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + SOUTH)].ttype == tt { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + NORTHEAST)].ttype == tt { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + NORTHWEST)].ttype == tt { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].ttype == tt { wall_counter += 1; }
-        if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].ttype == tt { wall_counter += 1; }
+        if map.tiles[map.idx_pt(curr_pt)].ttype == tt {
+            wall_counter += 1;
+        } // avoid many single tile blockers
+        if map.tiles[map.idx_pt(curr_pt + EAST)].ttype == tt {
+            wall_counter += 1;
+        }
+        if map.tiles[map.idx_pt(curr_pt + WEST)].ttype == tt {
+            wall_counter += 1;
+        }
+        if map.tiles[map.idx_pt(curr_pt + NORTH)].ttype == tt {
+            wall_counter += 1;
+        }
+        if map.tiles[map.idx_pt(curr_pt + SOUTH)].ttype == tt {
+            wall_counter += 1;
+        }
+        if map.tiles[map.idx_pt(curr_pt + NORTHEAST)].ttype == tt {
+            wall_counter += 1;
+        }
+        if map.tiles[map.idx_pt(curr_pt + NORTHWEST)].ttype == tt {
+            wall_counter += 1;
+        }
+        if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].ttype == tt {
+            wall_counter += 1;
+        }
+        if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].ttype == tt {
+            wall_counter += 1;
+        }
 
         wall_counter
     }
@@ -125,30 +161,37 @@ impl CellularAutomata {
             cave_pts.push(pts);
         }
 
-        for i in 0 .. cave_pts.len()-1 {
-            let this_cave = &cave_pts[i]; 
-            let other_cave = &cave_pts[i+1]; 
+        for i in 0..cave_pts.len() - 1 {
+            let this_cave = &cave_pts[i];
+            let other_cave = &cave_pts[i + 1];
             let mut shortest_dist = other_cave.len();
             let mut this_idx = 0;
             let mut other_idx = 0;
-            for j in 0 .. this_cave.len()-1 {
-                for k in 0 .. other_cave.len()-1 {
-                    let d = DistanceAlg::Pythagoras.distance2d(this_cave[j], other_cave[k]) as usize;
-                    if d < shortest_dist { 
+            for j in 0..this_cave.len() - 1 {
+                for k in 0..other_cave.len() - 1 {
+                    let d =
+                        DistanceAlg::Pythagoras.distance2d(this_cave[j], other_cave[k]) as usize;
+                    if d < shortest_dist {
                         this_idx = j;
                         other_idx = k;
-                        shortest_dist = d; 
+                        shortest_dist = d;
                     }
                 }
             }
-            make_exact_tunnel(map, this_cave[this_idx].x, this_cave[this_idx].y, 
-                              other_cave[other_idx].x, other_cave[other_idx].y,
-                              TileType::Floor, true);
-         }
+            make_exact_tunnel(
+                map,
+                this_cave[this_idx].x,
+                this_cave[this_idx].y,
+                other_cave[other_idx].x,
+                other_cave[other_idx].y,
+                TileType::Floor,
+                true,
+            );
+        }
     }
 
     /// Returns true if the point is probably an edge of a region.
-    /// While not 100% accurate (it detects blockers not only on edges), 
+    /// While not 100% accurate (it detects blockers not only on edges),
     /// it cuts our distance computations by a lot!
     fn is_probably_edge(&self, pt: Point, map: &mut Map) -> bool {
         let east = pt + EAST;
@@ -156,10 +199,18 @@ impl CellularAutomata {
         let north = pt + NORTH;
         let south = pt + SOUTH;
 
-        if map.in_map_bounds(east) && map.tiles[map.idx_pt(east)].block { return true; }
-        if map.in_map_bounds(west) && map.tiles[map.idx_pt(west)].block { return true; }
-        if map.in_map_bounds(north) && map.tiles[map.idx_pt(north)].block { return true; }
-        if map.in_map_bounds(south) && map.tiles[map.idx_pt(south)].block { return true; }
+        if map.in_map_bounds(east) && map.tiles[map.idx_pt(east)].block {
+            return true;
+        }
+        if map.in_map_bounds(west) && map.tiles[map.idx_pt(west)].block {
+            return true;
+        }
+        if map.in_map_bounds(north) && map.tiles[map.idx_pt(north)].block {
+            return true;
+        }
+        if map.in_map_bounds(south) && map.tiles[map.idx_pt(south)].block {
+            return true;
+        }
 
         return false;
     }
@@ -179,8 +230,8 @@ impl CellularAutomata {
         let mut caves: Vec<Vec<usize>> = Vec::new();
         let mut marked_map: Vec<bool> = vec![false; map.size as usize];
 
-        for y in 1 .. h-1 {
-            for x in 1 .. w-1 {
+        for y in 1..h - 1 {
+            for x in 1..w - 1 {
                 let idx = map.idx(x, y);
                 if !marked_map[idx] && map.tiles[idx].ttype == TileType::Floor {
                     let new_cave = self.get_cave(idx, map);
@@ -211,8 +262,8 @@ impl CellularAutomata {
             let tile = queue.pop_front().unwrap();
             cave_tiles.push(tile);
             let pt = map.idx_pos(tile);
-            for y in pt.y-1 .. pt.y+2 {
-                for x in pt.x-1 .. pt.x+2 {
+            for y in pt.y - 1..pt.y + 2 {
+                for x in pt.x - 1..pt.x + 2 {
                     let idx = map.idx(x, y);
                     if map.in_map_bounds_xy(x, y) && (y == pt.y || x == pt.x) {
                         if !marked_map[idx] && map.tiles[idx].ttype == TileType::Floor {

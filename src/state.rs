@@ -1,19 +1,21 @@
-use bracket_lib::prelude::*;
-use specs::prelude::*;
 use super::{
     input::*,
+    killer::remove_dead_entities,
     map_gen::*,
     renderer::render_all,
-    killer::remove_dead_entities,
-    systems::{fov::FOVSystem, ai::HostileAISystem, mapping::MappingSystem, 
-        melee::MeleeSystem, missile::MissileSystem, damage::DamageSystem},
+    systems::{
+        ai::HostileAISystem, damage::DamageSystem, fov::FOVSystem, mapping::MappingSystem,
+        melee::MeleeSystem, missile::MissileSystem,
+    },
 };
+use bracket_lib::prelude::*;
+use specs::prelude::*;
 
 /*
- * 
+ *
  * state.rs
  * --------
- * Controls the running systems, game states and other main functions at every tick. 
+ * Controls the running systems, game states and other main functions at every tick.
  *
  */
 
@@ -27,54 +29,53 @@ pub enum RunState {
     PlayerTurn,
     MobTurn,
     Targeting,
-    Mapgen
+    Mapgen,
 }
 
 pub struct State {
     pub ecs: World,
     pub runstate: RunState,
-    pub show_map: bool
+    pub show_map: bool,
 }
 
 impl State {
-  pub fn new(world: World) -> Self {
-    Self { 
-        ecs: world, 
-        runstate: RunState::Start, 
-        show_map: SHOW_MAP,
+    pub fn new(world: World) -> Self {
+        Self {
+            ecs: world,
+            runstate: RunState::Start,
+            show_map: SHOW_MAP,
+        }
     }
-  }
 
-  fn run_systems(&mut self) {
-    let mut vis = FOVSystem{};
-    vis.run_now(&self.ecs);
+    fn run_systems(&mut self) {
+        let mut vis = FOVSystem {};
+        vis.run_now(&self.ecs);
 
-    let mut hostile_ai = HostileAISystem{};
-    hostile_ai.run_now(&self.ecs);
+        let mut hostile_ai = HostileAISystem {};
+        hostile_ai.run_now(&self.ecs);
 
-    let mut mapping = MappingSystem{};
-    mapping.run_now(&self.ecs);
+        let mut mapping = MappingSystem {};
+        mapping.run_now(&self.ecs);
 
-    let mut melee = MeleeSystem{};
-    melee.run_now(&self.ecs);
+        let mut melee = MeleeSystem {};
+        melee.run_now(&self.ecs);
 
-    let mut missile = MissileSystem{};
-    missile.run_now(&self.ecs);
+        let mut missile = MissileSystem {};
+        missile.run_now(&self.ecs);
 
-    let mut damage = DamageSystem{};
-    damage.run_now(&self.ecs);
+        let mut damage = DamageSystem {};
+        damage.run_now(&self.ecs);
 
+        self.ecs.maintain();
+    }
 
-    self.ecs.maintain();
-  }
-
-  pub fn generate_map(&mut self, width: i32, height: i32) -> Map {
-      let mut mapgen = MapGenerator::new(width, height);
-      mapgen.gen_map();
-      let mut this_map = self.ecs.write_resource::<Map>();
-      *this_map = mapgen.get_map();
-      mapgen.get_map()
-  }
+    pub fn generate_map(&mut self, width: i32, height: i32) -> Map {
+        let mut mapgen = MapGenerator::new(width, height);
+        mapgen.gen_map();
+        let mut this_map = self.ecs.write_resource::<Map>();
+        *this_map = mapgen.get_map();
+        mapgen.get_map()
+    }
 }
 
 impl GameState for State {
@@ -101,8 +102,11 @@ impl GameState for State {
         // State machine.
         match curr_state {
             RunState::Start => {
-                if self.show_map { curr_state = RunState::Mapgen; }
-                else { curr_state = RunState::Running; }
+                if self.show_map {
+                    curr_state = RunState::Mapgen;
+                } else {
+                    curr_state = RunState::Running;
+                }
             }
             RunState::Running => {
                 self.run_systems();
@@ -122,20 +126,18 @@ impl GameState for State {
             RunState::Targeting => {
                 curr_state = targeting_input(self, term);
             }
-            RunState::Mapgen => {
-                match term.key {
-                    None => {}
-                    Some(key) => {
-                        if let VirtualKeyCode::Space = key {
-                            self.generate_map(80, 60);
-                        }
-                        if let VirtualKeyCode::Return = key {
-                            self.show_map = false;
-                            curr_state = RunState::Running;
-                        }
+            RunState::Mapgen => match term.key {
+                None => {}
+                Some(key) => {
+                    if let VirtualKeyCode::Space = key {
+                        self.generate_map(80, 60);
+                    }
+                    if let VirtualKeyCode::Return = key {
+                        self.show_map = false;
+                        curr_state = RunState::Running;
                     }
                 }
-            }
+            },
         }
 
         {

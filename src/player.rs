@@ -1,17 +1,9 @@
+use super::{
+    map_gen::Map, utils::directions::Direction, Fov, MeleeAttack, MissileAttack, Mob, Player,
+    Position, RunState, Target,
+};
 use bracket_lib::prelude::*;
 use specs::prelude::*;
-use super::{
-    RunState,
-    Position, 
-    Player, 
-    Mob,
-    Fov, 
-    MeleeAttack,
-    MissileAttack,
-    Target,
-    utils::directions::Direction,
-    map_gen::Map,
-};
 use std::cmp::Ordering;
 
 /*
@@ -31,7 +23,7 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
     //let stats = ecs.read_storage::<BaseStats>();
     let mobs = ecs.read_storage::<Mob>();
     let entities = ecs.entities();
-    
+
     for (_player, pos, fov, entity) in (&mut player_, &mut pos_, &mut fov, &entities).join() {
         let dir_x = dir.delta_x as i32;
         let dir_y = dir.delta_y as i32;
@@ -44,19 +36,15 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
             if let Some(_t) = t {
                 println!("Attacking enemy.");
                 let mut melee_attack = ecs.write_storage::<MeleeAttack>();
-                melee_attack.insert(
-                        entity,
-                        MeleeAttack {
-                            target: *ent,
-                        },
-                    )
-                .expect("Melee attack insertion failed");
+                melee_attack
+                    .insert(entity, MeleeAttack { target: *ent })
+                    .expect("Melee attack insertion failed");
             }
         }
 
         if !map.tiles[dest].block {
-            pos.x = pos.x + dir_x; 
-            pos.y = pos.y + dir_y; 
+            pos.x = pos.x + dir_x;
+            pos.y = pos.y + dir_y;
             let mut player_pos = ecs.write_resource::<Point>();
             player_pos.x = pos.x;
             player_pos.y = pos.y;
@@ -72,7 +60,9 @@ pub fn choose_target(ecs: &mut World, up: bool) -> RunState {
     let entities = ecs.entities();
 
     // Just return a waiting state if there aren't any visible targets.
-    if vis_targets.len() < 1 { return RunState::Waiting }
+    if vis_targets.len() < 1 {
+        return RunState::Waiting;
+    }
 
     let mut curr_target: Option<Entity> = None;
 
@@ -82,7 +72,8 @@ pub fn choose_target(ecs: &mut World, up: bool) -> RunState {
 
     targets.clear();
 
-    if let Some(curr_target) = curr_target { // If there's already a target selected...
+    if let Some(curr_target) = curr_target {
+        // If there's already a target selected...
         let mut idx = 0;
         for (i, target) in vis_targets.iter().enumerate() {
             // Get index from current target.
@@ -92,17 +83,32 @@ pub fn choose_target(ecs: &mut World, up: bool) -> RunState {
         }
 
         if !up && idx > 0 {
-            let tgt = vis_targets[idx-1];
-            targets.insert(tgt.0, Target{ covered: tgt.2 }).expect("Insert fail");
+            let tgt = vis_targets[idx - 1];
+            targets
+                .insert(tgt.0, Target { covered: tgt.2 })
+                .expect("Insert fail");
         } else {
-            if idx+1 > vis_targets.len()-1 { idx = 0; }
-            else  { idx += 1; }
+            if idx + 1 > vis_targets.len() - 1 {
+                idx = 0;
+            } else {
+                idx += 1;
+            }
             let tgt = vis_targets[idx];
-            targets.insert(tgt.0, Target{ covered: tgt.2 }).expect("Insert fail");
-        } 
-    } else { // If there's not a target select already, select the first closest visible.
+            targets
+                .insert(tgt.0, Target { covered: tgt.2 })
+                .expect("Insert fail");
+        }
+    } else {
+        // If there's not a target select already, select the first closest visible.
         let first_target = vis_targets[0];
-        targets.insert(first_target.0, Target{ covered: first_target.2 }).expect("Insert fail");
+        targets
+            .insert(
+                first_target.0,
+                Target {
+                    covered: first_target.2,
+                },
+            )
+            .expect("Insert fail");
     }
 
     RunState::Targeting
@@ -124,10 +130,12 @@ pub fn missile_attack(ecs: &mut World) {
         let mut missile_attack = ecs.write_storage::<MissileAttack>();
         let player = ecs.fetch::<Entity>();
         let t = targets.get(target);
-        if !t.unwrap().covered { 
-            missile_attack.insert(*player, MissileAttack{ target }).expect("Missile attack insertion failed"); 
+        if !t.unwrap().covered {
+            missile_attack
+                .insert(*player, MissileAttack { target })
+                .expect("Missile attack insertion failed");
         }
-    } 
+    }
 
     targets.clear();
 }
@@ -150,29 +158,31 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> 
 
     let mut visible_targets: Vec<(Entity, f32, bool)> = Vec::new(); // (entity, distance, map_idx)
     for (_player, fov) in (&player, &fov).join() {
-       for pos in fov.visible_pos.iter() {
-           let idx = map.idx(pos.x, pos.y);
+        for pos in fov.visible_pos.iter() {
+            let idx = map.idx(pos.x, pos.y);
             for ent in map.entities[idx].iter() {
                 let t = mobs.get(*ent);
                 if let Some(_t) = t {
                     let mobpos = Point::new(pos.x, pos.y);
                     let player_pos = positions.get(*player_ent).unwrap();
-                    let ppos =  Point::new(player_pos.x, player_pos.y);
+                    let ppos = Point::new(player_pos.x, player_pos.y);
                     let mut covered = false;
                     if hittable {
                         let points = line2d_vector(ppos, mobpos);
                         //let points = line2d_bresenham(ppos, mobpos);
-                        for pt in points.iter().take(points.len()-1) {
+                        for pt in points.iter().take(points.len() - 1) {
                             let i = map.idx(pt.x, pt.y);
                             // if there's a blocker in the aim line, you can't hit the entity.
-                            if map.tiles[i].block { covered = true; }
+                            if map.tiles[i].block {
+                                covered = true;
+                            }
                         }
                     }
                     let dist = DistanceAlg::Pythagoras.distance2d(mobpos, ppos);
                     visible_targets.push((*ent, dist, covered));
                 }
             }
-        } 
+        }
     }
 
     visible_targets.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(Ordering::Equal));
@@ -182,5 +192,4 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> 
 // TODO
 /// Switches between the two readied weapons.
 #[allow(dead_code)]
-pub fn switch_weapon(_ecs: &mut World) {
-}
+pub fn switch_weapon(_ecs: &mut World) {}

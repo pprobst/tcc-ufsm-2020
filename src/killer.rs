@@ -1,6 +1,6 @@
-use bracket_lib::prelude::{RGB, YELLOW, RED};
+use super::{log::Log, BaseStats, Name, Player};
+use bracket_lib::prelude::{RED, RGB, YELLOW};
 use specs::prelude::*;
-use super::{BaseStats, Name, Player, log::Log};
 
 /*
  *
@@ -16,9 +16,7 @@ pub struct Killer<'a> {
 
 /// Remove all the dead entities from the ECS.
 pub fn remove_dead_entities(ecs: &mut World) {
-    Killer {
-        ecs,
-    }.kill_all()
+    Killer { ecs }.kill_all()
 }
 
 impl<'a> Killer<'a> {
@@ -44,7 +42,9 @@ impl<'a> Killer<'a> {
             }
         }
         for f in dead {
-            self.ecs.delete_entity(f).expect("Unable to remove the dead");
+            self.ecs
+                .delete_entity(f)
+                .expect("Unable to remove the dead");
         }
-    } 
+    }
 }

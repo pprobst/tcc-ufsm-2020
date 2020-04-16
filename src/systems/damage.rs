@@ -1,7 +1,7 @@
 //use bracket_lib::prelude::*;
-use specs::prelude::*;
-use crate::components::{SufferDamage, BaseStats, Position};
+use crate::components::{BaseStats, Position, SufferDamage};
 use crate::map_gen::Map;
+use specs::prelude::*;
 
 /*
  *
@@ -20,13 +20,14 @@ impl<'a> System<'a> for DamageSystem {
         ReadExpect<'a, Entity>,
         WriteStorage<'a, BaseStats>,
         WriteExpect<'a, Map>,
-        ReadStorage<'a, Position>
+        ReadStorage<'a, Position>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
         let (mut damage, entities, _player, mut stats, mut map, position) = data;
 
-        for (damage, _ent, victim_stats, pos) in (&damage, &entities, &mut stats, &position).join() {
+        for (damage, _ent, victim_stats, pos) in (&damage, &entities, &mut stats, &position).join()
+        {
             if !victim_stats.god {
                 for dmg in damage.amount.iter() {
                     //println!("{}", victim_stats.health.hp);

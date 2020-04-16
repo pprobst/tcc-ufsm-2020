@@ -1,8 +1,8 @@
+use crate::components::{Fov, MeleeAttack, Mob, Position};
+use crate::map_gen::Map;
+use crate::state::RunState;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
-use crate::components::{Position, Mob, Fov, MeleeAttack};
-use crate::state::{RunState};
-use crate::map_gen::Map;
 
 /*
  *
@@ -24,27 +24,26 @@ impl<'a> System<'a> for HostileAISystem {
         WriteStorage<'a, Position>,
         ReadExpect<'a, RunState>,
         Entities<'a>,
-        WriteStorage<'a, MeleeAttack>
+        WriteStorage<'a, MeleeAttack>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mob, pt, player, mut map, mut fov, mut pos, runstate, entities, mut melee_attack) = data;
+        let (mob, pt, player, mut map, mut fov, mut pos, runstate, entities, mut melee_attack) =
+            data;
         let ppos = *pt;
         let map = &mut *map;
 
-        if *runstate != RunState::MobTurn { return; }
+        if *runstate != RunState::MobTurn {
+            return;
+        }
 
         for (_mob, mut fov, mut pos, ent) in (&mob, &mut fov, &mut pos, &entities).join() {
             let d = DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), ppos);
             if d < 1.5 {
                 println!("I'm touching you!");
-                melee_attack.insert(
-                    ent,
-                    MeleeAttack {
-                        target: *player
-                    },
-                )
-                .expect("Melee attack insertion failed");
+                melee_attack
+                    .insert(ent, MeleeAttack { target: *player })
+                    .expect("Melee attack insertion failed");
             }
             // https://github.com/thebracket/bracket-lib/blob/master/bracket-pathfinding/examples/astar/main.rs
             else if fov.visible_pos.contains(&ppos) {

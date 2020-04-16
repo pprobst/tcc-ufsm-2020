@@ -1,7 +1,7 @@
-use bracket_lib::prelude::{ColorPair, Point, to_cp437, RGB};
-use specs::{prelude::*, Component};
 use crate::utils::directions::Direction;
-use std::ops::{AddAssign, Add};
+use bracket_lib::prelude::{to_cp437, ColorPair, Point, RGB};
+use specs::{prelude::*, Component};
+use std::ops::{Add, AddAssign};
 //use std::collections::HashSet;
 
 /*
@@ -34,20 +34,19 @@ impl Add<Direction> for Point {
     }
 }
 
-
 #[derive(Component, Copy, Clone)]
 pub struct Renderable {
     pub glyph: u16,
-    pub color: ColorPair
+    pub color: ColorPair,
 }
 
 impl Renderable {
-  pub fn new(glyph: char, fg: RGB, bg: RGB) -> Self {
-    Self {
-      glyph: to_cp437(glyph),
-      color: ColorPair::new(fg, bg),
+    pub fn new(glyph: char, fg: RGB, bg: RGB) -> Self {
+        Self {
+            glyph: to_cp437(glyph),
+            color: ColorPair::new(fg, bg),
+        }
     }
-  }
 }
 
 #[derive(Component)]
@@ -59,7 +58,7 @@ pub struct Mob {}
 
 #[derive(Component, Debug)]
 pub struct Name {
-    pub name: String
+    pub name: String,
 }
 
 #[derive(Component, PartialEq)]
@@ -67,7 +66,7 @@ pub struct Name {
 pub struct Fov {
     pub range: i32,
     pub visible_pos: Vec<Position>,
-    pub dirty: bool
+    pub dirty: bool,
 }
 
 #[derive(Component)]
@@ -77,8 +76,8 @@ pub struct Blocker {}
 
 #[derive(Component)]
 pub struct Health {
-   pub max_hp: i32,
-   pub hp: i32
+    pub max_hp: i32,
+    pub hp: i32,
 }
 
 #[derive(Component)]
@@ -86,7 +85,7 @@ pub struct BaseStats {
     pub health: Health,
     pub defense: i32,
     pub attack: i32,
-    pub god: bool // Doesn't die
+    pub god: bool, // Doesn't die
 }
 
 #[derive(Component)]
@@ -95,44 +94,55 @@ pub struct SufferDamage {
 }
 
 impl SufferDamage {
-    pub fn add_damage(dmg_store: &mut WriteStorage<SufferDamage>, victim: Entity, amount: i32, from_player: bool) {
+    pub fn add_damage(
+        dmg_store: &mut WriteStorage<SufferDamage>,
+        victim: Entity,
+        amount: i32,
+        from_player: bool,
+    ) {
         if let Some(suffering) = dmg_store.get_mut(victim) {
             suffering.amount.push((amount, from_player));
         } else {
-            let dmg = SufferDamage { amount: vec![(amount, from_player)] };
-            dmg_store.insert(victim, dmg).expect("Unable to insert damage");
+            let dmg = SufferDamage {
+                amount: vec![(amount, from_player)],
+            };
+            dmg_store
+                .insert(victim, dmg)
+                .expect("Unable to insert damage");
         }
     }
 }
 
 #[derive(Component)]
 pub struct MeleeAttack {
-    pub target: Entity
+    pub target: Entity,
 }
 
 #[derive(Component)]
 pub struct MissileAttack {
-    pub target: Entity
+    pub target: Entity,
 }
 
 #[derive(Component)]
 pub struct MeleeWeapon {
-    pub base_damage: i32
-    // special effect?
+    pub base_damage: i32, // special effect?
 }
 
-pub enum AmmoType { Arrow, _32, _9mm }
+pub enum AmmoType {
+    Arrow,
+    _32,
+    _9mm,
+}
 
 #[derive(Component)]
 pub struct MissileWeapon {
     pub base_damage: i32,
     pub range: i32, // Influence on misses
     pub ammo_type: AmmoType,
-    pub charges: i32
-    // special effect?
+    pub charges: i32, // special effect?
 }
 
 #[derive(Component)]
 pub struct Target {
-    pub covered: bool
+    pub covered: bool,
 }

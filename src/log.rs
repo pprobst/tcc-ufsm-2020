@@ -1,4 +1,4 @@
-use bracket_lib::prelude::{RGB};
+use bracket_lib::prelude::RGB;
 
 /*
  *
@@ -10,7 +10,7 @@ use bracket_lib::prelude::{RGB};
  */
 
 pub struct Log {
-    pub messages: Vec<(String, RGB)>
+    pub messages: Vec<(String, RGB)>,
 }
 
 impl Log {

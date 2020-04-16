@@ -2,22 +2,22 @@ use bracket_lib::prelude::*;
 use specs::prelude::*;
 
 mod state;
-use state::{State, RunState};
+use state::{RunState, State};
 mod components;
 pub use components::*;
-mod utils;
 mod input;
-mod renderer;
 mod killer;
-mod ui;
 mod log;
-mod player;
-mod systems;
 mod map_gen;
+mod player;
+mod renderer;
 mod spawner;
+mod systems;
+mod ui;
+mod utils;
 
 pub const X_OFFSET: i32 = 18; // Left box
-pub const Y_OFFSET: i32 = 10;  // Bottom box
+pub const Y_OFFSET: i32 = 10; // Bottom box
 pub const WINDOW_WIDTH: i32 = 80;
 pub const WINDOW_HEIGHT: i32 = 60;
 //pub const WINDOW_HEIGHT: i32 = 80+Y_OFFSET;
@@ -85,4 +85,3 @@ fn main() -> BError {
 
     bracket_lib::prelude::main_loop(term, game_state)
 }
-

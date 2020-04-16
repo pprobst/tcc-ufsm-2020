@@ -1,5 +1,5 @@
-use bracket_lib::prelude::{RGB, RGBA, to_cp437, ColorPair, BLACK};
 use crate::utils::colors::*;
+use bracket_lib::prelude::{to_cp437, ColorPair, BLACK, RGB, RGBA};
 
 /*
  *
@@ -38,9 +38,8 @@ pub struct Tile {
     // https://dwarffortresswiki.org/index.php/Character_table
     pub glyph: u16,
     //pub fg: RGB,
-    pub color: ColorPair
-    //pub entities: Vec<Entity> ! Can't have this because we need Copy, an Vec contains a pointer to
-    //                            some variable amount of heap memory.
+    pub color: ColorPair, //pub entities: Vec<Entity> ! Can't have this because we need Copy, an Vec contains a pointer to
+                          //                            some variable amount of heap memory.
 }
 
 impl Tile {
@@ -90,10 +89,13 @@ impl Tile {
         Self {
             ttype: TileType::TallGrass,
             glyph: to_cp437('⌠'),
-            color: ColorPair::new(RGB::from_hex(GRASS_GREEN_DARKER).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(
+                RGB::from_hex(GRASS_GREEN_DARKER).unwrap(),
+                RGB::named(BLACK),
+            ),
             ..Default::default()
         }
-    } 
+    }
 
     #[allow(dead_code)]
     pub fn flower() -> Self {
@@ -121,7 +123,10 @@ impl Tile {
         Self {
             ttype: TileType::DeepWater,
             glyph: to_cp437('~'),
-            color: ColorPair::new(RGB::from_hex(WATER_BLUE).unwrap(), RGBA::from_hex(DEEP_BLUE).unwrap()),
+            color: ColorPair::new(
+                RGB::from_hex(WATER_BLUE).unwrap(),
+                RGBA::from_hex(DEEP_BLUE).unwrap(),
+            ),
             ..Default::default()
         }
     }
@@ -131,7 +136,10 @@ impl Tile {
         Self {
             ttype: TileType::ShallowWater,
             glyph: to_cp437('~'),
-            color: ColorPair::new(RGB::from_hex(WATER_BLUE).unwrap(), RGBA::from_hex(SHALLOW_BLUE).unwrap()),
+            color: ColorPair::new(
+                RGB::from_hex(WATER_BLUE).unwrap(),
+                RGBA::from_hex(SHALLOW_BLUE).unwrap(),
+            ),
             ..Default::default()
         }
     }

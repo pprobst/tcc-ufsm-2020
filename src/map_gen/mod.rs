@@ -1,7 +1,7 @@
-use bracket_lib::prelude::{RandomNumberGenerator};
-use super::{Position, Point};
+use super::{Point, Position};
+use bracket_lib::prelude::RandomNumberGenerator;
 mod tile;
-use tile::{TileType, Tile};
+use tile::{Tile, TileType};
 mod room;
 use room::*;
 pub mod map;
@@ -25,10 +25,10 @@ pub struct MapGenerator {
 impl MapGenerator {
     pub fn new(width: i32, height: i32) -> Self {
         Self {
-           map: Map::new(width, height),
-           rooms: None,
-           tunnels: None,
-           caves: None,
+            map: Map::new(width, height),
+            rooms: None,
+            tunnels: None,
+            caves: None,
         }
     }
 
@@ -40,7 +40,7 @@ impl MapGenerator {
 
         // If we create a walker with (0.45, true, false) and after that we run
         // Cellular Automata with (12, 5, 50, false), we get linear organic
-        // dungeons. Then, if we run a BSP generator, it'll become like 
+        // dungeons. Then, if we run a BSP generator, it'll become like
         // cave with man-made rooms!
         let mut walker = RandomWalker::new(0.55, false, false);
         walker.generate(&mut self.map, &mut rng);
