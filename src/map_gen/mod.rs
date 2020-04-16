@@ -45,7 +45,7 @@ impl MapGenerator {
         let mut walker = RandomWalker::new(0.55, false, false);
         walker.generate(&mut self.map, &mut rng);
 
-        let mut cell_automata = CellularAutomata::new(15, 5, 80, false, false);
+        let mut cell_automata = CellularAutomata::new(12, 5, 80, false, false);
         cell_automata.generate(&mut self.map);
 
         // If we have two Cellular Automata generators:

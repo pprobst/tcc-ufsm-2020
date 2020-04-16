@@ -167,6 +167,15 @@ impl Map {
         }
     }
 
+    pub fn is_water(&self, idx: usize) -> bool {
+        let ttype = self.tiles[idx].ttype;
+        match ttype {
+            TileType::ShallowWater => true,
+            TileType::DeepWater => true,
+            _ => false,
+        }
+    }
+
     /// Returns a map index from a given x, y coordinate.
     pub fn idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize

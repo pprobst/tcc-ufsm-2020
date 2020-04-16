@@ -54,15 +54,15 @@ impl CellularAutomata {
                     let mut flag = false;
                     let curr_pt = Point::new(x, y);
                     let curr_idx = map.idx(x, y);
-                    let wall_counter = self.count_neighbor_tile(map, curr_pt, TileType::Wall);
+                    let wall_counter = self.count_neighbor_tile(map, curr_pt, TileType::Wall, true);
                     let water_counter =
-                        self.count_neighbor_tile(map, curr_pt, TileType::ShallowWater);
+                        self.count_neighbor_tile(map, curr_pt, TileType::ShallowWater, true);
                     if wall_counter >= self.n_walls_rule || (wall_counter == 0 && !self.open_halls)
                     {
                         tiles[curr_idx] = Tile::wall();
                         flag = true;
                     }
-                    if water_counter >= 3 && water_counter < 5 {
+                    if water_counter > 2 && water_counter < 4 {
                         tiles[curr_idx] = Tile::shallow_water();
                         flag = true;
                     }
@@ -78,6 +78,7 @@ impl CellularAutomata {
         }
 
         map.tiles = tiles.clone();
+        //self.smooth_map(map);
 
         let mut main_caves = self.get_all_caves(map);
         let mut lesser_caves = main_caves.clone();
@@ -104,15 +105,16 @@ impl CellularAutomata {
 
         main_caves.sort_by(|a, b| a[0].cmp(&b[0]));
         self.connect_caves(map, main_caves);
+        self.smooth_map(map);
     }
 
-    fn count_neighbor_tile(&self, map: &mut Map, curr_pt: Point, tt: TileType) -> u8 {
+    fn count_neighbor_tile(&self, map: &mut Map, curr_pt: Point, tt: TileType, moore: bool) -> u8 {
         let mut wall_counter = 0;
 
-        // Moore neighborhood.
-        if map.tiles[map.idx_pt(curr_pt)].ttype == tt {
+        /*if map.tiles[map.idx_pt(curr_pt)].ttype == tt {
             wall_counter += 1;
         } // avoid many single tile blockers
+        */
         if map.tiles[map.idx_pt(curr_pt + EAST)].ttype == tt {
             wall_counter += 1;
         }
@@ -125,20 +127,51 @@ impl CellularAutomata {
         if map.tiles[map.idx_pt(curr_pt + SOUTH)].ttype == tt {
             wall_counter += 1;
         }
-        if map.tiles[map.idx_pt(curr_pt + NORTHEAST)].ttype == tt {
-            wall_counter += 1;
-        }
-        if map.tiles[map.idx_pt(curr_pt + NORTHWEST)].ttype == tt {
-            wall_counter += 1;
-        }
-        if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].ttype == tt {
-            wall_counter += 1;
-        }
-        if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].ttype == tt {
-            wall_counter += 1;
+        if moore {
+            if map.tiles[map.idx_pt(curr_pt + NORTHEAST)].ttype == tt {
+                wall_counter += 1;
+            }
+            if map.tiles[map.idx_pt(curr_pt + NORTHWEST)].ttype == tt {
+                wall_counter += 1;
+            }
+            if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].ttype == tt {
+                wall_counter += 1;
+            }
+            if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].ttype == tt {
+                wall_counter += 1;
+            }
         }
 
         wall_counter
+    }
+
+    fn smooth_map(&self, map: &mut Map) {
+        let mut tiles = map.tiles.clone();
+
+        for _i in 0..self.n_iterations {
+            for y in 1..map.height - 1 {
+                for x in 1..map.width - 1 {
+                    let curr_pt = Point::new(x, y);
+                    let curr_idx = map.idx(x, y);
+                    if !map.is_water(curr_idx) {
+                        let wall_counter =
+                            self.count_neighbor_tile(map, curr_pt, TileType::Wall, false);
+                        let water_counter =
+                            self.count_neighbor_tile(map, curr_pt, TileType::ShallowWater, false);
+                        let deep_counter =
+                            self.count_neighbor_tile(map, curr_pt, TileType::DeepWater, false);
+                        if wall_counter <= 1 {
+                            tiles[curr_idx] = Tile::floor();
+                        }
+                        if water_counter >= 2 || deep_counter >= 1 {
+                            tiles[curr_idx] = Tile::shallow_water();
+                        }
+                    }
+                }
+            }
+        }
+
+        map.tiles = tiles;
     }
 
     /// Connect with tunnels the caves that have >= than the minimum size.
