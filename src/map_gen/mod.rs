@@ -42,11 +42,12 @@ impl MapGenerator {
         // Cellular Automata with (12, 5, 50, false), we get linear organic
         // dungeons. Then, if we run a BSP generator, it'll become like
         // cave with man-made rooms!
-        let mut walker = RandomWalker::new(0.55, false, false);
+        let mut walker = RandomWalker::new(0.45, false, false);
         walker.generate(&mut self.map, &mut rng);
 
         let mut cell_automata = CellularAutomata::new(12, 5, 80, false, false);
         cell_automata.generate(&mut self.map);
+        //make_lake(&mut self.map, TileType::ShallowWater, 500);
 
         // If we have two Cellular Automata generators:
         // - 1st with open halls and lots of iterations.
@@ -63,7 +64,8 @@ impl MapGenerator {
         //bsp.build_tunnels(&mut self.map, &mut rng);
 
         self.map.add_borders();
-        //self.map.pretty_walls();
+        self.map.pretty_walls();
+        add_vegetation(&mut self.map);
         // future: apply_theme(map)
         println!("Map generated!");
     }

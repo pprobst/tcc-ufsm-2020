@@ -82,7 +82,7 @@ impl Map {
     #[allow(dead_code)]
     fn get_wall_glyph(&self, x: i32, y: i32) -> char {
         if !self.in_map_bounds_xy(x, y) {
-            return '█';
+            return '■';
         }
         let curr_pt = Point { x, y };
         let mut bitmask: u8 = 0;
@@ -115,7 +115,7 @@ impl Map {
         }
 
         match bitmask {
-            0 => '█',
+            0 => '■',
             1 => '║',
             2 => '║',
             3 => '║',
