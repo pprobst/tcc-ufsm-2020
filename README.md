@@ -21,12 +21,13 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
 - [x] Câmera/viewport;
 - [x] Implementar uma UI básica e aproveitar para aprimorar os estados de jogo (game states);
 - [x] Mobs e estrutura básica do sistema de combate;
-- [ ] Alguns métodos construtivos de geração de mapas:
+- [x] Alguns métodos construtivos de geração de mapas:
     - [x] Random Walkers;
     - [x] Cellular Automata;
         - [x] Assegurar conectividade.
     - [x] BSP (binary space partitioning) trees;
-    - [ ] Tunnelers/Diggers, see [here](https://www.gridsagegames.com/blog/2014/06/mapgen-tunneling-algorithm/) and [here](http://www.roguebasin.com/index.php?title=Dungeon-Building_Algorithm).
+    - [x] Tunnelers/Diggers.
+        - [ ] Retoques finais.
 - [ ] Sistema de geração de mapas (pipeline) híbrido utilizando
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;
 - [ ] Temáticas diferentes de mapas (ruínas, florestas, aquedutos, etc.);
