@@ -1,4 +1,5 @@
-use bracket_lib::prelude::Rect;
+use crate::utils::directions::*;
+use bracket_lib::prelude::{Point, RandomNumberGenerator, Rect};
 
 /* room.rs
  * -------
@@ -22,4 +23,34 @@ use bracket_lib::prelude::Rect;
  *
  */
 
+pub trait Operations {
+    fn get_wall(&self, dir: Direction) -> Point;
+}
+
 pub type Room = Rect;
+
+impl Operations for Room {
+    fn get_wall(&self, dir: Direction) -> Point {
+        let mut cx = self.center().x;
+        let mut cy = self.center().y;
+        let w = self.width() / 2;
+        let h = self.height() / 2;
+
+        match dir {
+            EAST => {
+                cx += h;
+            }
+            WEST => {
+                cx -= w;
+            }
+            NORTH => {
+                cy -= h;
+            }
+            _ => {
+                cy += h;
+            }
+        }
+
+        Point::new(cx, cy)
+    }
+}

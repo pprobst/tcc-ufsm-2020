@@ -153,6 +153,9 @@ pub fn make_lake(map: &mut Map, liquid: TileType, total_tiles: u32) {
     }
 }
 
+/// Counts how many neighbor tiles of a given type curr_pt has.
+/// If moore == true, considers a Moore neighborhood (ortoghonal+diagonals neighbors).
+/// If moore == false, considers a von Neumann neighborhood (orthogonal neighbors).
 pub fn count_neighbor_tile(map: &Map, curr_pt: Point, tt: TileType, moore: bool) -> u8 {
     let mut counter = 0;
 
