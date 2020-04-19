@@ -1,4 +1,4 @@
-use super::{common::*, Map, Room};
+use super::{common::*, Map, Room, Tunnel};
 use bracket_lib::prelude::RandomNumberGenerator;
 
 /*
@@ -56,16 +56,12 @@ impl BSPDungeon {
         &mut self,
         map: &mut Map,
         rng: &mut RandomNumberGenerator,
-    ) -> Vec<Vec<usize>> {
+    ) -> Vec<Tunnel> {
         self.rooms.sort_by(|a, b| a.x1.cmp(&b.x1));
         self.build_tunnels(map, rng)
     }
 
-    pub fn build_tunnels(
-        &mut self,
-        map: &mut Map,
-        rng: &mut RandomNumberGenerator,
-    ) -> Vec<Vec<usize>> {
+    pub fn build_tunnels(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) -> Vec<Tunnel> {
         let mut tunnels = Vec::new();
 
         for i in 0..self.rooms.len() - 1 {

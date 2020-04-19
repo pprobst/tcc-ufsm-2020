@@ -1,4 +1,4 @@
-use super::{Map, Room, Tile, TileType};
+use super::{Map, Room, Tile, TileType, Tunnel};
 use crate::utils::directions::*;
 use bracket_lib::prelude::{Point, RandomNumberGenerator};
 use std::cmp;
@@ -27,7 +27,7 @@ pub fn create_room(map: &mut Map, room: Room) -> Room {
 
 /// Creates a horizontal tunnel (corridor) and returns it.
 #[allow(dead_code)]
-pub fn create_h_tunnel(map: &mut Map, x1: i32, x2: i32, y: i32, size: i32) -> Vec<usize> {
+pub fn create_h_tunnel(map: &mut Map, x1: i32, x2: i32, y: i32, size: i32) -> Tunnel {
     let mut tunnel = Vec::new();
 
     for x in cmp::min(x1, x2)..cmp::max(x1, x2) + 1 {
@@ -48,7 +48,7 @@ pub fn create_h_tunnel(map: &mut Map, x1: i32, x2: i32, y: i32, size: i32) -> Ve
 
 /// Creates a vertical tunnel and returns it.
 #[allow(dead_code)]
-pub fn create_v_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32, size: i32) -> Vec<usize> {
+pub fn create_v_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32, size: i32) -> Tunnel {
     let mut tunnel = Vec::new();
     for y in cmp::min(y1, y2)..cmp::max(y1, y2) + 1 {
         let mut idx = map.idx(x, y);
@@ -64,6 +64,28 @@ pub fn create_v_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32, size: i32) -> Ve
     }
 
     tunnel
+}
+
+#[allow(dead_code)]
+pub fn create_h_tunnel_room(map: &mut Map, x1: i32, x2: i32, y: i32, size: i32) -> Room {
+    let left = cmp::min(x1, x2);
+    let right = cmp::max(x1, x2);
+    let top = y - 1;
+    let bottom = y + 1;
+    let room = Room::with_size(left, top, right - left + size - 1, bottom - top + 1);
+    create_room(map, room);
+    room
+}
+
+#[allow(dead_code)]
+pub fn create_v_tunnel_room(map: &mut Map, y1: i32, y2: i32, x: i32, size: i32) -> Room {
+    let top = cmp::min(y1, y2);
+    let bottom = cmp::max(y1, y2);
+    let left = x - 1;
+    let right = x + 1;
+    let room = Room::with_size(left, top, right - left + size - 1, bottom - top + 1);
+    create_room(map, room);
+    room
 }
 
 #[allow(dead_code)]

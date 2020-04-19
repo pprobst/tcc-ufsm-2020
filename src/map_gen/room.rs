@@ -35,32 +35,30 @@ impl Operations for Room {
     fn get_wall(&self, map: &Map, dir: Direction) -> Point {
         let borders = self.get_borders(map);
         let mut rng = RandomNumberGenerator::new();
-        let mut x = 0;
-        let mut y = 0;
 
         for pt in borders {
             match dir {
                 EAST => {
                     if pt.x == self.x2 - 1 {
-                        y = rng.range(self.y1 + 1, self.y2 - 1);
+                        let y = rng.range(self.y1 + 1, self.y2);
                         return Point::new(pt.x, y);
                     }
                 }
                 WEST => {
                     if pt.x == self.x1 + 1 {
-                        y = rng.range(self.y1 + 1, self.y2 - 1);
+                        let y = rng.range(self.y1 + 1, self.y2);
                         return Point::new(pt.x, y);
                     }
                 }
                 NORTH => {
                     if pt.y == self.y1 + 1 {
-                        x = rng.range(self.x1 + 1, self.x2 - 1);
+                        let x = rng.range(self.x1 + 1, self.x2);
                         return Point::new(x, pt.y);
                     }
                 }
                 _ => {
                     if pt.y == self.y2 - 1 {
-                        x = rng.range(self.x1 + 1, self.x2 - 1);
+                        let x = rng.range(self.x1 + 1, self.x2);
                         return Point::new(x, pt.y);
                     }
                 }
@@ -74,9 +72,11 @@ impl Operations for Room {
         for x in (self.x1 + 1)..self.x2 {
             for y in (self.y1 + 1)..self.y2 {
                 let pt = Point::new(x, y);
-                let wall_counter = count_neighbor_tile(map, pt, TileType::Wall, false);
-                if wall_counter >= 1 {
-                    borders.push(pt);
+                if map.in_map_bounds(pt) {
+                    let wall_counter = count_neighbor_tile(map, pt, TileType::Wall, false);
+                    if wall_counter >= 1 {
+                        borders.push(pt);
+                    }
                 }
             }
         }

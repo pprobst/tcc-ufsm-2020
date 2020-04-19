@@ -1,5 +1,5 @@
 use super::{
-    common::{create_h_tunnel, create_room, create_v_tunnel},
+    common::{create_h_tunnel_room, create_room, create_v_tunnel_room},
     room::Operations,
     Map, Room,
 };
@@ -18,16 +18,12 @@ use bracket_lib::prelude::{DistanceAlg, Point, RandomNumberGenerator};
 #[allow(dead_code)]
 pub struct Digger {
     rooms: Vec<Room>,
-    tunnels: Vec<Vec<usize>>,
 }
 
 #[allow(dead_code)]
 impl Digger {
     pub fn new() -> Self {
-        Self {
-            rooms: vec![],
-            tunnels: vec![],
-        }
+        Self { rooms: vec![] }
     }
 
     pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
@@ -43,13 +39,13 @@ impl Digger {
     }
 
     fn add_feature(&mut self, map: &mut Map, room: Room, rng: &mut RandomNumberGenerator) -> bool {
-        let w = rng.range(5, 15);
-        let h = rng.range(w, 15);
+        let w = rng.range(5, 10);
+        let h = rng.range(w, 10);
         let dir = get_random_dir();
         let ndir = dir.clone();
 
         let mut pt = room.get_wall(map, dir);
-        let room_gap = rng.range(2, 6);
+        let room_gap = rng.range(3, 8);
 
         match ndir {
             NORTH => {
@@ -85,14 +81,14 @@ impl Digger {
 
     fn gen_feature(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
         let mut num_features = 0;
-        let mut repeat = 50;
+        let mut repeat = 100;
         let mut prev_idx = 0;
-        while num_features <= 50 && repeat > 0 {
+        while num_features <= 60 && repeat > 0 {
             repeat -= 1;
-            for _i in num_features..50 {
-                //let idx = rng.range(0, self.rooms.len());
+            for _i in num_features..60 {
                 let idx = rng.range(0, self.rooms.len());
                 if idx == prev_idx && self.rooms.len() > 1 {
+                    repeat += 1;
                     continue;
                 }
                 prev_idx = idx;
@@ -133,36 +129,44 @@ impl Digger {
         match rng.range(0, 2) {
             0 => {
                 if room_c.x <= other_c.x {
-                    self.tunnels
-                        .push(create_h_tunnel(map, room_c.x, other_c.x, room_c.y, size));
+                    self.rooms.push(create_h_tunnel_room(
+                        map, room_c.x, other_c.x, room_c.y, size,
+                    ));
                 } else {
-                    self.tunnels
-                        .push(create_h_tunnel(map, other_c.x, room_c.x, room_c.y, size));
+                    self.rooms.push(create_h_tunnel_room(
+                        map, other_c.x, room_c.x, room_c.y, size,
+                    ));
                 }
 
                 if room_c.y <= other_c.y {
-                    self.tunnels
-                        .push(create_v_tunnel(map, room_c.y, other_c.y, other_c.x, size));
+                    self.rooms.push(create_v_tunnel_room(
+                        map, room_c.y, other_c.y, other_c.x, size,
+                    ));
                 } else {
-                    self.tunnels
-                        .push(create_v_tunnel(map, other_c.y, room_c.y, other_c.x, size));
+                    self.rooms.push(create_v_tunnel_room(
+                        map, other_c.y, room_c.y, other_c.x, size,
+                    ));
                 }
             }
             _ => {
                 if room_c.y <= other_c.y {
-                    self.tunnels
-                        .push(create_v_tunnel(map, room_c.y, other_c.y, room_c.x, size));
+                    self.rooms.push(create_v_tunnel_room(
+                        map, room_c.y, other_c.y, room_c.x, size,
+                    ));
                 } else {
-                    self.tunnels
-                        .push(create_v_tunnel(map, other_c.y, room_c.y, room_c.x, size));
+                    self.rooms.push(create_v_tunnel_room(
+                        map, other_c.y, room_c.y, room_c.x, size,
+                    ));
                 }
 
                 if room_c.x <= other_c.x {
-                    self.tunnels
-                        .push(create_h_tunnel(map, room_c.x, other_c.x, other_c.y, size));
+                    self.rooms.push(create_h_tunnel_room(
+                        map, room_c.x, other_c.x, other_c.y, size,
+                    ));
                 } else {
-                    self.tunnels
-                        .push(create_h_tunnel(map, other_c.x, room_c.x, other_c.y, size));
+                    self.rooms.push(create_h_tunnel_room(
+                        map, other_c.x, room_c.x, other_c.y, size,
+                    ));
                 }
             }
         }

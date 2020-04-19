@@ -4,6 +4,10 @@ mod tile;
 use tile::{Tile, TileType};
 mod room;
 use room::*;
+mod tunnel;
+use tunnel::*;
+mod cave;
+use cave::*;
 pub mod map;
 pub use map::Map;
 mod common;
@@ -20,8 +24,8 @@ use digger::*;
 pub struct MapGenerator {
     pub map: Map,
     pub rooms: Option<Vec<Room>>,
-    pub tunnels: Option<Vec<Vec<usize>>>,
-    pub caves: Option<Vec<Vec<usize>>>,
+    pub tunnels: Option<Vec<Tunnel>>,
+    pub caves: Option<Vec<Cave>>,
 }
 
 impl MapGenerator {

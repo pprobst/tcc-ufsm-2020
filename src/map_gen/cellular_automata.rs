@@ -1,6 +1,6 @@
 use super::{
     common::{count_neighbor_tile, make_exact_tunnel},
-    Map, Point, Tile, TileType,
+    Cave, Map, Point, Tile, TileType,
 };
 use crate::utils::directions::*;
 use bracket_lib::prelude::DistanceAlg;
@@ -140,7 +140,7 @@ impl CellularAutomata {
     }
 
     /// Connect with tunnels the caves that have >= than the minimum size.
-    fn connect_caves(&self, map: &mut Map, caves: Vec<Vec<usize>>) {
+    fn connect_caves(&self, map: &mut Map, caves: Vec<Cave>) {
         // Algorithm idea:
         // - get the two points (x, y) that are the closest between two caves
         // - make a tunnel between then
@@ -215,17 +215,17 @@ impl CellularAutomata {
 
     /// Fill with wall tiles the caves that have < than the minimum size.
     // idea: maybe fill them with water tiles for a nice twist?
-    fn fill_cave(&self, map: &mut Map, cave: Vec<usize>, ttype: TileType) {
+    fn fill_cave(&self, map: &mut Map, cave: Cave, ttype: TileType) {
         for idx in cave {
             map.paint_tile(idx, ttype);
         }
     }
 
     /// Gets a list of all separated caves on the map.
-    fn get_all_caves(&self, map: &mut Map) -> Vec<Vec<usize>> {
+    fn get_all_caves(&self, map: &mut Map) -> Vec<Cave> {
         let w = map.width;
         let h = map.height;
-        let mut caves: Vec<Vec<usize>> = Vec::new();
+        let mut caves: Vec<Cave> = Vec::new();
         let mut marked_map: Vec<bool> = vec![false; map.size as usize];
 
         for y in 1..h - 1 {
@@ -247,9 +247,9 @@ impl CellularAutomata {
     }
 
     /// Gets a cave using the flood-fill algorithm.
-    fn get_cave(&self, start_idx: usize, map: &mut Map) -> Vec<usize> {
+    fn get_cave(&self, start_idx: usize, map: &mut Map) -> Cave {
         use std::collections::VecDeque;
-        let mut cave_tiles: Vec<usize> = Vec::new();
+        let mut cave_tiles: Cave = Vec::new();
         let mut marked_map: Vec<bool> = vec![false; map.size as usize];
         let mut queue: VecDeque<usize> = VecDeque::new();
 
