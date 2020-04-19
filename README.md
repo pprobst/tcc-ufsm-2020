@@ -27,7 +27,7 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
         - [x] Assegurar conectividade.
     - [x] BSP (binary space partitioning) trees;
     - [x] Tunnelers/Diggers.
-        - [ ] Retoques finais.
+        - [x] Retoques finais.
 - [ ] Sistema de geração de mapas (pipeline) híbrido utilizando
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;
 - [ ] Temáticas diferentes de mapas (ruínas, florestas, aquedutos, etc.);
