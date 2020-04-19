@@ -74,31 +74,33 @@ impl BSPDungeon {
             let room_c = room.center();
             let other_c = other.center();
 
-            match rng.range(0, 3) {
+            let size = rng.range(1, 3);
+
+            match rng.range(0, 2) {
                 0 => {
                     if room_c.x <= other_c.x {
-                        tunnels.push(create_h_tunnel(map, room_c.x, other_c.x, room_c.y));
+                        tunnels.push(create_h_tunnel(map, room_c.x, other_c.x, room_c.y, size));
                     } else {
-                        tunnels.push(create_h_tunnel(map, other_c.x, room_c.x, room_c.y));
+                        tunnels.push(create_h_tunnel(map, other_c.x, room_c.x, room_c.y, size));
                     }
 
                     if room_c.y <= other_c.y {
-                        tunnels.push(create_v_tunnel(map, room_c.y, other_c.y, other_c.x));
+                        tunnels.push(create_v_tunnel(map, room_c.y, other_c.y, other_c.x, size));
                     } else {
-                        tunnels.push(create_v_tunnel(map, other_c.y, room_c.y, other_c.x));
+                        tunnels.push(create_v_tunnel(map, other_c.y, room_c.y, other_c.x, size));
                     }
                 }
                 _ => {
                     if room_c.y <= other_c.y {
-                        tunnels.push(create_v_tunnel(map, room_c.y, other_c.y, other_c.x));
+                        tunnels.push(create_v_tunnel(map, room_c.y, other_c.y, room_c.x, size));
                     } else {
-                        tunnels.push(create_v_tunnel(map, other_c.y, room_c.y, other_c.x));
+                        tunnels.push(create_v_tunnel(map, other_c.y, room_c.y, room_c.x, size));
                     }
 
                     if room_c.x <= other_c.x {
-                        tunnels.push(create_h_tunnel(map, room_c.x, other_c.x, room_c.y));
+                        tunnels.push(create_h_tunnel(map, room_c.x, other_c.x, other_c.y, size));
                     } else {
-                        tunnels.push(create_h_tunnel(map, other_c.x, room_c.x, room_c.y));
+                        tunnels.push(create_h_tunnel(map, other_c.x, room_c.x, other_c.y, size));
                     }
                 }
             }

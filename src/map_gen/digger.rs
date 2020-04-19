@@ -4,7 +4,7 @@ use super::{
     Map, Room,
 };
 use crate::utils::directions::*;
-use bracket_lib::prelude::RandomNumberGenerator;
+use bracket_lib::prelude::{DistanceAlg, Point, RandomNumberGenerator};
 
 /*
  *
@@ -34,36 +34,22 @@ impl Digger {
         // Create initial room somewhere on the map.
         let xi = map.width / 2 - map.width / 10;
         let yi = map.height / 3;
-        let wi = rng.range(15, 20);
+        let wi = rng.range(10, 20);
         let hi = wi;
         let initial_room = Room::with_size(xi, yi, wi, hi);
-        let idx = map.idx(initial_room.center().x, initial_room.center().y);
-        map.tiles[idx].change_glyph('#');
         create_room(map, initial_room);
         self.rooms.push(initial_room);
-
         self.gen_feature(map, rng);
-
-        /*
-        self.rooms.sort_by(|a, b| a.x1.cmp(&b.x1));
-
-        for i in 0 .. self.rooms.len()-1 {
-            let this_room = self.rooms[i];
-            let other_room = self.rooms[i+1];
-            self.connect_rooms(map, this_room, other_room, rng);
-        }
-        */
     }
 
     fn add_feature(&mut self, map: &mut Map, room: Room, rng: &mut RandomNumberGenerator) -> bool {
         let w = rng.range(5, 15);
-        //let h = rng.range(5, 15);
-        let h = w;
+        let h = rng.range(w, 15);
         let dir = get_random_dir();
         let ndir = dir.clone();
 
-        let mut pt = room.get_wall(dir);
-        let room_gap = rng.range(1, 4);
+        let mut pt = room.get_wall(map, dir);
+        let room_gap = rng.range(2, 6);
 
         match ndir {
             NORTH => {
@@ -93,17 +79,23 @@ impl Digger {
 
         self.rooms.push(new_room);
         create_room(map, new_room);
-        self.connect_rooms(map, new_room, room, rng);
+        self.connect_rooms(map, room, new_room, rng);
         return true;
     }
 
     fn gen_feature(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
         let mut num_features = 0;
-        let mut repeat = 300;
-        while num_features <= 100 && repeat > 0 {
+        let mut repeat = 50;
+        let mut prev_idx = 0;
+        while num_features <= 50 && repeat > 0 {
             repeat -= 1;
-            for _i in num_features..100 + 1 {
+            for _i in num_features..50 {
+                //let idx = rng.range(0, self.rooms.len());
                 let idx = rng.range(0, self.rooms.len());
+                if idx == prev_idx && self.rooms.len() > 1 {
+                    continue;
+                }
+                prev_idx = idx;
                 if self.add_feature(map, self.rooms[idx], rng) {
                     num_features += 1;
                 }
@@ -118,42 +110,59 @@ impl Digger {
         room2: Room,
         rng: &mut RandomNumberGenerator,
     ) {
-        let room_c = room2.center();
-        let other_c = room1.center();
+        let borders1 = room1.get_borders(map);
+        let borders2 = room2.get_borders(map);
 
-        match rng.range(0, 3) {
+        let mut room_c = Point::new(0, 0);
+        let mut other_c = Point::new(0, 0);
+
+        let mut shortest_dist = DistanceAlg::Pythagoras.distance2d(borders1[0], borders2[0]);
+        for b1 in borders1.iter() {
+            for b2 in borders2.iter() {
+                let d = DistanceAlg::Pythagoras.distance2d(*b1, *b2);
+                if d < shortest_dist {
+                    room_c = *b1;
+                    other_c = *b2;
+                    shortest_dist = d;
+                }
+            }
+        }
+
+        let size = rng.range(1, 4);
+
+        match rng.range(0, 2) {
             0 => {
                 if room_c.x <= other_c.x {
                     self.tunnels
-                        .push(create_h_tunnel(map, room_c.x, other_c.x, room_c.y));
+                        .push(create_h_tunnel(map, room_c.x, other_c.x, room_c.y, size));
                 } else {
                     self.tunnels
-                        .push(create_h_tunnel(map, other_c.x, room_c.x, room_c.y));
+                        .push(create_h_tunnel(map, other_c.x, room_c.x, room_c.y, size));
                 }
 
                 if room_c.y <= other_c.y {
                     self.tunnels
-                        .push(create_v_tunnel(map, room_c.y, other_c.y, other_c.x));
+                        .push(create_v_tunnel(map, room_c.y, other_c.y, other_c.x, size));
                 } else {
                     self.tunnels
-                        .push(create_v_tunnel(map, other_c.y, room_c.y, other_c.x));
+                        .push(create_v_tunnel(map, other_c.y, room_c.y, other_c.x, size));
                 }
             }
             _ => {
                 if room_c.y <= other_c.y {
                     self.tunnels
-                        .push(create_v_tunnel(map, room_c.y, other_c.y, other_c.x));
+                        .push(create_v_tunnel(map, room_c.y, other_c.y, room_c.x, size));
                 } else {
                     self.tunnels
-                        .push(create_v_tunnel(map, other_c.y, room_c.y, other_c.x));
+                        .push(create_v_tunnel(map, other_c.y, room_c.y, room_c.x, size));
                 }
 
                 if room_c.x <= other_c.x {
                     self.tunnels
-                        .push(create_h_tunnel(map, room_c.x, other_c.x, room_c.y));
+                        .push(create_h_tunnel(map, room_c.x, other_c.x, other_c.y, size));
                 } else {
                     self.tunnels
-                        .push(create_h_tunnel(map, other_c.x, room_c.x, room_c.y));
+                        .push(create_h_tunnel(map, other_c.x, room_c.x, other_c.y, size));
                 }
             }
         }
