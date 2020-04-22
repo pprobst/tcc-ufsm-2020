@@ -20,6 +20,8 @@ mod bsp_tree;
 use bsp_tree::*;
 mod digger;
 use digger::*;
+mod prefab_map;
+use prefab_map::*;
 
 pub struct MapGenerator {
     pub map: Map,
@@ -68,13 +70,17 @@ impl MapGenerator {
         //let mut bsp = BSPDungeon::new(8, false);
         //bsp.generate(&mut self.map, &mut rng);
         //bsp.build_tunnels(&mut self.map, &mut rng);
+        //make_lake(&mut self.map, TileType::ShallowWater, 500);
 
-        let mut digger = Digger::new();
-        digger.generate(&mut self.map, &mut rng);
+        //let mut digger = Digger::new();
+        //digger.generate(&mut self.map, &mut rng);
+        
+        let mut handmade_map = PrefabMap::new("../rex_resources/dungeon80x60.xp", 80, 60);
+        handmade_map.generate(&mut self.map);
 
         self.map.add_borders();
         self.map.pretty_walls();
-        //add_vegetation(&mut self.map);
+        add_vegetation(&mut self.map);
         // future: apply_theme(map)
         println!("Map generated!");
     }
