@@ -9,7 +9,7 @@ use bracket_lib::prelude::{to_cp437, ColorPair, BLACK, RGB, RGBA};
  *
  */
 
-#[derive(PartialEq, Eq, Hash, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Hash)]
 pub enum TileType {
     Empty,
     Wall,

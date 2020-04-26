@@ -11,11 +11,11 @@ mod log;
 mod map_gen;
 mod player;
 mod renderer;
+mod rexloader;
 mod spawner;
 mod systems;
 mod ui;
 mod utils;
-mod rexloader;
 
 pub const X_OFFSET: i32 = 18; // Left box
 pub const Y_OFFSET: i32 = 10; // Bottom box
