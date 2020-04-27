@@ -2,11 +2,51 @@ use super::{Map, Point, Tile, TileType};
 use crate::utils::directions::*;
 use std::collections::{HashMap, HashSet};
 
+pub struct Cell {
+    patterns: Vec<MapTile>,
+}
+
+impl Cell {
+    pub fn new(patterns: Vec<MapTile>) -> Self {
+        Self { patterns }
+    }
+}
+
+pub struct Wave {
+    cells: Vec<Cell>,
+    uncollapsed_cells: usize,
+}
+
+impl Wave {
+    pub fn new(cells: Vec<Cell>) -> Self {
+        let cells_len = cells.len();
+        Self {
+            cells,
+            uncollapsed_cells: cells_len,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct MapTile {
+    pattern: Vec<TileType>,
+    compatible: Vec<(Vec<TileType>, Direction)>, // overlaps
+    size: i32,
+}
+
+pub fn tile_idx(tile_size: i32, x: i32, y: i32) -> usize {
+    ((y * tile_size) + x) as usize
+}
+
+pub fn in_tile_bounds(tile_size: i32, x: i32, y: i32) -> bool {
+    x >= 0 && x < tile_size && y >= 0 && y < tile_size
+}
+
 #[allow(dead_code)]
 pub struct WaveFunctionCollapse {
     tile_size: i32,
     patterns: Vec<Vec<TileType>>,
-    frequencies: HashMap<TileType, u32>,
+    frequencies: HashMap<TileType, f32>,
 }
 
 #[allow(dead_code)]
@@ -21,10 +61,30 @@ impl WaveFunctionCollapse {
 
     pub fn generate(&mut self, map: &mut Map) {
         self.build_patterns(map);
-        self.compute_frequencies();
+        self.compute_frequencies(); // frequency hints
+        let constraints = self.build_constraints(); // patterns + adjacency rules
+
+        //let output_size = map.width * map.height;
+        let output_size = map.width / self.tile_size * map.height / self.tile_size;
+        let mut cells: Vec<Cell> = Vec::new();
+        for _i in 0..output_size {
+            let mut cell = Cell {
+                patterns: Vec::new(),
+            };
+            for p in constraints.iter() {
+                cell.patterns.push(p.clone());
+            }
+            cells.push(cell);
+        }
+
+        let mut wave = Wave::new(cells);
+
         /*
-        for tile in map.tiles.iter_mut() {
-            *tile = Tile::floor();
+        while wave.uncollapsed_cells > 0 {
+            let next_coord = wave.choose_next_cell();
+            wave.collapse_cell_at(next_coord);
+            wave.propagate();
+            wave.uncollapsed_cells -= 1;
         }
         */
     }
@@ -63,10 +123,12 @@ impl WaveFunctionCollapse {
                 let vert_pattern = self.get_pattern(map, start, end, "vertical");
                 let horiz_pattern = self.get_pattern(map, start, end, "horizontal");
                 let verthoriz_pattern = self.get_pattern(map, start, end, "both");
+                //let inverted_pattern = self.get_pattern(map, start, end, "invert");
                 self.patterns.push(normal_pattern);
                 self.patterns.push(vert_pattern);
                 self.patterns.push(horiz_pattern);
                 self.patterns.push(verthoriz_pattern);
+                //self.patterns.push(inverted_pattern);
             }
         }
 
@@ -75,14 +137,71 @@ impl WaveFunctionCollapse {
     }
 
     fn compute_frequencies(&mut self) {
+        // Calculate frequencies (absolute).
         for pattern in self.patterns.iter() {
             for ttype in pattern.iter() {
-                *self.frequencies.entry(*ttype).or_insert(0) += 1;
+                *self.frequencies.entry(*ttype).or_insert(0.0) += 1.0;
             }
+        }
+
+        // Update frequencies to relative frequencies.
+        let total: f32 = self.frequencies.values().sum();
+        for v in self.frequencies.values_mut() {
+            *v /= total;
         }
     }
 
-    fn build_adjacency_rules(&mut self) {}
+    fn build_constraints(&self) -> Vec<MapTile> {
+        let mut constraints: Vec<MapTile> = Vec::new();
+
+        for p1 in self.patterns.iter() {
+            let mut map_tile = MapTile {
+                pattern: p1.to_vec(),
+                compatible: Vec::new(),
+                size: self.tile_size,
+            };
+            for p2 in self.patterns.iter() {
+                if p1 != p2 {
+                    if self.is_compatible(p1.to_vec(), p2.to_vec(), NORTH) {
+                        map_tile.compatible.push((p2.to_vec(), NORTH));
+                    }
+                    if self.is_compatible(p1.to_vec(), p2.to_vec(), SOUTH) {
+                        map_tile.compatible.push((p2.to_vec(), SOUTH));
+                    }
+                    if self.is_compatible(p1.to_vec(), p2.to_vec(), EAST) {
+                        map_tile.compatible.push((p2.to_vec(), EAST));
+                    }
+                    if self.is_compatible(p1.to_vec(), p2.to_vec(), WEST) {
+                        map_tile.compatible.push((p2.to_vec(), WEST));
+                    }
+                }
+            }
+            println!("{:?}", map_tile);
+            constraints.push(map_tile);
+        }
+
+        constraints
+    }
+
+    /// Checks if there is overlap.
+    /// I need to review this, because it's probably wrong!
+    fn is_compatible(&self, p1: Vec<TileType>, p2: Vec<TileType>, dir: Direction) -> bool {
+        for y in 0..self.tile_size {
+            for x in 0..self.tile_size {
+                let p1_pos = Point::new(x, y);
+                let offset = p1_pos + dir;
+                if !in_tile_bounds(self.tile_size, offset.x, offset.y) {
+                    continue;
+                }
+                if p1[tile_idx(self.tile_size, p1_pos.x, p1_pos.y)]
+                    != p2[tile_idx(self.tile_size, offset.x, offset.y)]
+                {
+                    return false;
+                }
+            }
+        }
+        true
+    }
 
     fn get_pattern(&mut self, map: &mut Map, start: Point, end: Point, rot: &str) -> Vec<TileType> {
         let mut pattern: Vec<TileType> = Vec::new();
@@ -98,6 +217,14 @@ impl WaveFunctionCollapse {
                     }
                     "both" => {
                         idx = map.idx(end.x - (x + 1), end.y - (y + 1));
+                    }
+                    "invert" => {
+                        if map.in_map_bounds_xy(y, x) {
+                            idx = map.idx(y, x);
+                        } else {
+                            idx = map.idx(x, y);
+                        }
+                        //idx = map.idx(end.y - (y + 1), end.x - (x + 1));
                     }
                     _ => {
                         idx = map.idx(x, y);

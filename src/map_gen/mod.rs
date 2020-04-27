@@ -77,14 +77,15 @@ impl MapGenerator {
         //let mut digger = Digger::new();
         //digger.generate(&mut self.map, &mut rng);
 
-        let mut handmade_map = PrefabMap::new("../rex_resources/dungeon02_80x60.xp", 80, 60);
+        //let mut handmade_map = PrefabMap::new("../rex_resources/dungeon02_80x60.xp");
+        let mut handmade_map = PrefabMap::new("../rex_resources/wfc14x8.xp");
         handmade_map.generate(&mut self.map);
 
-        let mut wfc = wfc::WaveFunctionCollapse::new(12);
+        let mut wfc = wfc::WaveFunctionCollapse::new(3);
         wfc.generate(&mut self.map);
 
         self.map.add_borders();
-        self.map.pretty_walls();
+        //self.map.pretty_walls();
         // add_vegetation(&mut self.map);
         // future: apply_theme(map)
         println!("Map generated!");

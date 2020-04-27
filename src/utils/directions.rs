@@ -8,7 +8,7 @@ use bracket_lib::prelude::RandomNumberGenerator;
  *
  */
 
-#[derive(PartialEq, Eq, Clone, Debug)]
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub struct Direction {
     pub delta_x: i8,
     pub delta_y: i8,

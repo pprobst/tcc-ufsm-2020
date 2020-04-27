@@ -12,17 +12,11 @@ use bracket_lib::prelude::XpFile;
 
 pub struct PrefabMap {
     template: &'static str,
-    width: usize,
-    height: usize,
 }
 
 impl PrefabMap {
-    pub fn new(template: &'static str, width: usize, height: usize) -> Self {
-        Self {
-            template,
-            width,
-            height,
-        }
+    pub fn new(template: &'static str) -> Self {
+        Self { template }
     }
 
     pub fn generate(&mut self, map: &mut Map) {

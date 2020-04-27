@@ -26,7 +26,7 @@ impl Map {
     pub fn new(width: i32, height: i32) -> Map {
         let map_size = width * height;
         Self {
-            tiles: vec![Tile::wall(); map_size as usize],
+            tiles: vec![Tile::floor(); map_size as usize],
             size: map_size,
             width,
             height,

@@ -1,7 +1,7 @@
 use crate::utils::directions::Direction;
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RGB};
 use specs::{prelude::*, Component};
-use std::ops::{Add, AddAssign};
+use std::ops::{Add, AddAssign, Sub};
 //use std::collections::HashSet;
 
 /*
@@ -30,6 +30,17 @@ impl Add<Direction> for Point {
         Self {
             x: self.x + other.delta_x as i32,
             y: self.y + other.delta_y as i32,
+        }
+    }
+}
+
+impl Sub<Direction> for Point {
+    type Output = Self;
+
+    fn sub(self, other: Direction) -> Self {
+        Self {
+            x: self.x - other.delta_x as i32,
+            y: self.y - other.delta_y as i32,
         }
     }
 }
