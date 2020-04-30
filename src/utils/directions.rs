@@ -48,6 +48,20 @@ pub const SOUTHWEST: Direction = Direction {
 };
 
 #[allow(dead_code)]
+pub fn opposite(dir: Direction) -> Direction {
+    match dir {
+        EAST => return WEST,
+        WEST => return EAST,
+        NORTH => return SOUTH,
+        SOUTH => return NORTH,
+        NORTHEAST => return SOUTHWEST,
+        NORTHWEST => return SOUTHEAST,
+        SOUTHEAST => return NORTHWEST,
+        _ => return NORTHEAST,
+    }
+}
+
+#[allow(dead_code)]
 pub fn get_random_dir() -> Direction {
     let mut rng = RandomNumberGenerator::new();
     let dir = rng.range(0, 4);

@@ -82,7 +82,7 @@ impl MapGenerator {
         handmade_map.generate(&mut self.map);
 
         let mut wfc = wfc::WaveFunctionCollapse::new(3);
-        wfc.generate(&mut self.map);
+        wfc.generate(&mut self.map, &mut rng);
 
         self.map.add_borders();
         //self.map.pretty_walls();
