@@ -54,7 +54,7 @@ impl Cell {
                 total_log += freq_hint * freq_hint.log2();
             }
         }
-        println!("{} {}", total, total_log);
+        //println!("{} {}", total, total_log);
         self.sum_possible_weights = total;
         self.sum_possible_weights_log = total_log;
     }
