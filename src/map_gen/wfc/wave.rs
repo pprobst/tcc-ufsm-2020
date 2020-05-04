@@ -7,7 +7,7 @@ use std::collections::{BinaryHeap, HashMap};
 #[derive(Debug, Clone)]
 pub struct Wave {
     cells: Vec<Cell>,
-    uncollapsed_cells: usize,
+    pub uncollapsed_cells: usize,
     entropy_queue: BinaryHeap<CoordEntropy>,
     tile_removals: Vec<RemovalUpdate>,
     out_width: i32,
@@ -17,7 +17,7 @@ pub struct Wave {
 #[allow(dead_code)]
 impl Wave {
     pub fn new(cells: Vec<Cell>, out_width: i32, out_height: i32) -> Self {
-        let cells_len = cells.len();
+        let cells_len = cells.len(); // or out_width * out_height
         Self {
             cells,
             uncollapsed_cells: cells_len,
@@ -28,6 +28,24 @@ impl Wave {
         }
     }
 
+    pub fn init_entropy_queue(&mut self) {
+        let mut i = 0;
+        //println!("{} {}", self.out_height, self.out_width);
+        for y in 0..self.out_height {
+            for x in 0..self.out_width {
+                let idx = self.cell_at(x, y);
+                let cell = &self.cells[idx];
+                i += 1;
+                //println!("{:?}, {:?}", cell, MinFloat(cell.entropy()));
+                self.entropy_queue.push(CoordEntropy {
+                    entropy: MinFloat(cell.entropy()),
+                    coord: Point::new(x, y),
+                });
+            }
+        }
+        //println!("{}", i);
+    }
+
     fn cell_at(&self, x: i32, y: i32) -> usize {
         (y as usize * self.out_width as usize) + x as usize
     }
@@ -36,7 +54,7 @@ impl Wave {
         x >= 0 && x < self.out_width && y > 0 && y < self.out_height
     }
 
-    fn choose_next_cell(&mut self) -> Point {
+    pub fn choose_next_cell(&mut self) -> Point {
         while let Some(entropy_coord) = self.entropy_queue.pop() {
             let idx = self.cell_at(entropy_coord.coord.x, entropy_coord.coord.y);
             let cell = &self.cells[idx];
@@ -114,6 +132,15 @@ impl Wave {
                         });
                     }
                 }
+            }
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn print_cells(&self) {
+        for (i, cell) in self.cells.iter().enumerate() {
+            if cell.collapsed == true {
+                println!("Cell {} is collapsed!", i);
             }
         }
     }

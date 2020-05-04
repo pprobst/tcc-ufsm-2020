@@ -1,7 +1,7 @@
 use super::{Map, Point, TileType};
 use crate::utils::directions::*;
 use bracket_lib::prelude::RandomNumberGenerator;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 mod common;
 use common::*;
@@ -50,6 +50,7 @@ impl WaveFunctionCollapse {
         let constraints = self.build_constraints(); // patterns + adjacency rules
 
         //let output_size = map.width * map.height;
+        // Not sure if the sizes are correct.
         let out_width = map.width / self.tile_size;
         let out_height = map.height / self.tile_size;
         let output_size = out_width * out_height;
@@ -70,7 +71,17 @@ impl WaveFunctionCollapse {
             cell.total_possible_tile_freq(&self.frequencies);
         }
 
+        // Initializing Wave
         let mut wave = Wave::new(cells, out_width, out_height);
+        wave.init_entropy_queue();
+
+        // Running some tests
+        let mut next_coord = wave.choose_next_cell();
+        println!("{:?}", next_coord);
+        wave.collapse_cell_at(next_coord, &self.frequencies, rng);
+        next_coord = wave.choose_next_cell();
+        wave.collapse_cell_at(next_coord, &self.frequencies, rng);
+        wave.print_cells();
 
         /*
         while wave.uncollapsed_cells > 0 {
