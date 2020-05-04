@@ -112,6 +112,10 @@ impl Wave {
                 let neighbor_cell = &mut self.cells[neighbor_idx];
 
                 for pattern in neighbor_patterns {
+                    for possible in removal_update.tile.compatible.iter() {
+                       println!("Pattern:  {:?}, {:?}", pattern.pattern, di); 
+                       println!("Possible: {:?}, {:?}", possible.0, possible.1); 
+                    }
                     let possible = removal_update
                         .tile
                         .compatible
@@ -119,6 +123,7 @@ impl Wave {
                         .any(|c| c.0 == pattern.pattern && c.1 == dir);
                     if !possible {
                         neighbor_cell.remove_tile(pattern.clone(), freq);
+                        // Problems here! Tile compatibility is wrong?
                         if neighbor_cell.patterns.len() == 0 {
                             println!("Contradiction!"); // do something
                             return false;
@@ -139,10 +144,13 @@ impl Wave {
     }
 
     #[allow(dead_code)]
-    pub fn print_cells(&self) {
+    pub fn print_collapsed_cells(&self) {
         for (i, cell) in self.cells.iter().enumerate() {
             if cell.collapsed == true {
                 println!("Cell {} is collapsed!", i);
+                for (j, _pattern) in cell.patterns.iter().enumerate() {
+                    println!("\t{}", j);
+                }
             }
         }
     }

@@ -68,11 +68,13 @@ impl WaveFunctionCollapse {
 
         // Running some tests
         let mut next_coord = wave.choose_next_cell();
-        println!("{:?}", next_coord);
         wave.collapse_cell_at(next_coord, &self.frequencies, rng);
         next_coord = wave.choose_next_cell();
         wave.collapse_cell_at(next_coord, &self.frequencies, rng);
-        wave.print_cells();
+        wave.print_collapsed_cells();
+        // Oops. Problems with contradiction.
+        wave.propagate(&self.frequencies);
+        wave.print_collapsed_cells();
 
         true
     }
