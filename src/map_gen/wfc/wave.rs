@@ -29,13 +29,13 @@ impl Wave {
     }
 
     pub fn init_entropy_queue(&mut self) {
-        let mut i = 0;
+        //let mut i = 0;
         //println!("{} {}", self.out_height, self.out_width);
         for y in 0..self.out_height {
             for x in 0..self.out_width {
                 let idx = self.cell_at(x, y);
                 let cell = &self.cells[idx];
-                i += 1;
+                //i += 1;
                 //println!("{:?}, {:?}", cell, MinFloat(cell.entropy()));
                 self.entropy_queue.push(CoordEntropy {
                     entropy: MinFloat(cell.entropy()),
@@ -88,7 +88,7 @@ impl Wave {
         }
     }
 
-    pub fn propagate(&mut self, freq: &HashMap<Vec<TileType>, f32>) {
+    pub fn propagate(&mut self, freq: &HashMap<Vec<TileType>, f32>) -> bool {
         while let Some(removal_update) = self.tile_removals.pop() {
             for i in 0..4 {
                 let dir;
@@ -121,6 +121,7 @@ impl Wave {
                         neighbor_cell.remove_tile(pattern.clone(), freq);
                         if neighbor_cell.patterns.len() == 0 {
                             println!("Contradiction!"); // do something
+                            return false;
                         }
                         self.entropy_queue.push(CoordEntropy {
                             entropy: MinFloat(neighbor_cell.entropy()),
@@ -134,6 +135,7 @@ impl Wave {
                 }
             }
         }
+        true
     }
 
     #[allow(dead_code)]

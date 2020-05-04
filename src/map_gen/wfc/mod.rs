@@ -43,10 +43,11 @@ impl WaveFunctionCollapse {
         }
     }
 
-    pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
+    pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) -> bool {
         self.build_patterns(map);
         self.compute_frequencies(); // frequency hints
         deduplicate(&mut self.patterns);
+
         let constraints = self.build_constraints(); // patterns + adjacency rules
 
         //let output_size = map.width * map.height;
@@ -54,26 +55,16 @@ impl WaveFunctionCollapse {
         let out_width = map.width / self.tile_size;
         let out_height = map.height / self.tile_size;
         let output_size = out_width * out_height;
-        let mut cells: Vec<Cell> = Vec::new();
-        for _i in 0..output_size {
-            let noise = rng.range(0.001f32, 0.005f32);
-            let cell = Cell::new(constraints.clone(), noise);
-            /*
-            for p in constraints.iter() {
-                cell.patterns.push(p.clone());
-            }
-            */
-            // Initially a cell can have all patterns.
-            cells.push(cell);
-        }
 
-        for cell in cells.iter_mut() {
-            cell.total_possible_tile_freq(&self.frequencies);
-        }
+        // Initializing Cells.
+        let cells = self.init_cells(output_size, constraints, rng);
 
-        // Initializing Wave
+        // Initializing Wave.
         let mut wave = Wave::new(cells, out_width, out_height);
         wave.init_entropy_queue();
+
+        // Running Wave.
+        //self.run_wave(&mut wave, rng);
 
         // Running some tests
         let mut next_coord = wave.choose_next_cell();
@@ -83,18 +74,43 @@ impl WaveFunctionCollapse {
         wave.collapse_cell_at(next_coord, &self.frequencies, rng);
         wave.print_cells();
 
-        /*
+        true
+    }
+
+    fn init_cells(
+        &self,
+        n_cells: i32,
+        constraints: Vec<MapTile>,
+        rng: &mut RandomNumberGenerator,
+    ) -> Vec<Cell> {
+        let mut cells: Vec<Cell> = Vec::new();
+        for _i in 0..n_cells {
+            let noise = rng.range(0.001f32, 0.005f32);
+            let cell = Cell::new(constraints.clone(), noise);
+            // Initially a cell can have all patterns.
+            cells.push(cell);
+        }
+        for cell in cells.iter_mut() {
+            cell.total_possible_tile_freq(&self.frequencies);
+        }
+        cells
+    }
+
+    fn run_wave(&mut self, wave: &mut Wave, rng: &mut RandomNumberGenerator) -> bool {
         while wave.uncollapsed_cells > 0 {
             let next_coord = wave.choose_next_cell();
             wave.collapse_cell_at(next_coord, &self.frequencies, rng);
-            wave.propagate(&self.frequencies);
+            if !wave.propagate(&self.frequencies) {
+                return false;
+            }
             wave.uncollapsed_cells -= 1;
         }
-        */
+        true
     }
 
     /// Build tiles of size tile_size x tile_size from map cells.
     fn build_patterns(&mut self, map: &mut Map) {
+        self.patterns.clear();
         // Navigate the coordinates of each tile.
         // Change map.height and map.width to specific input size?
         for ty in 0..(14 / self.tile_size) {
@@ -139,6 +155,7 @@ impl WaveFunctionCollapse {
     }
 
     fn compute_frequencies(&mut self) {
+        self.frequencies.clear();
         // Calculate frequencies (absolute).
         for pattern in self.patterns.iter() {
             *self.frequencies.entry(pattern.to_vec()).or_insert(0.0) += 1.0;
