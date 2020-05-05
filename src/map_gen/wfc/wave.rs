@@ -113,17 +113,20 @@ impl Wave {
 
                 for pattern in neighbor_patterns {
                     for possible in removal_update.tile.compatible.iter() {
-                       println!("Pattern:  {:?}, {:?}", pattern.pattern, di); 
-                       println!("Possible: {:?}, {:?}", possible.0, possible.1); 
+                        if pattern.pattern == possible.0 {
+                            println!("Pattern:  {:?}, {:?}", pattern.pattern, dir); 
+                            println!("Possible: {:?}, {:?}", possible.0, possible.1); 
+                        }
                     }
                     let possible = removal_update
                         .tile
                         .compatible
                         .iter()
-                        .any(|c| c.0 == pattern.pattern && c.1 == dir);
+                        .any(|c| c.0 == pattern.pattern && c.1 == opposite(dir));
                     if !possible {
+                        println!("LEN: {}", neighbor_cell.patterns.len()); 
                         neighbor_cell.remove_tile(pattern.clone(), freq);
-                        // Problems here! Tile compatibility is wrong?
+                        // Problems here! is tile compatibility wrong?
                         if neighbor_cell.patterns.len() == 0 {
                             println!("Contradiction!"); // do something
                             return false;

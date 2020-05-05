@@ -182,7 +182,7 @@ impl WaveFunctionCollapse {
                 size: self.tile_size,
             };
             for p2 in self.patterns.iter() {
-                if p1 != p2 {
+                //if p1 != p2 {
                     if self.is_compatible(p1.to_vec(), p2.to_vec(), NORTH) {
                         map_tile.compatible.push((p2.to_vec(), NORTH));
                     }
@@ -195,7 +195,7 @@ impl WaveFunctionCollapse {
                     if self.is_compatible(p1.to_vec(), p2.to_vec(), WEST) {
                         map_tile.compatible.push((p2.to_vec(), WEST));
                     }
-                }
+                //}
             }
             //println!("{:?}", map_tile);
             constraints.push(map_tile);
@@ -205,18 +205,25 @@ impl WaveFunctionCollapse {
     }
 
     /// Checks if there is overlap.
-    /// I need to review this, because it's probably wrong!
     fn is_compatible(&self, p1: Vec<TileType>, p2: Vec<TileType>, dir: Direction) -> bool {
-        for y in 0..self.tile_size {
-            for x in 0..self.tile_size {
+        let xmin = if dir.delta_x < 0 { 0 } else { dir.delta_x };
+        let xmax = if dir.delta_x < 0 { dir.delta_x + self.tile_size as i8 } else { self.tile_size as i8};
+        let ymin = if dir.delta_y < 0 { 0 } else { dir.delta_y };
+        let ymax = if dir.delta_y < 0 { dir.delta_y + self.tile_size as i8 } else { self.tile_size as i8};
+
+        // Iterate on every symbol in the intersection of the two patterns.
+        for y in ymin .. ymax {
+            for x in xmin .. xmax {
                 let p1_pos = Point::new(x, y);
-                let offset = p1_pos + dir;
-                if !in_tile_bounds(self.tile_size, offset.x, offset.y) {
+                let offset = p1_pos - dir;
+                //println!("p1:     {:?}", p1_pos);
+                //println!("offset: {:?}", offset);
+                /*
+                if !in_tile_bounds(self.tile_size, offset.x, offset.y) || !in_tile_bounds(self.tile_size, x as i32, y as i32) {
                     continue;
                 }
-                if p1[tile_idx(self.tile_size, p1_pos.x, p1_pos.y)]
-                    != p2[tile_idx(self.tile_size, offset.x, offset.y)]
-                {
+                */
+                if p1[tile_idx(self.tile_size, p1_pos.x, p1_pos.y)] != p2[tile_idx(self.tile_size, offset.x, offset.y)] {
                     return false;
                 }
             }
