@@ -68,7 +68,8 @@ impl Wave {
     pub fn collapse_cell_at(
         &mut self,
         pt: Point,
-        freq: &HashMap<Vec<TileType>, f32>,
+        //freq: &HashMap<Vec<TileType>, f32>,
+        freq: &HashMap<usize, f32>,
         rng: &mut RandomNumberGenerator,
     ) {
         let idx = self.cell_at(pt.x, pt.y);
@@ -80,16 +81,23 @@ impl Wave {
         let patterns = cell.patterns.clone();
         for tile in patterns {
             if tile != locked_tile {
-                let t = tile.clone();
-                cell.remove_tile(tile, freq);
-                self.tile_removals
-                    .push(RemovalUpdate { tile: t, coord: pt })
+                //let t = tile.clone();
+                cell.remove_tile(tile.idx, freq);
+                self.tile_removals.push(RemovalUpdate {
+                    tile: tile,
+                    coord: pt,
+                })
             }
         }
     }
 
-    pub fn propagate(&mut self, freq: &HashMap<Vec<TileType>, f32>) -> bool {
+    /// Keeps propagating consequences until there are none.
+    //pub fn propagate(&mut self, freq: &HashMap<Vec<TileType>, f32>) -> bool {
+    pub fn propagate(&mut self, freq: &HashMap<usize, f32>) -> bool {
         while let Some(removal_update) = self.tile_removals.pop() {
+            //let curr_possible_tiles = removal_update.tile.compatible;
+
+            // Iterate through each adjacent tile of the the current one.
             for i in 0..4 {
                 let dir;
                 match i {
@@ -106,26 +114,81 @@ impl Wave {
                         dir = SOUTH;
                     }
                 }
+
                 let neighbor_coord = removal_update.coord + dir;
+                if !self.in_bound(neighbor_coord.x, neighbor_coord.y) {
+                    continue;
+                }
                 let neighbor_idx = self.cell_at(neighbor_coord.x, neighbor_coord.y);
                 let neighbor_patterns = self.cells[neighbor_idx].patterns.clone();
                 let neighbor_cell = &mut self.cells[neighbor_idx];
 
+                let compatible_dirs = removal_update.tile.get_compatible_dir(dir);
+
+                /*
+                for compatible_tile in compatible_dirs {
+                    let opposite_dir = opposite(dir);
+                    let mut idx = 0;
+                    //let mut pattern = MapTile{};
+                    let mut possible = false;
+
+                    // Continuar isso
+                    for tile in neighbor_patterns {
+                        if tile.pattern == compatible_tile {
+                            println!("ACHOU!");
+                            pattern = tile;
+                            possible = true;
+                        }
+                        idx += 1;
+                    }
+
+                    let enabler_counts = &mut neighbor_cell.enabler_count[idx];
+
+                    if enabler_counts.by_direction[i] == 1 && possible {
+                        if enabler_counts.any_zero() {
+                            neighbor_cell.remove_tile(&pattern, freq);
+                        }
+                        if neighbor_cell.patterns.len() == 0 {
+                            println!("Contradiction!"); // do something
+                            return false;
+                        }
+                        self.entropy_queue.push(CoordEntropy {
+                            entropy: MinFloat(neighbor_cell.entropy()),
+                            coord: neighbor_coord,
+                        });
+                        self.tile_removals.push(RemovalUpdate {
+                            tile: pattern,
+                            coord: neighbor_coord,
+                        });
+                    }
+                    enabler_counts.by_direction[i] -= 1;
+                }
+                */
+
+                /*
+                let mut idx = 0;
                 for pattern in neighbor_patterns {
+                    /*
                     for possible in removal_update.tile.compatible.iter() {
                         if pattern.pattern == possible.0 {
-                            println!("Pattern:  {:?}, {:?}", pattern.pattern, dir); 
-                            println!("Possible: {:?}, {:?}", possible.0, possible.1); 
+                            println!("Pattern:  {:?}, {:?}", pattern.pattern, dir);
+                            println!("Possible: {:?}, {:?}", possible.0, possible.1);
                         }
                     }
+                    */
+                    let compatible_dirs = removal_update.tile.get_compatible_dir(dir);
+                    //println!("Compatibles: {:?}\n", compatible_dirs);
+                    let possible = compatible_dirs.iter().any(|c| *c == pattern.pattern);
+                    /*
                     let possible = removal_update
                         .tile
                         .compatible
                         .iter()
-                        .any(|c| c.0 == pattern.pattern && c.1 == opposite(dir));
+                        .any(|c| c.0 == pattern.pattern && c.1 == dir);
+                    */
                     if !possible {
-                        println!("LEN: {}", neighbor_cell.patterns.len()); 
-                        neighbor_cell.remove_tile(pattern.clone(), freq);
+                        //println!("LEN: {}", neighbor_cell.patterns.len());
+                        neighbor_cell.remove_tile(&pattern, freq);
                         // Problems here! is tile compatibility wrong?
                         if neighbor_cell.patterns.len() == 0 {
                             println!("Contradiction!"); // do something
@@ -140,7 +203,9 @@ impl Wave {
                             coord: neighbor_coord,
                         });
                     }
+                    idx += 1;
                 }
+                */
             }
         }
         true

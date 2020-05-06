@@ -1,13 +1,5 @@
-use super::{Direction, TileType};
+use super::TileType;
 use std::collections::HashSet;
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct MapTile {
-    pub idx: usize,
-    pub pattern: Vec<TileType>,
-    pub compatible: Vec<(Vec<TileType>, Direction)>, // overlaps
-    pub size: i32,
-}
 
 pub fn tile_idx(tile_size: i32, x: i32, y: i32) -> usize {
     ((y * tile_size) + x) as usize
