@@ -134,17 +134,17 @@ impl Wave {
                     continue;
                 }
                 //let neighbor_patterns = self.cells[neighbor_idx].patterns.clone();
-                //let neighbor_cell = &mut self.cells[neighbor_idx];
 
                 let compatible_tiles = self.get_compatible_dir(removal_update.tile, dir);
+                let neighbor_cell = &mut self.cells[neighbor_idx];
 
-                for compat in compatible_tiles {
+                for compat in compatible_tiles.iter() {
                     let j = opposite_idx(i); // Opposite direction to i
                                              //let j = i;
 
-                    if self.cells[neighbor_idx].enabler_count[compat].by_direction[j] == 1 {
+                    if neighbor_cell.enabler_count[*compat].by_direction[j] == 1 {
                         println!("ONE!");
-                        println!("{:?}", self.cells[neighbor_idx].enabler_count[compat]);
+                        //println!("{:?}", self.cells[neighbor_idx].enabler_count[compat]);
                         /*
                         if self.cells[neighbor_idx].enabler_count[compat].any_zero() {
                             println!("HAS ZERO");
@@ -155,22 +155,28 @@ impl Wave {
                             return false;
                         }
                         */
-                        if self.cells[neighbor_idx].possible[compat] {
-                            self.cells[neighbor_idx].remove_tile(compat, freq);
+                        if neighbor_cell.possible[*compat] {
+                            println!("Before: {:?}", neighbor_cell.possible);
+                            neighbor_cell.remove_tile(*compat, freq);
+                            if neighbor_cell.contradiction_check() {
+                                println!("Contradiction!");
+                                return false;
+                            }
                             self.entropy_queue.push(CoordEntropy {
-                                entropy: MinFloat(self.cells[neighbor_idx].entropy()),
+                                entropy: MinFloat(neighbor_cell.entropy()),
                                 coord: neighbor_coord,
                             });
                             self.tile_removals.push(RemovalUpdate {
-                                tile: compat,
+                                tile: *compat,
                                 coord: neighbor_coord,
                             });
                         }
                     }
 
+                    println!("After: {:?}", neighbor_cell.possible);
                     //println!("{:?}", self.cells[neighbor_idx].enabler_count[compatible_tile]);
                     //println!("{}", self.cells[neighbor_idx].enabler_count[compatible_tile].by_direction[j]);
-                    self.cells[neighbor_idx].enabler_count[compat].by_direction[j] -= 1;
+                    neighbor_cell.enabler_count[*compat].by_direction[j] -= 1;
                 }
 
                 /*

@@ -79,12 +79,13 @@ impl WaveFunctionCollapse {
         wave.collapse_cell_at(next_coord, &self.frequencies, rng);
         //wave.print_collapsed_cells();
         // Oops. Problems with contradiction.
-        //wave.propagate(&self.frequencies);
+        wave.propagate(&self.frequencies);
         //wave.print_collapsed_cells();
 
         true
     }
 
+    /// Initialize all the cells.
     fn init_cells(
         &self,
         n_cells: i32,

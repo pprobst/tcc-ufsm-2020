@@ -133,4 +133,10 @@ impl Cell {
 
         unreachable!("sum_possible_weights was inconsistent!");
     }
+
+    /// Checks if there's a contradiction in the current cell.
+    /// That is, not a single tile is possible for this cell.
+    pub fn contradiction_check(&self) -> bool {
+        self.possible.iter().all(|d| *d == false)
+    }
 }
