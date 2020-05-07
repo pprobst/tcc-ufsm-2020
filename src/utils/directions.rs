@@ -62,6 +62,19 @@ pub fn opposite(dir: Direction) -> Direction {
 }
 
 #[allow(dead_code)]
+pub fn opposite_idx(idx: usize) -> usize {
+    match idx {
+        0 => return 1, // EAST -> WEST
+        1 => return 0, // WEST -> EAST
+        2 => return 3, // NORTH -> SOUTH
+        3 => return 2, // SOUTH -> NORTH
+        4 => return 5, // NORTHEAST -> NORTHWEST
+        5 => return 4, // NORTHWEST -> NORTHEAST
+        6 => return 7, // SOUTHEAST -> SOUTHWEST
+        _ => return 6, // SOUTHWEST -> SOUTHEAST
+    }
+}
+#[allow(dead_code)]
 pub fn get_random_dir() -> Direction {
     let mut rng = RandomNumberGenerator::new();
     let dir = rng.range(0, 4);
