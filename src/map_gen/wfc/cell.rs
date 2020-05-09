@@ -86,7 +86,11 @@ impl Cell {
         self.possible_tiles.retain(|t| *t != tile_idx);
 
         let f = freq.get(&tile_idx).unwrap();
+        //println!("");
+        //println!("Freq {}", f);
+        //println!("Before {}", self.sum_possible_weights);
         self.sum_possible_weights -= f;
+        //println!("After {}", self.sum_possible_weights);
         self.sum_possible_weights_log -= f * f.log2();
     }
 

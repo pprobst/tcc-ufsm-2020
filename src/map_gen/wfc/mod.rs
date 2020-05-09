@@ -1,4 +1,4 @@
-use super::{Map, Point, TileType};
+use super::{Map, Point, Tile, TileType};
 use crate::utils::directions::*;
 use bracket_lib::prelude::RandomNumberGenerator;
 use std::collections::HashMap;
@@ -31,6 +31,7 @@ use wave::*;
 pub struct WaveFunctionCollapse {
     tile_size: i32,
     patterns: Vec<Vec<TileType>>,
+    constraints: Vec<MapTile>,
     frequencies: HashMap<usize, f32>,
 }
 
@@ -40,22 +41,31 @@ impl WaveFunctionCollapse {
         Self {
             tile_size,
             patterns: Vec::new(),
+            constraints: Vec::new(),
             frequencies: HashMap::new(),
         }
     }
 
     /// Runs the whole WFC algorithm.
-    pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) -> bool {
-        self.build_patterns(map);
-        let patterns_clone = self.patterns.clone();
+    pub fn generate(
+        &mut self,
+        map: &mut Map,
+        input_x: i32,
+        input_y: i32,
+        rng: &mut RandomNumberGenerator,
+    ) -> bool {
+        self.build_patterns(map, input_x, input_y);
+        let patterns = self.patterns.clone();
         deduplicate(&mut self.patterns);
         println!(
             "All patterns: {}, Unique patterns: {}",
-            patterns_clone.len(),
+            patterns.len(),
             self.patterns.len()
         );
-        let constraints = self.build_constraints(); // patterns + adjacency rules
-        self.compute_frequencies(&patterns_clone, &constraints); // frequency hints
+
+        self.build_constraints(); // patterns + adjacency rules
+        let constraints = self.constraints.clone();
+        self.compute_frequencies(&patterns, &constraints); // frequency hints
 
         // Not sure if the sizes are correct.
         let out_width = map.width / self.tile_size;
@@ -63,41 +73,35 @@ impl WaveFunctionCollapse {
         let output_size = out_width * out_height;
 
         // Initialize Cells.
-        let cells = self.init_cells(output_size, constraints.clone(), rng);
+        let cells = self.init_cells(output_size, rng);
 
         // Initialize Wave.
         let mut wave = Wave::new(cells, constraints, out_width, out_height);
         wave.init_entropy_queue();
 
         // Run Wave.
-        self.run_wave(&mut wave, rng);
+        if !self.run_wave(&mut wave, rng) {
+            return false;
+        }
 
-        // Running some tests
-        /*
-        let next_coord = wave.choose_next_cell();
-        wave.collapse_cell_at(next_coord, &self.frequencies, rng);
-        wave.propagate(&self.frequencies);
-        */
+        // Clear the previous map and generate the output.
+        map.tiles = vec![Tile::wall(); (map.width * map.height) as usize];
+        self.generate_output(wave, map);
 
         true
     }
 
     /// Initialize all the cells.
-    fn init_cells(
-        &self,
-        n_cells: i32,
-        constraints: Vec<MapTile>,
-        rng: &mut RandomNumberGenerator,
-    ) -> Vec<Cell> {
+    fn init_cells(&self, n_cells: i32, rng: &mut RandomNumberGenerator) -> Vec<Cell> {
         let mut cells: Vec<Cell> = Vec::new();
         for _i in 0..n_cells {
-            let noise = rng.range(0.0001f32, 0.0005f32);
-            let cell = Cell::new(constraints.len(), noise);
+            let noise = rng.range(0.000001f32, 0.000005f32); // Random noise to break entropy ties
+            let cell = Cell::new(self.constraints.len(), noise);
             cells.push(cell);
         }
         for cell in cells.iter_mut() {
             cell.total_possible_tile_freq(&self.frequencies);
-            cell.initial_enabler_count(constraints.clone());
+            cell.initial_enabler_count(self.constraints.clone());
             //println!("Enablers: {:?}\n", cell.enabler_count);
         }
         cells
@@ -106,7 +110,7 @@ impl WaveFunctionCollapse {
     /// Runs the core WFC solver.
     fn run_wave(&mut self, wave: &mut Wave, rng: &mut RandomNumberGenerator) -> bool {
         while wave.uncollapsed_cells > 0 {
-            println!("> Uncollapsed cells: {}", wave.uncollapsed_cells);
+            //println!("> Uncollapsed cells: {}", wave.uncollapsed_cells);
             let next_coord = wave.choose_next_cell();
             wave.collapse_cell_at(next_coord, &self.frequencies, rng);
             if !wave.propagate(&self.frequencies) {
@@ -117,13 +121,37 @@ impl WaveFunctionCollapse {
         true
     }
 
+    /// Translates the information on the wave to the map, thus generating the output.
+    fn generate_output(&mut self, wave: Wave, map: &mut Map) {
+        for (i, cell) in wave.cells.iter().enumerate() {
+            let cell_x = i as i32 % wave.out_width;
+            let cell_y = i as i32 / wave.out_width;
+            let left_x = cell_x * self.tile_size;
+            let right_x = (cell_x + 1) * self.tile_size;
+            let top_y = cell_y * self.tile_size;
+            let bottom_y = (cell_y + 1) * self.tile_size as i32;
+            //println!("{}, {}", left_x, bottom_y);
+
+            let mut i: usize = 0;
+            for y in top_y..bottom_y {
+                for x in left_x..right_x {
+                    let map_idx = map.idx(x, y);
+                    let tile_idx = cell.possible_tiles[0];
+                    let tile = self.constraints[tile_idx].pattern[i];
+                    map.paint_tile(map_idx, tile);
+                    i += 1;
+                }
+            }
+        }
+    }
+
     /// Builds tiles of size tile_size*tile_size from the given map cells.
-    fn build_patterns(&mut self, map: &mut Map) {
+    fn build_patterns(&mut self, map: &mut Map, input_x: i32, input_y: i32) {
         self.patterns.clear();
         // Navigate the coordinates of each tile.
         // Change map.height and map.width to specific input size?
-        for ty in 0..(8 / self.tile_size) {
-            for tx in 0..(14 / self.tile_size) {
+        for ty in 1..(input_y / self.tile_size) {
+            for tx in 1..(input_x / self.tile_size) {
                 let start = Point::new(tx * self.tile_size, ty * self.tile_size);
                 let end = Point::new((tx + 1) * self.tile_size, (ty + 1) * self.tile_size);
                 /*
@@ -150,14 +178,14 @@ impl WaveFunctionCollapse {
                  *
                  */
                 let normal_pattern = self.get_pattern(map, start, end, "normal");
-                let vert_pattern = self.get_pattern(map, start, end, "vertical");
+                //let vert_pattern = self.get_pattern(map, start, end, "vertical");
                 let horiz_pattern = self.get_pattern(map, start, end, "horizontal");
-                let verthoriz_pattern = self.get_pattern(map, start, end, "both");
+                //let verthoriz_pattern = self.get_pattern(map, start, end, "both");
                 //let inverted_pattern = self.get_pattern(map, start, end, "invert");
                 self.patterns.push(normal_pattern);
-                self.patterns.push(vert_pattern);
+                //self.patterns.push(vert_pattern);
                 self.patterns.push(horiz_pattern);
-                self.patterns.push(verthoriz_pattern);
+                //self.patterns.push(verthoriz_pattern);
                 //self.patterns.push(inverted_pattern);
             }
         }
@@ -182,9 +210,7 @@ impl WaveFunctionCollapse {
 
     /// Build the "contraints", that is, the possible tiles and their compatibilities.
     /// In other other, we're building each "map tile" with its adjacency rules.
-    fn build_constraints(&self) -> Vec<MapTile> {
-        let mut constraints: Vec<MapTile> = Vec::new();
-
+    fn build_constraints(&mut self) {
         for (i, p1) in self.patterns.iter().enumerate() {
             let mut map_tile = MapTile {
                 idx: i, // Each tile has an index
@@ -206,10 +232,8 @@ impl WaveFunctionCollapse {
                     map_tile.compatible.push((j, WEST));
                 }
             }
-            constraints.push(map_tile);
+            self.constraints.push(map_tile);
         }
-
-        constraints
     }
 
     /// Checks if there is overlap between two patterns.

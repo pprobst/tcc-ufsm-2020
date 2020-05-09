@@ -11,8 +11,8 @@ pub struct Wave {
     maptiles: Vec<MapTile>,
     entropy_queue: BinaryHeap<CoordEntropy>,
     tile_removals: Vec<RemovalUpdate>, // stack
-    out_width: i32,
-    out_height: i32,
+    pub out_width: i32,
+    pub out_height: i32,
 }
 
 #[allow(dead_code)]
@@ -51,7 +51,7 @@ impl Wave {
 
     /// Returns true if (x, y) is in the bounds of the wave; false otherwise.
     fn in_bound(&self, x: i32, y: i32) -> bool {
-        x >= 0 && x < self.out_width && y > 0 && y < self.out_height
+        x >= 0 && x < self.out_width && y >= 0 && y < self.out_height
     }
 
     /// Given a tile index, returns all the compatible tiles it has.
@@ -149,6 +149,7 @@ impl Wave {
                                 println!("Contradiction!");
                                 return false;
                             }
+                            //println!("AÌ SIM");
                             self.entropy_queue.push(CoordEntropy {
                                 entropy: MinFloat(neighbor_cell.entropy()),
                                 coord: neighbor_coord,
@@ -159,8 +160,6 @@ impl Wave {
                             });
                         }
                     }
-
-                    //println!("After: {:?}", neighbor_cell.possible);
                     neighbor_cell.enabler_count[*compat].by_direction[j] -= 1;
                 }
             }
