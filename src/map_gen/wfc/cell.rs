@@ -30,16 +30,10 @@ pub struct TileEnablerCount {
     pub by_direction: [usize; 4],
 }
 
-impl TileEnablerCount {
-    pub fn any_zero(&self) -> bool {
-        self.by_direction.iter().any(|d| *d == 0)
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct Cell {
-    //pub patterns: Vec<MapTile>, // Possible patterns of a cell
     pub possible: Vec<bool>,
+    pub possible_tiles: Vec<usize>,
     sum_possible_weights: f32,
     sum_possible_weights_log: f32,
     entropy_noise: f32,
@@ -51,6 +45,7 @@ impl Cell {
     pub fn new(num_tiles: usize, entropy_noise: f32) -> Self {
         Self {
             possible: vec![true; num_tiles], // Initially all tiles are possible on a cell
+            possible_tiles: (0..num_tiles).collect(),
             sum_possible_weights: 0.0,
             sum_possible_weights_log: 0.0,
             entropy_noise,
@@ -84,11 +79,12 @@ impl Cell {
     /// Removes a map tile (pattern index) from the list of possible tiles, and
     /// updates the sums of possible weights for the Entropy calculation.
     pub fn remove_tile(&mut self, tile_idx: usize, freq: &HashMap<usize, f32>) {
-        //self.patterns.retain(|x| *x != *tile);
-        //self.patterns.retain(|x| x.idx != tile_idx);
+        if !self.possible[tile_idx] {
+            return;
+        }
         self.possible[tile_idx] = false;
+        self.possible_tiles.retain(|t| *t != tile_idx);
 
-        //let f = freq.get(&tile.pattern).unwrap();
         let f = freq.get(&tile_idx).unwrap();
         self.sum_possible_weights -= f;
         self.sum_possible_weights_log -= f * f.log2();
@@ -96,20 +92,16 @@ impl Cell {
 
     /// Adds up the relative frequencies of all possible tiles.
     /// Also calculates the log sum.
-    //pub fn total_possible_tile_freq(&mut self, freq: &HashMap<Vec<TileType>, f32>) {
     pub fn total_possible_tile_freq(&mut self, freq: &HashMap<usize, f32>) {
         let mut total = 0.0;
         let mut total_log = 0.0;
-        //for maptile in self.patterns.iter() {
-        for (i, _p) in self.possible.iter().enumerate() {
-            //let tile_index = &maptile.idx;
-            if freq.contains_key(&i) {
-                let freq_hint = freq.get(&i).unwrap();
+        for idx in self.possible_tiles.iter() {
+            if freq.contains_key(idx) {
+                let freq_hint = freq.get(idx).unwrap();
                 total += freq_hint;
                 total_log += freq_hint * freq_hint.log2();
             }
         }
-        //println!("{} {}", total, total_log);
         self.sum_possible_weights = total;
         self.sum_possible_weights_log = total_log;
     }
@@ -122,12 +114,12 @@ impl Cell {
     ) -> usize {
         let mut remain = rng.range(0.0, self.sum_possible_weights);
 
-        for (i, _p) in self.possible.iter().enumerate() {
-            let weight = *freq.get(&i).unwrap();
+        for idx in self.possible_tiles.iter() {
+            let weight = *freq.get(idx).unwrap();
             if remain >= weight {
                 remain -= weight;
             } else {
-                return i;
+                return *idx;
             }
         }
 

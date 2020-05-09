@@ -81,7 +81,7 @@ impl MapGenerator {
         let mut handmade_map = PrefabMap::new("../rex_resources/wfc14x8.xp");
         handmade_map.generate(&mut self.map);
 
-        let mut wfc = wfc::WaveFunctionCollapse::new(2);
+        let mut wfc = wfc::WaveFunctionCollapse::new(3);
         wfc.generate(&mut self.map, &mut rng);
 
         self.map.add_borders();

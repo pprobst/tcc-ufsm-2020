@@ -31,7 +31,6 @@ use wave::*;
 pub struct WaveFunctionCollapse {
     tile_size: i32,
     patterns: Vec<Vec<TileType>>,
-    //frequencies: HashMap<Vec<TileType>, f32>,
     frequencies: HashMap<usize, f32>,
 }
 
@@ -58,7 +57,6 @@ impl WaveFunctionCollapse {
         let constraints = self.build_constraints(); // patterns + adjacency rules
         self.compute_frequencies(&patterns_clone, &constraints); // frequency hints
 
-        //let output_size = map.width * map.height;
         // Not sure if the sizes are correct.
         let out_width = map.width / self.tile_size;
         let out_height = map.height / self.tile_size;
@@ -72,15 +70,14 @@ impl WaveFunctionCollapse {
         wave.init_entropy_queue();
 
         // Run Wave.
-        //self.run_wave(&mut wave, rng);
+        self.run_wave(&mut wave, rng);
 
         // Running some tests
+        /*
         let next_coord = wave.choose_next_cell();
         wave.collapse_cell_at(next_coord, &self.frequencies, rng);
-        //wave.print_collapsed_cells();
-        // Oops. Problems with contradiction.
         wave.propagate(&self.frequencies);
-        //wave.print_collapsed_cells();
+        */
 
         true
     }
@@ -109,6 +106,7 @@ impl WaveFunctionCollapse {
     /// Runs the core WFC solver.
     fn run_wave(&mut self, wave: &mut Wave, rng: &mut RandomNumberGenerator) -> bool {
         while wave.uncollapsed_cells > 0 {
+            println!("> Uncollapsed cells: {}", wave.uncollapsed_cells);
             let next_coord = wave.choose_next_cell();
             wave.collapse_cell_at(next_coord, &self.frequencies, rng);
             if !wave.propagate(&self.frequencies) {
@@ -167,7 +165,7 @@ impl WaveFunctionCollapse {
 
     /// Compute the relative frequencies of each tile.
     fn compute_frequencies(&mut self, patterns: &Vec<Vec<TileType>>, constraints: &Vec<MapTile>) {
-        // Absolute frequencies.
+        // Calculate absolute frequencies.
         for tile in constraints.iter() {
             for p in patterns.iter() {
                 if tile.pattern == *p {

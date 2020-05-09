@@ -6,7 +6,7 @@ use std::collections::{BinaryHeap, HashMap};
 
 #[derive(Debug, Clone)]
 pub struct Wave {
-    cells: Vec<Cell>,
+    pub cells: Vec<Cell>,
     pub uncollapsed_cells: usize,
     maptiles: Vec<MapTile>,
     entropy_queue: BinaryHeap<CoordEntropy>,
@@ -76,7 +76,6 @@ impl Wave {
     pub fn collapse_cell_at(
         &mut self,
         pt: Point,
-        //freq: &HashMap<Vec<TileType>, f32>,
         freq: &HashMap<usize, f32>,
         rng: &mut RandomNumberGenerator,
     ) {
@@ -86,13 +85,12 @@ impl Wave {
 
         cell.collapsed = true;
 
-        let possibles = cell.possible.clone();
-        for (idx, _p) in possibles.iter().enumerate() {
-            if idx != locked_tile {
-                //let t = tile.clone();
-                cell.remove_tile(idx, freq);
+        let possibles = cell.possible_tiles.clone();
+        for idx in possibles.iter() {
+            if *idx != locked_tile {
+                cell.remove_tile(*idx, freq);
                 self.tile_removals.push(RemovalUpdate {
-                    tile: idx,
+                    tile: *idx,
                     coord: pt,
                 });
             }
@@ -102,10 +100,9 @@ impl Wave {
     /// Keeps propagating consequences until there are none (think like it's a sudoku game).
     pub fn propagate(&mut self, freq: &HashMap<usize, f32>) -> bool {
         while let Some(removal_update) = self.tile_removals.pop() {
-            //let curr_possible_tiles = removal_update.tile.compatible;
-            println!("NEW REMOVAL");
+            //println!("NEW REMOVAL");
 
-            // Iterate through each adjacent tile of the the current one.
+            // Iterate through each adjacent tile to the current one.
             for i in 0..4 {
                 let dir;
                 match i {
@@ -124,39 +121,29 @@ impl Wave {
                 }
 
                 let neighbor_coord = removal_update.coord + dir;
+
+                // Skip if coordinates are outside the bounds.
                 if !self.in_bound(neighbor_coord.x, neighbor_coord.y) {
-                    println!("SKIP (NOT IN BOUNDS)");
                     continue;
                 }
+
                 let neighbor_idx = self.cell_at(neighbor_coord.x, neighbor_coord.y);
+
+                // Skip if the neighbor cell is already collapsed.
                 if self.cells[neighbor_idx].collapsed {
-                    println!("SKIP (COLLAPSED)");
                     continue;
                 }
-                //let neighbor_patterns = self.cells[neighbor_idx].patterns.clone();
 
                 let compatible_tiles = self.get_compatible_dir(removal_update.tile, dir);
                 let neighbor_cell = &mut self.cells[neighbor_idx];
 
                 for compat in compatible_tiles.iter() {
                     let j = opposite_idx(i); // Opposite direction to i
-                                             //let j = i;
 
                     if neighbor_cell.enabler_count[*compat].by_direction[j] == 1 {
-                        println!("ONE!");
-                        //println!("{:?}", self.cells[neighbor_idx].enabler_count[compat]);
-                        /*
-                        if self.cells[neighbor_idx].enabler_count[compat].any_zero() {
-                            println!("HAS ZERO");
-                            self.cells[neighbor_idx].remove_tile(compat, freq);
-                        }
-                        if self.cells[neighbor_idx].patterns.len() == 0 {
-                            println!("Contradiction!"); // do something
-                            return false;
-                        }
-                        */
+                        //println!("ONE!");
                         if neighbor_cell.possible[*compat] {
-                            println!("Before: {:?}", neighbor_cell.possible);
+                            //println!("Before: {:?}", neighbor_cell.possible);
                             neighbor_cell.remove_tile(*compat, freq);
                             if neighbor_cell.contradiction_check() {
                                 println!("Contradiction!");
@@ -173,76 +160,17 @@ impl Wave {
                         }
                     }
 
-                    println!("After: {:?}", neighbor_cell.possible);
-                    //println!("{:?}", self.cells[neighbor_idx].enabler_count[compatible_tile]);
-                    //println!("{}", self.cells[neighbor_idx].enabler_count[compatible_tile].by_direction[j]);
+                    //println!("After: {:?}", neighbor_cell.possible);
                     neighbor_cell.enabler_count[*compat].by_direction[j] -= 1;
                 }
-
-                /*
-                let mut idx = 0;
-                for pattern in neighbor_patterns {
-                    /*
-                    for possible in removal_update.tile.compatible.iter() {
-                        if pattern.pattern == possible.0 {
-                            println!("Pattern:  {:?}, {:?}", pattern.pattern, dir);
-                            println!("Possible: {:?}, {:?}", possible.0, possible.1);
-                        }
-                    }
-                    */
-                    let compatible_dirs = removal_update.tile.get_compatible_dir(dir);
-                    //println!("Compatibles: {:?}\n", compatible_dirs);
-                    let possible = compatible_dirs.iter().any(|c| *c == pattern.pattern);
-                    /*
-                    let possible = removal_update
-                        .tile
-                        .compatible
-                        .iter()
-                        .any(|c| c.0 == pattern.pattern && c.1 == dir);
-                    */
-                    if !possible {
-                        //println!("LEN: {}", neighbor_cell.patterns.len());
-                        neighbor_cell.remove_tile(&pattern, freq);
-                        // Problems here! is tile compatibility wrong?
-                        if neighbor_cell.patterns.len() == 0 {
-                            println!("Contradiction!"); // do something
-                            return false;
-                        }
-                        self.entropy_queue.push(CoordEntropy {
-                            entropy: MinFloat(neighbor_cell.entropy()),
-                            coord: neighbor_coord,
-                        });
-                        self.tile_removals.push(RemovalUpdate {
-                            tile: pattern,
-                            coord: neighbor_coord,
-                        });
-                    }
-                    idx += 1;
-                }
-                */
             }
         }
         true
     }
-
-    /*
-    #[allow(dead_code)]
-    pub fn print_collapsed_cells(&self) {
-        for (i, cell) in self.cells.iter().enumerate() {
-            if cell.collapsed == true {
-                println!("Cell {} is collapsed!", i);
-                for (j, _pattern) in cell.patterns.iter().enumerate() {
-                    println!("\t{}", j);
-                }
-            }
-        }
-    }
-    */
 }
 
 #[derive(Debug, Clone)]
 pub struct RemovalUpdate {
-    //tile: MapTile,
     tile: usize,
     coord: Point,
 }
