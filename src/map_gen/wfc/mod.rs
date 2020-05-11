@@ -28,21 +28,23 @@ use wave::*;
  */
 
 #[derive(Debug, Clone)]
-pub struct WaveFunctionCollapse {
+pub struct WaveFunctionCollapse<'a> {
     tile_size: i32,
     patterns: Vec<Vec<TileType>>,
     constraints: Vec<MapTile>,
     frequencies: HashMap<usize, f32>,
+    adjacency_mode: &'a str,
 }
 
 #[allow(dead_code)]
-impl WaveFunctionCollapse {
-    pub fn new(tile_size: i32) -> Self {
+impl<'a> WaveFunctionCollapse<'a> {
+    pub fn new(tile_size: i32, adjacency_mode: &'a str) -> Self {
         Self {
             tile_size,
             patterns: Vec::new(),
             constraints: Vec::new(),
             frequencies: HashMap::new(),
+            adjacency_mode,
         }
     }
 
@@ -67,7 +69,6 @@ impl WaveFunctionCollapse {
         let constraints = self.constraints.clone();
         self.compute_frequencies(&patterns, &constraints); // frequency hints
 
-        // Not sure if the sizes are correct.
         let out_width = map.width / self.tile_size;
         let out_height = map.height / self.tile_size;
         let output_size = out_width * out_height;
@@ -95,14 +96,13 @@ impl WaveFunctionCollapse {
     fn init_cells(&self, n_cells: i32, rng: &mut RandomNumberGenerator) -> Vec<Cell> {
         let mut cells: Vec<Cell> = Vec::new();
         for _i in 0..n_cells {
-            let noise = rng.range(0.000001f32, 0.000005f32); // Random noise to break entropy ties
+            let noise = rng.range(0.000001f32, 0.000009f32); // Random noise to break entropy ties
             let cell = Cell::new(self.constraints.len(), noise);
             cells.push(cell);
         }
         for cell in cells.iter_mut() {
             cell.total_possible_tile_freq(&self.frequencies);
             cell.initial_enabler_count(self.constraints.clone());
-            //println!("Enablers: {:?}\n", cell.enabler_count);
         }
         cells
     }
@@ -132,14 +132,14 @@ impl WaveFunctionCollapse {
             let bottom_y = (cell_y + 1) * self.tile_size as i32;
             //println!("{}, {}", left_x, bottom_y);
 
-            let mut i: usize = 0;
+            let mut j: usize = 0;
             for y in top_y..bottom_y {
                 for x in left_x..right_x {
                     let map_idx = map.idx(x, y);
                     let tile_idx = cell.possible_tiles[0];
-                    let tile = self.constraints[tile_idx].pattern[i];
+                    let tile = self.constraints[tile_idx].pattern[j];
                     map.paint_tile(map_idx, tile);
-                    i += 1;
+                    j += 1;
                 }
             }
         }
@@ -149,9 +149,8 @@ impl WaveFunctionCollapse {
     fn build_patterns(&mut self, map: &mut Map, input_x: i32, input_y: i32) {
         self.patterns.clear();
         // Navigate the coordinates of each tile.
-        // Change map.height and map.width to specific input size?
-        for ty in 1..(input_y / self.tile_size) {
-            for tx in 1..(input_x / self.tile_size) {
+        for ty in 0..(input_y / self.tile_size) {
+            for tx in 0..(input_x / self.tile_size) {
                 let start = Point::new(tx * self.tile_size, ty * self.tile_size);
                 let end = Point::new((tx + 1) * self.tile_size, (ty + 1) * self.tile_size);
                 /*
@@ -178,14 +177,14 @@ impl WaveFunctionCollapse {
                  *
                  */
                 let normal_pattern = self.get_pattern(map, start, end, "normal");
-                //let vert_pattern = self.get_pattern(map, start, end, "vertical");
+                let vert_pattern = self.get_pattern(map, start, end, "vertical");
                 let horiz_pattern = self.get_pattern(map, start, end, "horizontal");
-                //let verthoriz_pattern = self.get_pattern(map, start, end, "both");
+                let verthoriz_pattern = self.get_pattern(map, start, end, "both");
                 //let inverted_pattern = self.get_pattern(map, start, end, "invert");
                 self.patterns.push(normal_pattern);
-                //self.patterns.push(vert_pattern);
+                self.patterns.push(vert_pattern);
                 self.patterns.push(horiz_pattern);
-                //self.patterns.push(verthoriz_pattern);
+                self.patterns.push(verthoriz_pattern);
                 //self.patterns.push(inverted_pattern);
             }
         }
@@ -257,10 +256,14 @@ impl WaveFunctionCollapse {
             for x in xmin..xmax {
                 let p1_pos = Point::new(x, y);
                 let offset = p1_pos - dir;
-                if p1[tile_idx(self.tile_size, p1_pos.x, p1_pos.y)]
-                    != p2[tile_idx(self.tile_size, offset.x, offset.y)]
-                {
-                    return false;
+                if self.adjacency_mode == "connect" {
+                    unimplemented!("Adjacency by connectivity is not yet implemented!");
+                } else {
+                    if p1[tile_idx(self.tile_size, p1_pos.x, p1_pos.y)]
+                        != p2[tile_idx(self.tile_size, offset.x, offset.y)]
+                    {
+                        return false;
+                    }
                 }
             }
         }

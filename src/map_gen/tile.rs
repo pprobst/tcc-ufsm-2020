@@ -14,6 +14,8 @@ pub enum TileType {
     Empty,
     Wall,
     Floor,
+    WoodenFloor,
+    Door,
     Grass,
     TallGrass,
     Flower,
@@ -70,6 +72,24 @@ impl Tile {
             ttype: TileType::Floor,
             glyph: to_cp437('.'),
             color: ColorPair::new(RGB::from_hex(FLOOR_GRAY).unwrap(), RGB::named(BLACK)),
+            ..Default::default()
+        }
+    }
+
+    pub fn woodenfloor() -> Self {
+        Self {
+            ttype: TileType::WoodenFloor,
+            glyph: to_cp437('_'),
+            color: ColorPair::new(RGB::from_hex(FLOOR_WOOD).unwrap(), RGB::named(BLACK)),
+            ..Default::default()
+        }
+    }
+
+    pub fn door() -> Self {
+        Self {
+            ttype: TileType::Door,
+            glyph: to_cp437('+'),
+            color: ColorPair::new(RGB::from_hex(DOOR_ORANGE).unwrap(), RGB::named(BLACK)),
             ..Default::default()
         }
     }

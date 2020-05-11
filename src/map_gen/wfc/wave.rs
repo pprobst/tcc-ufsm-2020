@@ -149,7 +149,6 @@ impl Wave {
                                 println!("Contradiction!");
                                 return false;
                             }
-                            //println!("AÌ SIM");
                             self.entropy_queue.push(CoordEntropy {
                                 entropy: MinFloat(neighbor_cell.entropy()),
                                 coord: neighbor_coord,
@@ -176,6 +175,7 @@ pub struct RemovalUpdate {
 
 #[derive(Debug, PartialEq, Clone)]
 struct MinFloat(f32);
+//type MinFloat = Reverse<f32>;
 
 impl Eq for MinFloat {}
 
@@ -185,11 +185,11 @@ impl PartialOrd for MinFloat {
     }
 }
 
-impl Ord for MinFloat {
+/*impl Ord for MinFloat {
     fn cmp(&self, other: &MinFloat) -> Ordering {
         self.partial_cmp(other).unwrap()
     }
-}
+}*/
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 struct CoordEntropy {
@@ -205,6 +205,7 @@ impl PartialOrd for CoordEntropy {
 
 impl Ord for CoordEntropy {
     fn cmp(&self, other: &Self) -> Ordering {
+        //self.partial_cmp(other).unwrap()
         if self < other {
             return Ordering::Less;
         }

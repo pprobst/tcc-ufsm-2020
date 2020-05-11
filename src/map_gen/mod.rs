@@ -69,7 +69,7 @@ impl MapGenerator {
         //let mut cell_automata2 = CellularAutomata::new(1, 5, 80, true, true);
         //cell_automata2.generate(&mut self.map);
 
-        //let mut bsp = BSPDungeon::new(8, false);
+        //let mut bsp = BSPDungeon::new(5, false);
         //bsp.generate(&mut self.map, &mut rng);
         //bsp.build_tunnels(&mut self.map, &mut rng);
         //make_lake(&mut self.map, TileType::ShallowWater, 500);
@@ -77,13 +77,14 @@ impl MapGenerator {
         //let mut digger = Digger::new();
         //digger.generate(&mut self.map, &mut rng);
 
-        let mut handmade_map = PrefabMap::new("../rex_resources/dungeon02_80x60.xp");
-        //let mut handmade_map = PrefabMap::new("../rex_resources/wfc14x8.xp");
+        //let mut handmade_map = PrefabMap::new("../rex_resources/dungeon03_60x60.xp");
+        //let mut handmade_map = PrefabMap::new("../rex_resources/6x6.xp");
+        let mut handmade_map = PrefabMap::new("../rex_resources/wfc_20x18.xp");
         handmade_map.generate(&mut self.map);
-        self.map.add_borders();
+        //self.map.add_borders();
 
-        let mut wfc = wfc::WaveFunctionCollapse::new(16);
-        wfc.generate(&mut self.map, 80, 60, &mut rng);
+        let mut wfc = wfc::WaveFunctionCollapse::new(12, "similarity");
+        wfc.generate(&mut self.map, 20, 20, &mut rng);
 
         //self.map.add_borders();
         //self.map.pretty_walls();

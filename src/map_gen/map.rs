@@ -26,7 +26,8 @@ impl Map {
     pub fn new(width: i32, height: i32) -> Map {
         let map_size = width * height;
         Self {
-            tiles: vec![Tile::wall(); map_size as usize],
+            tiles: vec![Tile::floor(); map_size as usize],
+            //tiles: vec![Tile::wall(); map_size as usize],
             size: map_size,
             width,
             height,
@@ -139,6 +140,12 @@ impl Map {
         match ttype {
             TileType::Floor => {
                 self.tiles[idx] = Tile::floor();
+            }
+            TileType::WoodenFloor => {
+                self.tiles[idx] = Tile::woodenfloor();
+            }
+            TileType::Door => {
+                self.tiles[idx] = Tile::door();
             }
             TileType::Tree => {
                 self.tiles[idx] = Tile::tree();
