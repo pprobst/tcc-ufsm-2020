@@ -59,9 +59,8 @@ impl<'a> WaveFunctionCollapse<'a> {
         self.build_patterns(map, input_x, input_y);
         let patterns = self.patterns.clone();
         map.tiles = vec![Tile::woodenfloor(); (map.width * map.height) as usize];
-        //self.render_tile_gallery(map, 100);
         deduplicate(&mut self.patterns);
-        //self.render_tile_gallery(map, 100);
+
         println!(
             "All patterns: {}, Unique patterns: {}",
             patterns.len(),
@@ -93,43 +92,6 @@ impl<'a> WaveFunctionCollapse<'a> {
         self.generate_output(wave, map);
 
         true
-    }
-
-    fn render_pattern_to_map(&self, map: &mut Map, counter: usize, start_x: i32, start_y: i32) {
-        let pattern = &self.patterns[counter];
-        let mut i = 0usize;
-        for tile_y in 0..self.tile_size {
-            for tile_x in 0..self.tile_size {
-                let idx = map.idx(start_x + tile_x, start_y + tile_y);
-                //map.tiles[map_idx] = pattern[i];
-                map.paint_tile(idx, pattern[i]);
-                i += 1;
-            }
-        }
-    }
-
-    fn render_tile_gallery(&mut self, map: &mut Map, count: i32) {
-        let mut counter = 0;
-        let mut x = 0;
-        let mut y = 0;
-        while counter < self.patterns.len() {
-            if counter < count as usize {
-                self.render_pattern_to_map(map, counter, x, y);
-            }
-
-            x += self.tile_size + 1;
-            if x + self.tile_size > map.width {
-                x = 0;
-                y += self.tile_size + 1;
-
-                if y + self.tile_size > map.height {
-                    x = 0;
-                    y = 0;
-                }
-            }
-
-            counter += 1;
-        }
     }
 
     /// Initialize all the cells.

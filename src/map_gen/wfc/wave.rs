@@ -37,7 +37,10 @@ impl Wave {
                 let idx = self.cell_at(x, y);
                 let cell = &self.cells[idx];
                 self.entropy_queue.push(CoordEntropy {
-                    entropy: Entropy {  entropy: cell.entropy(), noise: cell.entropy_noise },
+                    entropy: Entropy {
+                        entropy: cell.entropy(),
+                        noise: cell.entropy_noise,
+                    },
                     coord: Point::new(x, y),
                 });
             }
@@ -148,7 +151,10 @@ impl Wave {
                                 return false;
                             }
                             self.entropy_queue.push(CoordEntropy {
-                                entropy: Entropy { entropy: neighbor_cell.entropy(), noise: neighbor_cell.entropy_noise },
+                                entropy: Entropy {
+                                    entropy: neighbor_cell.entropy(),
+                                    noise: neighbor_cell.entropy_noise,
+                                },
                                 coord: neighbor_coord,
                             });
                             self.tile_removals.push(RemovalUpdate {

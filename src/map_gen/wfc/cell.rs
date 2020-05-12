@@ -72,8 +72,8 @@ impl Cell {
     /// Calculates the entropy (negated).
     pub fn entropy(&self) -> f32 {
         return self.sum_possible_weights.log2()
-            - (self.sum_possible_weights_log / self.sum_possible_weights as f32)
-            //+ self.entropy_noise;
+            - (self.sum_possible_weights_log / self.sum_possible_weights as f32);
+        //+ self.entropy_noise;
     }
 
     /// Removes a map tile (pattern index) from the list of possible tiles, and

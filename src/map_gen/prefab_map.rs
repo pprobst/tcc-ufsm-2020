@@ -20,6 +20,7 @@ impl PrefabMap {
     }
 
     pub fn generate(&mut self, map: &mut Map) {
+        map.tiles = vec![Tile::floor(); (map.width * map.height) as usize];
         let prefab_map = XpFile::from_resource(self.template).unwrap();
         for layer in &prefab_map.layers {
             for y in 0..layer.height {
