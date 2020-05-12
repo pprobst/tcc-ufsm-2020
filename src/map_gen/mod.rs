@@ -78,17 +78,35 @@ impl MapGenerator {
         //digger.generate(&mut self.map, &mut rng);
 
         //let mut handmade_map = PrefabMap::new("../rex_resources/dungeon03_60x60.xp");
-        //let mut handmade_map = PrefabMap::new("../rex_resources/6x6.xp");
-        let mut handmade_map = PrefabMap::new("../rex_resources/wfc_20x18.xp");
+        //let mut handmade_map = PrefabMap::new("../rex_resources/wfc_9x9.xp");
+        let mut handmade_map = PrefabMap::new("../rex_resources/wfc_20x20_4.xp");
         handmade_map.generate(&mut self.map);
         //self.map.add_borders();
 
-        let mut wfc = wfc::WaveFunctionCollapse::new(12, "similarity");
+        // About WFC (overlapping model): 
+        // WFC is good, but the results can vary from extremely bad to extremely good.
+        // Generally, WFC has trouble differentiating between "outside" and "inside", 
+        // so it's a good idea to use a different floor tile to represent the inside of 
+        // structures. Also, it's not a good idea do add too much details in WFC, like
+        // doors, chests and other stuff: they tend do lose meaning in the output!
+        //
+        // WFC, however, is great at mimickying the overlaying architecture of an input to
+        // different degrees: a bigger tile size can give us an output very similar to 
+        // the input, but with less variability; with smaller tile sizes, the output 
+        // can be seen as a "micro architecture" of the input.
+        //
+        // Depending on the input, WFC also doesn't assure connectivity. This can be fixed
+        // with a myriad of methods afterwards.
+        let mut wfc = wfc::WaveFunctionCollapse::new(10, "similarity");
         wfc.generate(&mut self.map, 20, 20, &mut rng);
 
-        //self.map.add_borders();
-        //self.map.pretty_walls();
-        // add_vegetation(&mut self.map);
+        // Sometimes, applying cellular automata to a WFC output is cool.
+        //let mut cell_automata = CellularAutomata::new(1, 5, 80, false, false);
+        //cell_automata.generate(&mut self.map);
+
+        self.map.add_borders();
+        self.map.pretty_walls();
+        add_vegetation(&mut self.map);
         // future: apply_theme(map)
         println!("Map generated!");
     }

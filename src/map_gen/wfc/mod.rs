@@ -58,7 +58,10 @@ impl<'a> WaveFunctionCollapse<'a> {
     ) -> bool {
         self.build_patterns(map, input_x, input_y);
         let patterns = self.patterns.clone();
+        map.tiles = vec![Tile::woodenfloor(); (map.width * map.height) as usize];
+        //self.render_tile_gallery(map, 100);
         deduplicate(&mut self.patterns);
+        //self.render_tile_gallery(map, 100);
         println!(
             "All patterns: {}, Unique patterns: {}",
             patterns.len(),
@@ -90,6 +93,43 @@ impl<'a> WaveFunctionCollapse<'a> {
         self.generate_output(wave, map);
 
         true
+    }
+
+    fn render_pattern_to_map(&self, map: &mut Map, counter: usize, start_x: i32, start_y: i32) {
+        let pattern = &self.patterns[counter];
+        let mut i = 0usize;
+        for tile_y in 0..self.tile_size {
+            for tile_x in 0..self.tile_size {
+                let idx = map.idx(start_x + tile_x, start_y + tile_y);
+                //map.tiles[map_idx] = pattern[i];
+                map.paint_tile(idx, pattern[i]);
+                i += 1;
+            }
+        }
+    }
+
+    fn render_tile_gallery(&mut self, map: &mut Map, count: i32) {
+        let mut counter = 0;
+        let mut x = 0;
+        let mut y = 0;
+        while counter < self.patterns.len() {
+            if counter < count as usize {
+                self.render_pattern_to_map(map, counter, x, y);
+            }
+
+            x += self.tile_size + 1;
+            if x + self.tile_size > map.width {
+                x = 0;
+                y += self.tile_size + 1;
+
+                if y + self.tile_size > map.height {
+                    x = 0;
+                    y = 0;
+                }
+            }
+
+            counter += 1;
+        }
     }
 
     /// Initialize all the cells.
@@ -129,7 +169,7 @@ impl<'a> WaveFunctionCollapse<'a> {
             let left_x = cell_x * self.tile_size;
             let right_x = (cell_x + 1) * self.tile_size;
             let top_y = cell_y * self.tile_size;
-            let bottom_y = (cell_y + 1) * self.tile_size as i32;
+            let bottom_y = (cell_y + 1) * self.tile_size;
             //println!("{}, {}", left_x, bottom_y);
 
             let mut j: usize = 0;
@@ -180,12 +220,12 @@ impl<'a> WaveFunctionCollapse<'a> {
                 let vert_pattern = self.get_pattern(map, start, end, "vertical");
                 let horiz_pattern = self.get_pattern(map, start, end, "horizontal");
                 let verthoriz_pattern = self.get_pattern(map, start, end, "both");
-                //let inverted_pattern = self.get_pattern(map, start, end, "invert");
+                let inverted_pattern = self.get_pattern(map, start, end, "invert");
                 self.patterns.push(normal_pattern);
                 self.patterns.push(vert_pattern);
                 self.patterns.push(horiz_pattern);
                 self.patterns.push(verthoriz_pattern);
-                //self.patterns.push(inverted_pattern);
+                self.patterns.push(inverted_pattern);
             }
         }
     }

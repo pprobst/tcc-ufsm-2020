@@ -37,9 +37,6 @@ impl PrefabMap {
                         '+' => {
                             map.tiles[idx] = Tile::door();
                         }
-                        ' ' => {
-                            map.tiles[idx] = Tile::floor();
-                        }
                         '#' => {
                             map.tiles[idx] = Tile::wall();
                         }
@@ -48,6 +45,9 @@ impl PrefabMap {
                         }
                         '♣' => {
                             map.tiles[idx] = Tile::tree();
+                        }
+                        '⌠' => {
+                            map.tiles[idx] = Tile::tallgrass();
                         }
                         _ => {
                             break;

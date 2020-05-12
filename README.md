@@ -32,7 +32,7 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;
   - [x] Carregar mapa externo desenhado manualmente;
   - [x] Aplicar WFC sobre o mapa atual;
-  - [ ] Melhoramentos, retoques, etc. 
+  - [ ] Melhoramentos (e.g. wrapping) e outras coisas. 
 - [ ] Temáticas diferentes de mapas (ruínas, florestas, aquedutos, etc.);
 - [ ] Equipamento e inventário;
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;

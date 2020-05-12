@@ -37,7 +37,7 @@ impl Wave {
                 let idx = self.cell_at(x, y);
                 let cell = &self.cells[idx];
                 self.entropy_queue.push(CoordEntropy {
-                    entropy: MinFloat(cell.entropy()),
+                    entropy: Entropy {  entropy: cell.entropy(), noise: cell.entropy_noise },
                     coord: Point::new(x, y),
                 });
             }
@@ -141,16 +141,14 @@ impl Wave {
                     let j = opposite_idx(i); // Opposite direction to i
 
                     if neighbor_cell.enabler_count[*compat].by_direction[j] == 1 {
-                        //println!("ONE!");
                         if neighbor_cell.possible[*compat] {
-                            //println!("Before: {:?}", neighbor_cell.possible);
                             neighbor_cell.remove_tile(*compat, freq);
                             if neighbor_cell.contradiction_check() {
                                 println!("Contradiction!");
                                 return false;
                             }
                             self.entropy_queue.push(CoordEntropy {
-                                entropy: MinFloat(neighbor_cell.entropy()),
+                                entropy: Entropy { entropy: neighbor_cell.entropy(), noise: neighbor_cell.entropy_noise },
                                 coord: neighbor_coord,
                             });
                             self.tile_removals.push(RemovalUpdate {
@@ -174,14 +172,20 @@ pub struct RemovalUpdate {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-struct MinFloat(f32);
+struct Entropy {
+    entropy: f32,
+    noise: f32,
+}
 //type MinFloat = Reverse<f32>;
 
-impl Eq for MinFloat {}
+impl Eq for Entropy {}
 
-impl PartialOrd for MinFloat {
+impl PartialOrd for Entropy {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        other.0.partial_cmp(&self.0)
+        match self.entropy.partial_cmp(&other.entropy) {
+            Some(Ordering::Equal) => self.noise.partial_cmp(&other.noise),
+            other_ordering => other_ordering,
+        }
     }
 }
 
@@ -193,7 +197,7 @@ impl PartialOrd for MinFloat {
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 struct CoordEntropy {
-    entropy: MinFloat,
+    entropy: Entropy,
     coord: Point,
 }
 
