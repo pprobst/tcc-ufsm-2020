@@ -183,6 +183,16 @@ impl Map {
         }
     }
 
+    pub fn is_floor(&self, idx: usize) -> bool {
+        let ttype = self.tiles[idx].ttype;
+        match ttype {
+            TileType::Floor => true,
+            TileType::Floor2 => true,
+            TileType::WoodenFloor => true,
+            _ => false,
+        }
+    }
+
     /// Returns a map index from a given x, y coordinate.
     pub fn idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize

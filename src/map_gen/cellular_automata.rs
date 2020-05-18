@@ -1,9 +1,9 @@
 use super::{
-    common::{count_neighbor_tile, make_exact_tunnel},
-    Cave, Map, Point, Tile, TileType,
+    common::{connect_regions, count_neighbor_tile},
+    get_all_regions,
+    region::Operations,
+    Map, Point, Tile, TileType,
 };
-use crate::utils::directions::*;
-use bracket_lib::prelude::DistanceAlg;
 
 /*
  *
@@ -81,9 +81,8 @@ impl CellularAutomata {
         }
 
         map.tiles = tiles.clone();
-        //self.smooth_map(map);
 
-        let mut main_caves = self.get_all_caves(map);
+        let mut main_caves = get_all_regions(map);
         let mut lesser_caves = main_caves.clone();
 
         // Get caves < min_cave_size.
@@ -95,19 +94,19 @@ impl CellularAutomata {
 
         for cave in lesser_caves {
             if self.dry_caves {
-                self.fill_cave(map, cave, TileType::Wall);
+                cave.fill_region(map, TileType::Wall);
             } else {
-                self.fill_cave(map, cave, TileType::ShallowWater);
+                cave.fill_region(map, TileType::ShallowWater);
             }
         }
 
         if main_caves.len() > 2 && !self.dry_caves {
             let last_main_cave = main_caves[main_caves.len() - 1].clone();
-            self.fill_cave(map, last_main_cave, TileType::ShallowWater);
+            last_main_cave.fill_region(map, TileType::ShallowWater);
         }
 
         main_caves.sort_by(|a, b| a[0].cmp(&b[0]));
-        self.connect_caves(map, main_caves);
+        connect_regions(map, main_caves, TileType::Floor, true);
         self.smooth_map(map);
     }
 
@@ -137,142 +136,5 @@ impl CellularAutomata {
         }
 
         map.tiles = tiles;
-    }
-
-    /// Connect with tunnels the caves that have >= than the minimum size.
-    fn connect_caves(&self, map: &mut Map, caves: Vec<Cave>) {
-        // Algorithm idea:
-        // - get the two points (x, y) that are the closest between two caves
-        // - make a tunnel between then
-        let mut cave_pts: Vec<Vec<Point>> = Vec::new();
-
-        // Populate the vector cave_pts (same as before, but considering the
-        // coordinates on the map instead of the index).
-        for cave in caves {
-            let mut pts: Vec<Point> = Vec::new();
-            for idx in cave {
-                let pt = map.idx_pos(idx);
-                if self.is_probably_edge(pt, map) {
-                    pts.push(pt);
-                }
-            }
-            cave_pts.push(pts);
-        }
-
-        for i in 0..cave_pts.len() - 1 {
-            let this_cave = &cave_pts[i];
-            let other_cave = &cave_pts[i + 1];
-            let mut shortest_dist = other_cave.len();
-            let mut this_idx = 0;
-            let mut other_idx = 0;
-            for j in 0..this_cave.len() - 1 {
-                for k in 0..other_cave.len() - 1 {
-                    let d =
-                        DistanceAlg::Pythagoras.distance2d(this_cave[j], other_cave[k]) as usize;
-                    if d < shortest_dist {
-                        this_idx = j;
-                        other_idx = k;
-                        shortest_dist = d;
-                    }
-                }
-            }
-            make_exact_tunnel(
-                map,
-                this_cave[this_idx].x,
-                this_cave[this_idx].y,
-                other_cave[other_idx].x,
-                other_cave[other_idx].y,
-                TileType::Floor,
-                true,
-            );
-        }
-    }
-
-    /// Returns true if the point is probably an edge of a region.
-    /// While not 100% accurate (it detects blockers not only on edges),
-    /// it cuts our distance computations by a lot!
-    fn is_probably_edge(&self, pt: Point, map: &mut Map) -> bool {
-        let east = pt + EAST;
-        let west = pt + WEST;
-        let north = pt + NORTH;
-        let south = pt + SOUTH;
-
-        if map.in_map_bounds(east) && map.tiles[map.idx_pt(east)].block {
-            return true;
-        }
-        if map.in_map_bounds(west) && map.tiles[map.idx_pt(west)].block {
-            return true;
-        }
-        if map.in_map_bounds(north) && map.tiles[map.idx_pt(north)].block {
-            return true;
-        }
-        if map.in_map_bounds(south) && map.tiles[map.idx_pt(south)].block {
-            return true;
-        }
-
-        return false;
-    }
-
-    /// Fill with wall tiles the caves that have < than the minimum size.
-    // idea: maybe fill them with water tiles for a nice twist?
-    fn fill_cave(&self, map: &mut Map, cave: Cave, ttype: TileType) {
-        for idx in cave {
-            map.paint_tile(idx, ttype);
-        }
-    }
-
-    /// Gets a list of all separated caves on the map.
-    fn get_all_caves(&self, map: &mut Map) -> Vec<Cave> {
-        let w = map.width;
-        let h = map.height;
-        let mut caves: Vec<Cave> = Vec::new();
-        let mut marked_map: Vec<bool> = vec![false; map.size as usize];
-
-        for y in 1..h - 1 {
-            for x in 1..w - 1 {
-                let idx = map.idx(x, y);
-                if !marked_map[idx] && map.tiles[idx].ttype == TileType::Floor {
-                    let new_cave = self.get_cave(idx, map);
-
-                    for idx in new_cave.iter() {
-                        marked_map[*idx] = true;
-                    }
-
-                    caves.push(new_cave);
-                }
-            }
-        }
-
-        caves
-    }
-
-    /// Gets a cave using the flood-fill algorithm.
-    fn get_cave(&self, start_idx: usize, map: &mut Map) -> Cave {
-        use std::collections::VecDeque;
-        let mut cave_tiles: Cave = Vec::new();
-        let mut marked_map: Vec<bool> = vec![false; map.size as usize];
-        let mut queue: VecDeque<usize> = VecDeque::new();
-
-        queue.push_back(start_idx);
-        marked_map[start_idx] = true;
-
-        while !queue.is_empty() {
-            let tile = queue.pop_front().unwrap();
-            cave_tiles.push(tile);
-            let pt = map.idx_pos(tile);
-            for y in pt.y - 1..pt.y + 2 {
-                for x in pt.x - 1..pt.x + 2 {
-                    let idx = map.idx(x, y);
-                    if map.in_map_bounds_xy(x, y) && (y == pt.y || x == pt.x) {
-                        if !marked_map[idx] && map.tiles[idx].ttype == TileType::Floor {
-                            marked_map[idx] = true;
-                            queue.push_back(idx);
-                        }
-                    }
-                }
-            }
-        }
-
-        cave_tiles
     }
 }

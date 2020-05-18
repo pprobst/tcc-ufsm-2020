@@ -32,6 +32,9 @@ impl PrefabMap {
                         '.' => {
                             map.tiles[idx] = Tile::floor();
                         }
+                        '∙' => {
+                            map.tiles[idx] = Tile::floor2();
+                        }
                         '_' => {
                             map.tiles[idx] = Tile::woodenfloor();
                         }

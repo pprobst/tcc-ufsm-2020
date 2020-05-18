@@ -6,8 +6,8 @@ mod room;
 use room::*;
 mod tunnel;
 use tunnel::*;
-mod cave;
-use cave::*;
+mod region;
+use region::*;
 pub mod map;
 pub use map::Map;
 mod common;
@@ -29,7 +29,7 @@ pub struct MapGenerator {
     pub map: Map,
     pub rooms: Option<Vec<Room>>,
     pub tunnels: Option<Vec<Tunnel>>,
-    pub caves: Option<Vec<Cave>>,
+    pub regions: Option<Vec<Region>>,
 }
 
 impl MapGenerator {
@@ -38,7 +38,7 @@ impl MapGenerator {
             map: Map::new(width, height),
             rooms: None,
             tunnels: None,
-            caves: None,
+            regions: None,
         }
     }
 
@@ -74,7 +74,12 @@ impl MapGenerator {
         //bsp.build_tunnels(&mut self.map, &mut rng);
         //make_lake(&mut self.map, TileType::ShallowWater, 500);
 
-        //let mut digger = Digger::new();
+        // (min_size, max_size, num_features (approx)
+        // num_features is approximate because depending on the room size and size of the map it
+        // may not be possible to insert all features.
+        // Biggers rooms are more aesthetically pleasing, but require a much greater map (from
+        // 100x100 to 200x200) to have more features.
+        //let mut digger = Digger::new(10, 20, 30);
         //digger.generate(&mut self.map, &mut rng);
 
         //let mut handmade_map = PrefabMap::new("../rex_resources/dungeon03_60x60.xp");
