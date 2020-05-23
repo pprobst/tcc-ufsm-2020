@@ -32,8 +32,8 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
   [WFC](https://github.com/mxgmn/WaveFunctionCollapse) em conjunto com outros algoritmos;
   - [x] Carregar mapa externo desenhado manualmente;
   - [x] Aplicar WFC sobre o mapa atual;
-  - [x] Assegurar connectivade pelo método do flood-fill (CA);
-  - [ ] Assegurar connectivade por outros métodos;
+  - [x] Assegurar conectividade pelo método do flood-fill (CA);
+  - [ ] Assegurar conectividade por outros métodos;
   - [ ] Melhoramentos (e.g. wrapping), etc. 
 - [ ] Temáticas diferentes de mapas (ruínas, florestas, aquedutos, etc.);
 - [ ] Equipamento e inventário;
