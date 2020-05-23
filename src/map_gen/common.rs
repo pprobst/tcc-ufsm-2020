@@ -163,13 +163,13 @@ pub fn make_lake(map: &mut Map, liquid: TileType, total_tiles: u32) {
             match liquid {
                 TileType::DeepWater => {
                     map.tiles[idx] = Tile::deep_water();
-                    map.tiles[idx+1] = Tile::deep_water();
-                    map.tiles[idx-1] = Tile::deep_water();
+                    map.tiles[idx + 1] = Tile::deep_water();
+                    map.tiles[idx - 1] = Tile::deep_water();
                 }
                 _ => {
                     map.tiles[idx] = Tile::shallow_water();
-                    map.tiles[idx+1] = Tile::shallow_water();
-                    map.tiles[idx-1] = Tile::shallow_water();
+                    map.tiles[idx + 1] = Tile::shallow_water();
+                    map.tiles[idx - 1] = Tile::shallow_water();
                 }
             }
             let dir = rng.range(0, 4);
@@ -234,7 +234,7 @@ pub fn count_neighbor_tile(map: &Map, curr_pt: Point, tt: TileType, moore: bool)
 }
 
 #[allow(dead_code)]
-pub fn add_vegetation(map: &mut Map) {
+pub fn add_vegetation(map: &mut Map, trees: bool) {
     let mut rng = RandomNumberGenerator::new();
     for y in 1..map.height - 1 {
         for x in 1..map.width - 1 {
@@ -247,11 +247,13 @@ pub fn add_vegetation(map: &mut Map) {
                     if water_counter >= 1 {
                         map.tiles[idx] = Tile::tallgrass();
                     } else {
-                        chance = rng.range(0, 60);
-                        if chance < 59 {
-                            map.tiles[idx] = Tile::grass();
-                        } else {
+                        chance = rng.range(0, 90);
+                        if chance < 2 {
                             map.tiles[idx] = Tile::flower();
+                        } else if chance < 85 {
+                            map.tiles[idx] = Tile::grass();
+                        } else if trees {
+                            map.tiles[idx] = Tile::tree();
                         }
                     }
                 }
@@ -317,6 +319,9 @@ pub fn get_region(start_idx: usize, map: &Map) -> Region {
 
 /// Connects with tunnels the selected regions.
 pub fn connect_regions(map: &mut Map, regions: Vec<Region>, ttype: TileType, natural: bool) {
+    if regions.len() <= 1 {
+        return;
+    }
     // Algorithm idea:
     // - get the two points (x, y) that are the closest between two caves
     // - make a tunnel between then
@@ -338,6 +343,9 @@ pub fn connect_regions(map: &mut Map, regions: Vec<Region>, ttype: TileType, nat
     for i in 0..region_pts.len() - 1 {
         let this_region = &region_pts[i];
         let other_region = &region_pts[i + 1];
+        if other_region.len() == 0 || this_region.len() == 0 {
+            return;
+        }
         let mut shortest_dist = other_region.len();
         let mut this_idx = 0;
         let mut other_idx = 0;

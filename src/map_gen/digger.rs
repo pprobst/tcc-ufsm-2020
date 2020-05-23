@@ -53,7 +53,7 @@ impl Digger {
         let ndir = dir.clone();
 
         let mut pt = room.get_wall(map, dir);
-        let room_gap = rng.range(3, 10);
+        let room_gap = rng.range(1, 10);
 
         match ndir {
             NORTH => {

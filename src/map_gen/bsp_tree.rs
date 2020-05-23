@@ -61,6 +61,15 @@ impl BSPDungeon {
         self.build_tunnels(map, rng)
     }
 
+    pub fn build_tunnels_down(
+        &mut self,
+        map: &mut Map,
+        rng: &mut RandomNumberGenerator,
+    ) -> Vec<Tunnel> {
+        self.rooms.sort_by(|a, b| a.y1.cmp(&b.y1));
+        self.build_tunnels(map, rng)
+    }
+
     pub fn build_tunnels(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) -> Vec<Tunnel> {
         let mut tunnels = Vec::new();
 
@@ -70,7 +79,10 @@ impl BSPDungeon {
             let room_c = room.center();
             let other_c = other.center();
 
-            let size = rng.range(1, 3);
+            let mut size = rng.range(2, 4);
+            if self.connected {
+                size = 1;
+            }
 
             match rng.range(0, 2) {
                 0 => {
@@ -234,8 +246,8 @@ impl Node {
             if connected {
                 self.room = Some(Room::with_size(self.x, self.y, self.w, self.h));
             } else {
-                let min_room_width = 4;
-                let min_room_height = 4;
+                let min_room_width = 5;
+                let min_room_height = 5;
                 let width = rng.range(min_room_width, self.w);
                 let height = rng.range(min_room_height, self.h);
                 let x = rng.range(0, self.w - width);

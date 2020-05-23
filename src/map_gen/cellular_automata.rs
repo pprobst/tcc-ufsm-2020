@@ -92,11 +92,13 @@ impl CellularAutomata {
         main_caves.retain(|a| a.len() >= self.min_cave_size);
         main_caves.sort_by(|a, b| b.len().cmp(&a.len()));
 
-        for cave in lesser_caves {
-            if self.dry_caves {
-                cave.fill_region(map, TileType::Wall);
-            } else {
-                cave.fill_region(map, TileType::ShallowWater);
+        if lesser_caves.len() > 1 {
+            for cave in lesser_caves {
+                if self.dry_caves {
+                    cave.fill_region(map, TileType::Wall);
+                } else {
+                    cave.fill_region(map, TileType::ShallowWater);
+                }
             }
         }
 
@@ -106,6 +108,7 @@ impl CellularAutomata {
         }
 
         //main_caves.sort_by(|a, b| a[0].cmp(&b[0]));
+        // change below to .y for mostly horizontal tunnels
         main_caves.sort_by(|a, b| map.idx_pos(a[0]).x.cmp(&map.idx_pos(b[0]).x));
         connect_regions(map, main_caves, TileType::Floor, true);
         self.smooth_map(map);

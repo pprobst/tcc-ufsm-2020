@@ -18,7 +18,7 @@ pub const FLOOR_WOOD: &str = "#46230F";
 pub const DOOR_ORANGE: &str = "#AF5124";
 pub const GRASS_GREEN: &str = "#61be67";
 pub const GRASS_GREEN_DARKER: &str = "#3ea346";
-pub const TREE_GREEN: &str = "#4d9352";
+pub const TREE_GREEN: &str = "#194F1D";
 pub const FLOWER_MAGENTA: &str = "#c074ab";
 pub const BLOOD_RED: &str = "#B9281E";
 

@@ -22,6 +22,7 @@ pub struct Map {
                                        //pub exit_point: (i32, i32)
 }
 
+#[allow(dead_code)]
 impl Map {
     pub fn new(width: i32, height: i32) -> Map {
         let map_size = width * height;
@@ -37,7 +38,6 @@ impl Map {
 
     /// Makes map chaotic with a chance of floor_chance to change a tile to floor.
     /// Used in mapgen algorithms that require a "chaotic map" like Cellular Automata.
-    #[allow(dead_code)]
     pub fn make_chaotic(&mut self, floor_chance: u8) {
         let mut rng = RandomNumberGenerator::new();
         let floor = Tile::floor();
@@ -67,7 +67,6 @@ impl Map {
         }
     }
 
-    #[allow(dead_code)]
     pub fn pretty_walls(&mut self) {
         for y in 1..self.height {
             for x in 1..self.width {
@@ -80,7 +79,6 @@ impl Map {
         }
     }
 
-    #[allow(dead_code)]
     fn get_wall_glyph(&self, x: i32, y: i32) -> char {
         if !self.in_map_bounds_xy(x, y) {
             return '■';
@@ -174,6 +172,14 @@ impl Map {
         }
     }
 
+    pub fn apply_forest_theme(&mut self) {
+        for idx in 0..self.tiles.len() {
+            if self.is_wall(idx) {
+                self.tiles[idx] = Tile::tree();
+            }
+        }
+    }
+
     pub fn is_water(&self, idx: usize) -> bool {
         let ttype = self.tiles[idx].ttype;
         match ttype {
@@ -189,6 +195,14 @@ impl Map {
             TileType::Floor => true,
             TileType::Floor2 => true,
             TileType::WoodenFloor => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_wall(&self, idx: usize) -> bool {
+        let ttype = self.tiles[idx].ttype;
+        match ttype {
+            TileType::Wall => true,
             _ => false,
         }
     }
