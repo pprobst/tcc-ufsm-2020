@@ -150,12 +150,12 @@ pub fn make_exact_tunnel(
 pub fn make_lake(map: &mut Map, liquid: TileType, total_tiles: u32) {
     let mut rng = RandomNumberGenerator::new();
 
-    let x = rng.range(10, map.width - 10);
-    let y = rng.range(10, map.height - 10);
+    let x = rng.range(15, map.width - 15);
+    let y = rng.range(15, map.height - 15);
 
     let mut walker_pos = Point::new(x, y);
     let mut n_tiles = 0;
-    let mut max_tries = total_tiles * 2;
+    let mut max_tries = total_tiles * 5;
 
     while n_tiles <= total_tiles && max_tries > 0 {
         if map.in_map_bounds(walker_pos) {
@@ -163,9 +163,13 @@ pub fn make_lake(map: &mut Map, liquid: TileType, total_tiles: u32) {
             match liquid {
                 TileType::DeepWater => {
                     map.tiles[idx] = Tile::deep_water();
+                    map.tiles[idx+1] = Tile::deep_water();
+                    map.tiles[idx-1] = Tile::deep_water();
                 }
                 _ => {
                     map.tiles[idx] = Tile::shallow_water();
+                    map.tiles[idx+1] = Tile::shallow_water();
+                    map.tiles[idx-1] = Tile::shallow_water();
                 }
             }
             let dir = rng.range(0, 4);
@@ -257,7 +261,7 @@ pub fn add_vegetation(map: &mut Map) {
 }
 
 /// Gets all the separated regions on a map.
-pub fn get_all_regions(map: &mut Map) -> Vec<Region> {
+pub fn get_all_regions(map: &Map) -> Vec<Region> {
     let w = map.width;
     let h = map.height;
     let mut caves: Vec<Region> = Vec::new();
@@ -282,7 +286,7 @@ pub fn get_all_regions(map: &mut Map) -> Vec<Region> {
 }
 
 /// Gets a single region from a map, given an initial index (flood fill).
-pub fn get_region(start_idx: usize, map: &mut Map) -> Region {
+pub fn get_region(start_idx: usize, map: &Map) -> Region {
     use std::collections::VecDeque;
     let mut region_tiles: Region = Vec::new();
     let mut marked_map: Vec<bool> = vec![false; map.size as usize];

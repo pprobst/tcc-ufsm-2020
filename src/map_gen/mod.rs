@@ -55,7 +55,8 @@ impl MapGenerator {
         //let mut walker = RandomWalker::new(0.45, false, false);
         //walker.generate(&mut self.map, &mut rng);
 
-        //let mut cell_automata = CellularAutomata::new(12, 5, 80, false, false);
+        // n_iterations, n_walls_rule, min_cave_size, open_halls, dry_caves
+        //let mut cell_automata = CellularAutomata::new(12, 5, 20, false, false);
         //cell_automata.generate(&mut self.map);
         //make_lake(&mut self.map, TileType::ShallowWater, 500);
 
@@ -66,7 +67,7 @@ impl MapGenerator {
         //
         // Generally speaking, a second run of Cellular Automata (only one generation)
         // is pretty good to smooth things out.
-        //let mut cell_automata2 = CellularAutomata::new(1, 5, 80, true, true);
+        //let mut cell_automata2 = CellularAutomata::new(1, 5, 20, true, true);
         //cell_automata2.generate(&mut self.map);
 
         //let mut bsp = BSPDungeon::new(5, false);
@@ -84,7 +85,7 @@ impl MapGenerator {
 
         //let mut handmade_map = PrefabMap::new("../rex_resources/dungeon03_60x60.xp");
         //let mut handmade_map = PrefabMap::new("../rex_resources/wfc_9x9.xp");
-        let mut handmade_map = PrefabMap::new("../rex_resources/wfc_20x20_2.xp");
+        let mut handmade_map = PrefabMap::new("../rex_resources/wfc_20x20_4.xp");
         handmade_map.generate(&mut self.map);
 
         // About WFC (overlapping model):
@@ -101,16 +102,27 @@ impl MapGenerator {
         //
         // Depending on the input, WFC also doesn't assure connectivity. This can be fixed
         // with a myriad of methods afterwards.
-        let mut wfc = wfc::WaveFunctionCollapse::new(10, "similarity");
+        //
+        let mut wfc = wfc::WaveFunctionCollapse::new(7, "similarity");
         wfc.generate(&mut self.map, 20, 20, &mut rng);
 
+        self.regions = Some(get_all_regions(&self.map));
+        let mut regions = self.regions.clone().unwrap(); // get_all_regions is guaranteed to return at least one region
+        regions.retain(|a| a.len() >= 5);
+        regions.sort_by(|a, b| self.map.idx_pos(a[0]).x.cmp(&self.map.idx_pos(b[0]).x));
+        //println!("{}", regions.len());
+        if regions.len() > 1 {
+            connect_regions(&mut self.map, regions, TileType::WoodenFloor, false); 
+        }
+        make_lake(&mut self.map, TileType::ShallowWater, 500);
+
         // Sometimes, applying cellular automata to a WFC output is cool.
-        //let mut cell_automata = CellularAutomata::new(1, 5, 80, false, false);
+        //let mut cell_automata = CellularAutomata::new(1, 4, 100, false, true);
         //cell_automata.generate(&mut self.map);
 
         self.map.add_borders();
-        self.map.pretty_walls();
-        //add_vegetation(&mut self.map);
+        //self.map.pretty_walls();
+        add_vegetation(&mut self.map);
         // future: apply_theme(map)
         println!("Map generated!");
     }

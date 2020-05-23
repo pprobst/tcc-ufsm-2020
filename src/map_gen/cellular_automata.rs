@@ -105,7 +105,8 @@ impl CellularAutomata {
             last_main_cave.fill_region(map, TileType::ShallowWater);
         }
 
-        main_caves.sort_by(|a, b| a[0].cmp(&b[0]));
+        //main_caves.sort_by(|a, b| a[0].cmp(&b[0]));
+        main_caves.sort_by(|a, b| map.idx_pos(a[0]).x.cmp(&map.idx_pos(b[0]).x));
         connect_regions(map, main_caves, TileType::Floor, true);
         self.smooth_map(map);
     }
