@@ -14,6 +14,7 @@ pub struct PrefabMap {
     template: &'static str,
 }
 
+#[allow(dead_code)]
 impl PrefabMap {
     pub fn new(template: &'static str) -> Self {
         Self { template }
@@ -28,6 +29,8 @@ impl PrefabMap {
                     let cell = layer.get(x, y).unwrap();
                     //if map.in_map_bounds_xy(x as i32, y as i32) {
                     let idx = map.idx(x as i32, y as i32);
+                    map.paint_tile_char(idx, (cell.ch as u8) as char);
+                    /*
                     match (cell.ch as u8) as char {
                         '.' => {
                             map.tiles[idx] = Tile::floor();
@@ -57,6 +60,7 @@ impl PrefabMap {
                             break;
                         }
                     }
+                    */
                     //}
                 }
             }

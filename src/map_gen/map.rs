@@ -172,6 +172,41 @@ impl Map {
         }
     }
 
+    pub fn paint_tile_char(&mut self, idx: usize, ch: char) {
+        match ch {
+            '.' => {
+                self.tiles[idx] = Tile::floor();
+            }
+            '∙' => {
+                self.tiles[idx] = Tile::floor2();
+            }
+            '_' => {
+                self.tiles[idx] = Tile::woodenfloor();
+            }
+            '+' => {
+                self.tiles[idx] = Tile::door();
+            }
+            '#' => {
+                self.tiles[idx] = Tile::wall();
+            }
+            '~' => {
+                self.tiles[idx] = Tile::shallow_water();
+            }
+            '♣' => {
+                self.tiles[idx] = Tile::tree();
+            }
+            '⌠' => {
+                self.tiles[idx] = Tile::tallgrass();
+            }
+            ',' => {
+                self.tiles[idx] = Tile::grass();
+            }
+            _ => {
+                self.tiles[idx] = Tile::floor();
+            }
+        }
+    }
+
     pub fn apply_forest_theme(&mut self) {
         for idx in 0..self.tiles.len() {
             if self.is_wall(idx) {
