@@ -35,7 +35,13 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
   - [x] Assegurar conectividade pelo método do flood-fill (CA);
   - [ ] Assegurar conectividade por outros métodos;
   - [ ] Melhoramentos (e.g. wrapping), etc. 
-- [ ] Temáticas diferentes de mapas (ruínas, florestas, aquedutos, etc.);
+- [x] Inserção de estruturas pré-fabricadas no mapa;
+- [x] Temáticas diferentes de mapas:
+    - [x] TDCL (top-down cavern-like);
+    - [x] TDML (top-down mansion-like);
+    - [x] Florestas;
+    - [x] Ruínas;
+    - [ ] Outros (cidades, canyons, etc.).
 - [ ] Equipamento e inventário;
 - [ ] Sistema de spawning;
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
