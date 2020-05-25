@@ -30,16 +30,12 @@ pub fn show_inventory(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch)
         ColorPair::new(gray, black),
     ); 
 
-    draw_batch.print_color(
-        Point::new(w-5, y1),
-        "·INVENTORY·",
-        ColorPair::new(gray, black),
-    );
-
     let mut items: HashMap<String, u32> = HashMap::new();
+    let mut item_count = 0;
     for (_pack, name) in (&backpack, &names).join().filter(|item| item.0.owner == *player ) {
         let item_name = name.name.to_string();
         *items.entry(item_name).or_insert(0) += 1;
+        item_count += 1;
     }
 
     let mut i = 0;
@@ -67,6 +63,19 @@ pub fn show_inventory(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch)
         i += 1;
         y += 1;
     }
+
+    draw_batch.print_color(
+        Point::new(w-5, y1),
+        "·INVENTORY·",
+        ColorPair::new(gray, black),
+    );
+
+    let count_w = if item_count < 10 { w-2 } else { w-3 };
+    draw_batch.print_color(
+        Point::new(count_w, y1+h),
+        format!("({}/26)", item_count),
+        ColorPair::new(gray, black),
+    );
 
     match term.key {
         None => InventoryResult::NoResponse,
