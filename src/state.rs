@@ -5,8 +5,9 @@ use super::{
     renderer::render_all,
     systems::{
         ai::HostileAISystem, damage::DamageSystem, fov::FOVSystem, mapping::MappingSystem,
-        melee::MeleeSystem, missile::MissileSystem,
+        melee::MeleeSystem, missile::MissileSystem, inventory::PickupSystem,
     },
+    ui::inventory::*,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -29,6 +30,7 @@ pub enum RunState {
     PlayerTurn,
     MobTurn,
     Targeting,
+    Inventory,
     Mapgen,
 }
 
@@ -65,6 +67,9 @@ impl State {
 
         let mut damage = DamageSystem {};
         damage.run_now(&self.ecs);
+
+        let mut pickup = PickupSystem {};
+        pickup.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -126,6 +131,10 @@ impl GameState for State {
             RunState::Targeting => {
                 curr_state = targeting_input(self, term);
             }
+            RunState::Inventory => {
+                curr_state = RunState::Inventory;
+                // Will change state on rendering (messy, but sometimes we just need things to work).
+            }
             RunState::Mapgen => match term.key {
                 None => {}
                 Some(key) => {
@@ -146,6 +155,6 @@ impl GameState for State {
         }
 
         remove_dead_entities(&mut self.ecs);
-        render_all(&self.ecs, term, self.show_map);
+        render_all(&self.ecs, term, curr_state, self.show_map);
     }
 }

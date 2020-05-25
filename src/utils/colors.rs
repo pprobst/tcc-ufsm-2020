@@ -28,3 +28,6 @@ pub const SELECTED_TARGET: &str = "#424242";
 // UI
 pub const UI_GRAY: &str = "#666666";
 pub const UI_CYAN: &str = "#157fa1";
+
+// Items
+pub const MED_RED: &str = "#BA3155";

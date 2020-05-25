@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, utils::colors::*, BaseStats, Blocker, Fov, Health, Mob, Name, Player, Position,
-    Renderable,
+    map_gen::Map, utils::colors::*, BaseStats, Blocker, Consumable, Fov, Health, Item, Mob, Name,
+    Player, Position, Renderable,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator, BLACK, RGB, WHITE};
 use specs::prelude::*;
@@ -64,6 +64,21 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
         .build()
 }
 
+pub fn test_consumable(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Position { x, y })
+        .with(Renderable {
+            glyph: to_cp437('!'),
+            color: ColorPair::new(RGB::from_hex(MED_RED).unwrap(), RGB::named(BLACK)),
+        })
+        .with(Name {
+            name: "Test Consumable".to_string(),
+        })
+        .with(Item {})
+        .with(Consumable {})
+        .build();
+}
+
 pub fn spawn_map(ecs: &mut World, map: &Map) {
     let idx = map.idx(map.width / 2 + 2, map.height / 2 + 2);
     let pt = map.idx_pos(idx);
@@ -71,16 +86,17 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
     let player = player(ecs, pt.x, pt.y);
     ecs.insert(player);
 
-    /*
+    test_consumable(ecs, pt.x + 1, pt.y + 1);
+    test_consumable(ecs, pt.x + 2, pt.y + 1);
+
     let mut rng = RandomNumberGenerator::new();
 
     for _i in 0..15 {
-        let x = rng.roll_dice(1, map.width-2);
-        let y = rng.roll_dice(1, map.height-2);
+        let x = rng.roll_dice(1, map.width - 2);
+        let y = rng.roll_dice(1, map.height - 2);
         let idx = map.idx(x, y);
         if !map.tiles[idx].block {
-           test_mob(ecs, x, y);
+            test_mob(ecs, x, y);
         }
     }
-    */
 }

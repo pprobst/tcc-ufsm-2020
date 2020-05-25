@@ -17,13 +17,13 @@ mod systems;
 mod ui;
 mod utils;
 
-pub const X_OFFSET: i32 = 18; // Left box
+pub const X_OFFSET: i32 = 20; // Left box
 pub const Y_OFFSET: i32 = 10; // Bottom box
 pub const WINDOW_WIDTH: i32 = 80;
 pub const WINDOW_HEIGHT: i32 = 60;
 //pub const WINDOW_HEIGHT: i32 = 80+Y_OFFSET;
-pub const TILE_WIDTH: i32 = 12;
-pub const TILE_HEIGHT: i32 = 12;
+pub const TILE_WIDTH: i32 = 16;
+pub const TILE_HEIGHT: i32 = 16;
 
 //embedded_resource!(TILE_FONT, "../resources/vga8x16.png");
 
@@ -64,6 +64,10 @@ fn main() -> BError {
     world.register::<MeleeWeapon>();
     world.register::<MissileWeapon>();
     world.register::<Target>();
+    world.register::<Item>();
+    world.register::<Consumable>();
+    world.register::<Pickup>();
+    world.register::<InBackpack>();
 
     // Create game state.
     let mut game_state = State::new(world);

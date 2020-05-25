@@ -157,3 +157,20 @@ pub struct MissileWeapon {
 pub struct Target {
     pub covered: bool,
 }
+
+#[derive(Component)]
+pub struct Item {}
+
+#[derive(Component)]
+pub struct Consumable {}
+
+#[derive(Component, Debug, Clone)]
+pub struct Pickup {
+    pub collector: Entity,
+    pub item: Entity,
+}
+
+#[derive(Component)]
+pub struct InBackpack {
+    pub owner: Entity,
+}

@@ -34,8 +34,16 @@ impl PrefabSection {
     }
 
     fn str_to_vec(&self) -> Vec<char> {
-        let mut string_vec: Vec<char> = self.template.chars().filter(|a| *a != '\r' && *a !='\n').collect();
-        for c in string_vec.iter_mut() { if *c as u8 == 160u8 { *c = ' '; } }
+        let mut string_vec: Vec<char> = self
+            .template
+            .chars()
+            .filter(|a| *a != '\r' && *a != '\n')
+            .collect();
+        for c in string_vec.iter_mut() {
+            if *c as u8 == 160u8 {
+                *c = ' ';
+            }
+        }
         string_vec
     }
 }
@@ -45,8 +53,7 @@ pub const HOUSE01: PrefabSection = PrefabSection {
     template: HOUSE01STR,
     width: 16,
     height: 7,
-    pos: Point{ x: 0, y: 0 }
-    //pos: Point::new(0, 0),
+    pos: Point { x: 0, y: 0 }, //pos: Point::new(0, 0),
 };
 
 const HOUSE01STR: &str = "

@@ -1,6 +1,6 @@
 use super::{
     map_gen::Map, ui::*, utils::colors::*, Position, Renderable, Target, WINDOW_HEIGHT,
-    WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
+    WINDOW_WIDTH, X_OFFSET, Y_OFFSET, RunState,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -16,10 +16,11 @@ use specs::prelude::*;
 pub struct Renderer<'a> {
     pub ecs: &'a World,
     pub term: &'a mut BTerm,
+    pub state: RunState,
 }
 
-pub fn render_all(ecs: &World, term: &mut BTerm, show_map: bool) {
-    Renderer { ecs, term }.render_all(show_map)
+pub fn render_all(ecs: &World, term: &mut BTerm, state: RunState, show_map: bool) {
+    Renderer { ecs, term, state}.render_all(show_map)
 }
 
 impl<'a> Renderer<'a> {
@@ -209,5 +210,11 @@ impl<'a> Renderer<'a> {
         hud::boxes(draw_batch);
         hud::name_stats(self.ecs, draw_batch);
         hud::game_log(self.ecs, draw_batch);
+        if self.state == RunState::Inventory {
+            if inventory::show_inventory(self.ecs, self.term, draw_batch) == inventory::InventoryResult::Cancel {
+                let mut write_state = self.ecs.write_resource::<RunState>();
+                *write_state = RunState::Running;
+            }
+        }
     }
 }

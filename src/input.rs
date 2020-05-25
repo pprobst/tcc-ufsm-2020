@@ -49,6 +49,12 @@ pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
             // Switch readied weapon.
             VirtualKeyCode::Z => switch_weapon(&mut gs.ecs),
 
+            // Pickup item.
+            VirtualKeyCode::G => pickup_item(&mut gs.ecs),
+
+            // Access inventory.
+            VirtualKeyCode::I => return RunState::Inventory,
+
             // Wait (skip turn).
             VirtualKeyCode::Period => return RunState::PlayerTurn,
 
@@ -80,6 +86,16 @@ pub fn targeting_input(gs: &mut State, term: &mut BTerm) -> RunState {
         },
     }
     RunState::PlayerTurn
+}
+
+pub fn inventory(gs: &mut State, term: &mut BTerm) -> RunState {
+    match term.key {
+        None => return RunState::Inventory,
+        Some(key) => match key {
+            VirtualKeyCode::Escape => return RunState::Waiting,
+            _ => return RunState::Inventory,
+        },
+    }
 }
 
 /*

@@ -62,6 +62,7 @@ pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
     let white = RGB::named(WHITE);
     let red = RGB::from_hex(BLOOD_RED).unwrap();
     let cyan = RGB::from_hex(UI_CYAN).unwrap();
+    let med_red = RGB::from_hex(MED_RED).unwrap();
     let player = ecs.fetch::<Entity>();
     let names = ecs.read_storage::<Name>();
     let stats = ecs.read_storage::<BaseStats>();
@@ -72,24 +73,24 @@ pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
     let phealth = format!("{}/{}", player_stats.health.hp, player_stats.health.max_hp);
 
     let y = 3;
-    let bar_end = X_OFFSET - 7;
+    let bar_end = X_OFFSET - 9;
 
-    draw_batch.print_color(Point::new(2, y), pname, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(3, y), pname, ColorPair::new(white, black));
     draw_batch.set(Point::new(1, y), ColorPair::new(cyan, black), to_cp437('»'));
     draw_batch.set(
         Point::new(1, y + 2),
-        ColorPair::new(cyan, black),
+        ColorPair::new(med_red, black),
         to_cp437('Ω'),
     );
     draw_batch.bar_horizontal(
-        Point::new(2, y + 2),
+        Point::new(3, y + 2),
         bar_end,
         player_stats.health.hp,
         player_stats.health.max_hp,
         ColorPair::new(red, black),
     );
     draw_batch.print_color(
-        Point::new(bar_end + 1, y + 2),
+        Point::new(bar_end + 4, y + 2),
         phealth,
         ColorPair::new(white, black),
     );

@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, utils::directions::Direction, Fov, MeleeAttack, MissileAttack, Mob, Player,
-    Position, RunState, Target,
+    map_gen::Map, utils::directions::Direction, Fov, Item, MeleeAttack, MissileAttack, Mob, Pickup,
+    Player, Position, RunState, Target,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -193,3 +193,37 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> 
 /// Switches between the two readied weapons.
 #[allow(dead_code)]
 pub fn switch_weapon(_ecs: &mut World) {}
+
+pub fn pickup_item(ecs: &mut World) {
+    let ents = ecs.entities();
+    let items = ecs.read_storage::<Item>();
+    let positions = ecs.read_storage::<Position>();
+    let player_ent = ecs.fetch::<Entity>();
+    let ppos = ecs.fetch::<Point>();
+
+    let item_to_pickup: Option<Entity> =
+        (&ents, &items, &positions)
+            .join()
+            .find_map(|(ent, _item, pos)| {
+                if pos.x == ppos.x && pos.y == ppos.y {
+                    return Some(ent);
+                }
+                return None;
+            });
+
+    match item_to_pickup {
+        Some(item) => {
+            let mut pickup = ecs.write_storage::<Pickup>();
+            pickup
+                .insert(
+                    *player_ent,
+                    Pickup {
+                        collector: *player_ent,
+                        item,
+                    },
+                )
+                .expect("FAILED to pickup item.");
+        }
+        None => (),
+    }
+}
