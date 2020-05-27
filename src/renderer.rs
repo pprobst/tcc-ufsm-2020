@@ -1,5 +1,5 @@
 use super::{
-    map_gen::Map, ui::*, utils::colors::*, Position, Renderable, RunState, SelectedItem, Target,
+    map_gen::Map, ui::*, utils::colors::*, Position, Renderable, RunState, Target,
     WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
 };
 use bracket_lib::prelude::*;
@@ -220,20 +220,17 @@ impl<'a> Renderer<'a> {
         let mut write_state = self.ecs.write_resource::<RunState>();
         if self.state == RunState::Inventory {
             let inventory_result = inventory::show_inventory(self.ecs, self.term, draw_batch);
-            if inventory_result.0 == inventory::InventoryResult::Cancel {
+            if inventory_result == inventory::InventoryResult::Cancel {
                 *write_state = RunState::Running;
-            } else if inventory_result.0 == inventory::InventoryResult::Select {
-                let mut selected_item = self.ecs.write_storage::<SelectedItem>();
-                let selected = inventory_result.1.unwrap();
-                selected_item
-                    .insert(selected, SelectedItem { item: selected })
-                    .expect("Could not select item.");
+            } else if inventory_result == inventory::InventoryResult::Select {
                 *write_state = RunState::ItemUse;
             }
         } else if self.state == RunState::ItemUse {
             let inventory_result = inventory::show_use_menu(self.ecs, self.term, draw_batch);
             if inventory_result == inventory::InventoryResult::Cancel {
                 *write_state = RunState::Running;
+            } else if inventory_result == inventory::InventoryResult::DropItem {
+                *write_state = RunState::MobTurn;
             }
         }
     }

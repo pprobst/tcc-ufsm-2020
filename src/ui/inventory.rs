@@ -1,5 +1,5 @@
-use super::{Log, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{InBackpack, Name, SelectedItem};
+use super::{WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
+use crate::components::{InBackpack, Name, SelectedItem, DropItem};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -13,13 +13,15 @@ pub enum InventoryResult {
     Select,
     Cancel,
     Idle,
+    DropItem,
+    //UseItem,
 }
 
 pub fn show_inventory(
     ecs: &World,
     term: &mut BTerm,
     draw_batch: &mut DrawBatch,
-) -> (InventoryResult, Option<Entity>) {
+) -> InventoryResult {
     let names = ecs.read_storage::<Name>();
     let player = ecs.fetch::<Entity>();
     let backpack = ecs.read_storage::<InBackpack>();
@@ -104,15 +106,20 @@ pub fn show_inventory(
 
     let items_len = items.len() as i32;
     match term.key {
-        None => (InventoryResult::Idle, None),
+        None => InventoryResult::Idle,
         Some(key) => match key {
-            VirtualKeyCode::Escape => (InventoryResult::Cancel, None),
+            VirtualKeyCode::Escape => InventoryResult::Cancel,
             _ => {
                 let select = letter_to_option(key);
                 if select >= 0 && select < items_len {
-                    (InventoryResult::Select, Some(items_ent[select as usize]))
+                    let mut selected = ecs.write_storage::<SelectedItem>();
+                    let selected_item = items_ent[select as usize];
+                    selected
+                        .insert(selected_item, SelectedItem { item: selected_item })
+                        .expect("Could not select item.");
+                    InventoryResult::Select
                 } else {
-                    (InventoryResult::Idle, None)
+                    InventoryResult::Idle
                 }
             }
         },
@@ -124,9 +131,10 @@ pub fn show_inventory(
 /// -- Use item
 /// -- Drop item
 pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) -> InventoryResult {
-    let selected_item = ecs.read_storage::<SelectedItem>();
+    let mut selected_item = ecs.write_storage::<SelectedItem>();
     let names = ecs.read_storage::<Name>();
     let entities = ecs.entities();
+    let player_ent = ecs.fetch::<Entity>();
 
     let item = (&selected_item, &names, &entities)
         .join()
@@ -184,14 +192,13 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
         None => InventoryResult::Idle,
         Some(key) => match key {
             VirtualKeyCode::Escape => InventoryResult::Cancel,
-            _ => {
-                let select = letter_to_option(key);
-                if select >= 0 {
-                    InventoryResult::Idle
-                } else {
-                    InventoryResult::Idle
-                }
+            VirtualKeyCode::D => {
+                let mut drop = ecs.write_storage::<DropItem>();
+                drop.insert(*player_ent, DropItem { item: item.0.item, dropper: *player_ent }).expect("FAILED to drop item.");
+                selected_item.clear();
+                InventoryResult::DropItem
+            },
+            _ => { InventoryResult::Idle },
             }
-        },
     }
 }

@@ -5,9 +5,8 @@ use super::{
     renderer::render_all,
     systems::{
         ai::HostileAISystem, damage::DamageSystem, fov::FOVSystem, inventory::PickupSystem,
-        mapping::MappingSystem, melee::MeleeSystem, missile::MissileSystem,
+        item_drop::ItemDropSystem, mapping::MappingSystem, melee::MeleeSystem, missile::MissileSystem,
     },
-    ui::inventory::*,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -71,6 +70,9 @@ impl State {
 
         let mut pickup = PickupSystem {};
         pickup.run_now(&self.ecs);
+
+        let mut drop = ItemDropSystem {};
+        drop.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
