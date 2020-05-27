@@ -4,8 +4,8 @@ use super::{
     map_gen::*,
     renderer::render_all,
     systems::{
-        ai::HostileAISystem, damage::DamageSystem, fov::FOVSystem, mapping::MappingSystem,
-        melee::MeleeSystem, missile::MissileSystem, inventory::PickupSystem,
+        ai::HostileAISystem, damage::DamageSystem, fov::FOVSystem, inventory::PickupSystem,
+        mapping::MappingSystem, melee::MeleeSystem, missile::MissileSystem,
     },
     ui::inventory::*,
 };
@@ -31,6 +31,7 @@ pub enum RunState {
     MobTurn,
     Targeting,
     Inventory,
+    ItemUse,
     Mapgen,
 }
 
@@ -134,6 +135,9 @@ impl GameState for State {
             RunState::Inventory => {
                 curr_state = RunState::Inventory;
                 // Will change state on rendering (messy, but sometimes we just need things to work).
+            }
+            RunState::ItemUse => {
+                curr_state = RunState::ItemUse;
             }
             RunState::Mapgen => match term.key {
                 None => {}

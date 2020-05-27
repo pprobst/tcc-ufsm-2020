@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, ui::*, utils::colors::*, Position, Renderable, Target, WINDOW_HEIGHT,
-    WINDOW_WIDTH, X_OFFSET, Y_OFFSET, RunState,
+    map_gen::Map, ui::*, utils::colors::*, Position, Renderable, RunState, SelectedItem, Target,
+    WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -20,7 +20,7 @@ pub struct Renderer<'a> {
 }
 
 pub fn render_all(ecs: &World, term: &mut BTerm, state: RunState, show_map: bool) {
-    Renderer { ecs, term, state}.render_all(show_map)
+    Renderer { ecs, term, state }.render_all(show_map)
 }
 
 impl<'a> Renderer<'a> {
@@ -176,13 +176,20 @@ impl<'a> Renderer<'a> {
         let targets = self.ecs.read_storage::<Target>();
         let entities = self.ecs.entities();
 
-        for (pos, render, ent) in (&positions, &renderables, &entities).join() {
+        let mut render_data = (&positions, &renderables, &entities)
+            .join()
+            .collect::<Vec<_>>();
+
+        // Sorting renderables by layer: the renderables with layer 0 will be rendered first, that
+        // is, bellow the renderables with layer 1 and so on.
+        render_data.sort_by(|&a, &b| a.1.layer.cmp(&b.1.layer));
+
+        for (pos, render, ent) in render_data {
             let idx = map.idx(pos.x, pos.y);
             if map.tiles[idx].visible {
                 let ent_x = pos.x - min_x;
                 let ent_y = pos.y - min_y;
                 if map.in_map_bounds_xy(ent_x, ent_y) {
-                    //self.term.set(ent_x + x_offset, ent_y + y_offset, render.color.fg, render.color.bg, render.glyph);
                     draw_batch.set(
                         Point::new(ent_x + x_offset, ent_y + y_offset),
                         render.color,
@@ -210,9 +217,22 @@ impl<'a> Renderer<'a> {
         hud::boxes(draw_batch);
         hud::name_stats(self.ecs, draw_batch);
         hud::game_log(self.ecs, draw_batch);
+        let mut write_state = self.ecs.write_resource::<RunState>();
         if self.state == RunState::Inventory {
-            if inventory::show_inventory(self.ecs, self.term, draw_batch) == inventory::InventoryResult::Cancel {
-                let mut write_state = self.ecs.write_resource::<RunState>();
+            let inventory_result = inventory::show_inventory(self.ecs, self.term, draw_batch);
+            if inventory_result.0 == inventory::InventoryResult::Cancel {
+                *write_state = RunState::Running;
+            } else if inventory_result.0 == inventory::InventoryResult::Select {
+                let mut selected_item = self.ecs.write_storage::<SelectedItem>();
+                let selected = inventory_result.1.unwrap();
+                selected_item
+                    .insert(selected, SelectedItem { item: selected })
+                    .expect("Could not select item.");
+                *write_state = RunState::ItemUse;
+            }
+        } else if self.state == RunState::ItemUse {
+            let inventory_result = inventory::show_use_menu(self.ecs, self.term, draw_batch);
+            if inventory_result == inventory::InventoryResult::Cancel {
                 *write_state = RunState::Running;
             }
         }

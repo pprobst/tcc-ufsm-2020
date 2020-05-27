@@ -66,8 +66,10 @@ fn main() -> BError {
     world.register::<Target>();
     world.register::<Item>();
     world.register::<Consumable>();
-    world.register::<Pickup>();
+    world.register::<PickupItem>();
+    world.register::<DropItem>();
     world.register::<InBackpack>();
+    world.register::<SelectedItem>();
 
     // Create game state.
     let mut game_state = State::new(world);

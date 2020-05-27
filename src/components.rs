@@ -45,10 +45,11 @@ impl Sub<Direction> for Point {
     }
 }
 
-#[derive(Component, Copy, Clone)]
+#[derive(Component, Copy, Clone, Debug)]
 pub struct Renderable {
     pub glyph: u16,
     pub color: ColorPair,
+    pub layer: u8,
 }
 
 impl Renderable {
@@ -56,6 +57,7 @@ impl Renderable {
         Self {
             glyph: to_cp437(glyph),
             color: ColorPair::new(fg, bg),
+            layer: 0,
         }
     }
 }
@@ -158,19 +160,30 @@ pub struct Target {
     pub covered: bool,
 }
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct Item {}
 
 #[derive(Component)]
 pub struct Consumable {}
 
 #[derive(Component, Debug, Clone)]
-pub struct Pickup {
+pub struct PickupItem {
     pub collector: Entity,
+    pub item: Entity,
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct DropItem {
+    pub dropper: Entity,
     pub item: Entity,
 }
 
 #[derive(Component)]
 pub struct InBackpack {
     pub owner: Entity,
+}
+
+#[derive(Component, Debug)]
+pub struct SelectedItem {
+    pub item: Entity,
 }

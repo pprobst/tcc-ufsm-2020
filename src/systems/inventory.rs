@@ -1,4 +1,4 @@
-use crate::components::{InBackpack, Name, Pickup, Position};
+use crate::components::{InBackpack, Name, PickupItem, Position};
 use crate::log::Log;
 use bracket_lib::prelude::{RGB, WHITE};
 use specs::prelude::*;
@@ -19,7 +19,7 @@ impl<'a> System<'a> for PickupSystem {
         ReadStorage<'a, Name>,
         WriteExpect<'a, Log>,
         WriteStorage<'a, Position>,
-        WriteStorage<'a, Pickup>,
+        WriteStorage<'a, PickupItem>,
         WriteStorage<'a, InBackpack>,
     );
 

@@ -1,5 +1,5 @@
 use super::{Log, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{Name, InBackpack};
+use crate::components::{InBackpack, Name, SelectedItem};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -9,54 +9,79 @@ const X: i32 = WINDOW_WIDTH;
 const Y: i32 = WINDOW_HEIGHT;
 
 #[derive(PartialEq, Copy, Clone)]
-pub enum InventoryResult { Cancel, NoResponse, Selected }
+pub enum InventoryResult {
+    Select,
+    Cancel,
+    Idle,
+}
 
-pub fn show_inventory(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) -> InventoryResult {
+pub fn show_inventory(
+    ecs: &World,
+    term: &mut BTerm,
+    draw_batch: &mut DrawBatch,
+) -> (InventoryResult, Option<Entity>) {
     let names = ecs.read_storage::<Name>();
     let player = ecs.fetch::<Entity>();
     let backpack = ecs.read_storage::<InBackpack>();
+    let entities = ecs.entities();
 
     let black = RGB::named(BLACK);
     let white = RGB::named(WHITE);
     let gray = RGB::from_hex(UI_GRAY).unwrap();
 
-    let x1 = X_OFFSET+5;
+    let x1 = X_OFFSET + 5;
     let y1 = 4;
-    let w = X-X_OFFSET-10;
-    let h = Y-Y_OFFSET-9;
+    let w = X - X_OFFSET - 10;
+    let h = Y - Y_OFFSET - 9;
 
-    draw_batch.draw_box(
-        Rect::with_size(x1, y1, w, h),
-        ColorPair::new(gray, black),
-    ); 
+    draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
 
     let mut items: HashMap<String, u32> = HashMap::new();
+    let mut items_vec: Vec<String> = Vec::new();
+    let mut items_ent: Vec<Entity> = Vec::new();
+
     let mut item_count = 0;
-    for (_pack, name) in (&backpack, &names).join().filter(|item| item.0.owner == *player ) {
+    for (_pack, name, ent) in (&backpack, &names, &entities)
+        .join()
+        .filter(|item| item.0.owner == *player)
+    {
         let item_name = name.name.to_string();
         *items.entry(item_name).or_insert(0) += 1;
+
+        if !items_vec.contains(&name.name.to_string()) {
+            items_vec.push(name.name.to_string());
+            items_ent.push(ent);
+        }
         item_count += 1;
     }
 
     let mut i = 0;
-    let mut y = y1+1;
+    let mut y = y1 + 1;
 
-    for item in items {
+    for item in items_vec.iter() {
+        //for item in items.iter() {
         draw_batch.set(
-            Point::new(x1+1, y),
+            Point::new(x1 + 1, y),
             ColorPair::new(white, black),
-            97+i as FontCharType,
+            97 + i as FontCharType,
         );
         draw_batch.print_color(
-            Point::new(x1+2, y),
-            format!(". {}", &item.0),
+            Point::new(x1 + 2, y),
+            //format!(") {}", &item.0),
+            format!(") {}", item),
             ColorPair::new(white, black),
         );
-        let x2 = x1+(item.0.len() as i32)+4;
-        let ct = (x1+w)-x2-4;
+        //let x2 = x1 + (item.0.len() as i32) + 4;
+        let x2 = x1 + (item.len() as i32) + 4;
+        let ct = (x1 + w) - x2 - 4;
         draw_batch.print_color(
             Point::new(x2, y),
-            format!(" {} x{}", ".".repeat(ct as usize), &item.1),
+            //format!(" {} x{}", ".".repeat(ct as usize), &item.1),
+            format!(
+                " {} x{}",
+                ".".repeat(ct as usize),
+                &items.get(item).unwrap()
+            ),
             ColorPair::new(white, black),
         );
 
@@ -65,25 +90,108 @@ pub fn show_inventory(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch)
     }
 
     draw_batch.print_color(
-        Point::new(w-5, y1),
+        Point::new(w - 5, y1),
         "·INVENTORY·",
         ColorPair::new(gray, black),
     );
 
-    let count_w = if item_count < 10 { w-2 } else { w-3 };
+    let count_w = if item_count < 10 { w - 2 } else { w - 3 };
     draw_batch.print_color(
-        Point::new(count_w, y1+h),
+        Point::new(count_w, y1 + h),
         format!("({}/26)", item_count),
         ColorPair::new(gray, black),
     );
 
+    let items_len = items.len() as i32;
     match term.key {
-        None => InventoryResult::NoResponse,
-        Some(key) => {
-            match key {
-                VirtualKeyCode::Escape => { InventoryResult::Cancel }
-                _ => InventoryResult::NoResponse
+        None => (InventoryResult::Idle, None),
+        Some(key) => match key {
+            VirtualKeyCode::Escape => (InventoryResult::Cancel, None),
+            _ => {
+                let select = letter_to_option(key);
+                if select >= 0 && select < items_len {
+                    (InventoryResult::Select, Some(items_ent[select as usize]))
+                } else {
+                    (InventoryResult::Idle, None)
+                }
             }
-        }
+        },
+    }
+}
+
+/// Show the item use menu.
+/// Options:
+/// -- Use item
+/// -- Drop item
+pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) -> InventoryResult {
+    let selected_item = ecs.read_storage::<SelectedItem>();
+    let names = ecs.read_storage::<Name>();
+    let entities = ecs.entities();
+
+    let item = (&selected_item, &names, &entities)
+        .join()
+        .collect::<Vec<_>>()[0];
+
+    let black = RGB::named(BLACK);
+    let white = RGB::named(WHITE);
+    let gray = RGB::from_hex(UI_GRAY).unwrap();
+
+    let x1 = X_OFFSET + 20;
+    let y1 = 20;
+    //let w = X - X_OFFSET*3;
+    let w = item.1.name.len() as i32 + 1;
+    let h = 5; // Number of lines + 1
+
+    draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
+
+    draw_batch.print_color(
+        Point::new(x1 + 1, y1 + 1),
+        format!("{}", item.1.name),
+        ColorPair::new(gray, black),
+    );
+
+    draw_batch.print_color(
+        Point::new(x1 + 1, y1 + 2),
+        format!("{}", "-".repeat(w as usize - 1)),
+        ColorPair::new(gray, black),
+    );
+
+    draw_batch.set(
+        Point::new(x1 + 1, y1 + 3),
+        ColorPair::new(white, black),
+        101 as FontCharType,
+    );
+
+    draw_batch.print_color(
+        Point::new(x1 + 2, y1 + 3),
+        format!(") Use item."),
+        ColorPair::new(white, black),
+    );
+
+    draw_batch.set(
+        Point::new(x1 + 1, y1 + 4),
+        ColorPair::new(white, black),
+        100 as FontCharType,
+    );
+
+    draw_batch.print_color(
+        Point::new(x1 + 2, y1 + 4),
+        format!(") Drop item."),
+        ColorPair::new(white, black),
+    );
+
+    match term.key {
+        None => InventoryResult::Idle,
+        Some(key) => match key {
+            VirtualKeyCode::Escape => InventoryResult::Cancel,
+            _ => {
+                let select = letter_to_option(key);
+                if select >= 0 {
+                    InventoryResult::Idle
+                } else {
+                    InventoryResult::Idle
+                }
+            }
+        },
     }
 }

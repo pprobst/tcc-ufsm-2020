@@ -19,6 +19,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Renderable {
             glyph: to_cp437('@'),
             color: ColorPair::new(RGB::named(WHITE), RGB::named(BLACK)),
+            layer: 1,
         })
         .with(Player {})
         .with(Name {
@@ -45,6 +46,7 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Renderable {
             glyph: to_cp437('t'),
             color: ColorPair::new(RGB::from_hex(BLOOD_RED).unwrap(), RGB::named(BLACK)),
+            layer: 1,
         })
         .with(Name {
             name: "Test Mob".to_string(),
@@ -70,6 +72,7 @@ pub fn test_consumable(ecs: &mut World, x: i32, y: i32) {
         .with(Renderable {
             glyph: to_cp437('!'),
             color: ColorPair::new(RGB::from_hex(MED_RED).unwrap(), RGB::named(BLACK)),
+            layer: 0,
         })
         .with(Name {
             name: "Test Consumable".to_string(),

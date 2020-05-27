@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, utils::directions::Direction, Fov, Item, MeleeAttack, MissileAttack, Mob, Pickup,
-    Player, Position, RunState, Target,
+    map_gen::Map, utils::directions::Direction, Fov, Item, MeleeAttack, MissileAttack, Mob,
+    PickupItem, Player, Position, RunState, Target,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -213,11 +213,11 @@ pub fn pickup_item(ecs: &mut World) {
 
     match item_to_pickup {
         Some(item) => {
-            let mut pickup = ecs.write_storage::<Pickup>();
+            let mut pickup = ecs.write_storage::<PickupItem>();
             pickup
                 .insert(
                     *player_ent,
-                    Pickup {
+                    PickupItem {
                         collector: *player_ent,
                         item,
                     },
