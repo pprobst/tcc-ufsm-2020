@@ -229,7 +229,7 @@ impl<'a> Renderer<'a> {
             let inventory_result = inventory::show_use_menu(self.ecs, self.term, draw_batch);
             if inventory_result == inventory::InventoryResult::Cancel {
                 *write_state = RunState::Running;
-            } else if inventory_result == inventory::InventoryResult::DropItem {
+            } else if inventory_result == inventory::InventoryResult::DropItem || inventory_result == inventory::InventoryResult::UseItem {
                 *write_state = RunState::MobTurn;
             }
         }

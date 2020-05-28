@@ -1,5 +1,5 @@
 use super::{WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{InBackpack, Name, SelectedItem, DropItem};
+use crate::components::{InBackpack, Name, SelectedItem, DropItem, ConsumeItem};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -14,7 +14,7 @@ pub enum InventoryResult {
     Cancel,
     Idle,
     DropItem,
-    //UseItem,
+    UseItem,
 }
 
 pub fn show_inventory(
@@ -197,6 +197,13 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
                 drop.insert(*player_ent, DropItem { item: item.0.item, dropper: *player_ent }).expect("FAILED to drop item.");
                 selected_item.clear();
                 InventoryResult::DropItem
+            },
+            VirtualKeyCode::E => {
+                // TODO: check type of item used, because action may change.
+                let mut use_item = ecs.write_storage::<ConsumeItem>();
+                use_item.insert(*player_ent, ConsumeItem { target: *player_ent, item: item.0.item }).expect("FAILED to drop item.");
+                selected_item.clear();
+                InventoryResult::UseItem
             },
             _ => { InventoryResult::Idle },
             }

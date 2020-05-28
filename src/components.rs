@@ -87,13 +87,13 @@ pub struct Fov {
 // After all, you can't walk over enemies (unless you're flying!).
 pub struct Blocker {}
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct Health {
     pub max_hp: i32,
     pub hp: i32,
 }
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct BaseStats {
     pub health: Health,
     pub defense: i32,
@@ -164,7 +164,9 @@ pub struct Target {
 pub struct Item {}
 
 #[derive(Component)]
-pub struct Consumable {}
+pub struct Consumable {
+    pub heal: i32,
+}
 
 #[derive(Component, Debug, Clone)]
 pub struct PickupItem {
@@ -175,6 +177,12 @@ pub struct PickupItem {
 #[derive(Component, Debug, Clone)]
 pub struct DropItem {
     pub dropper: Entity,
+    pub item: Entity,
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct ConsumeItem {
+    pub target: Entity,
     pub item: Entity,
 }
 

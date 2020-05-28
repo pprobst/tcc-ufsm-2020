@@ -33,10 +33,10 @@ fn main() -> BError {
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
-        .with_font("Cheepicus-8x8x2.png", 16, 16)
-        .with_font("Zilk-16x16.png", 16, 16)
-        .with_simple_console(WINDOW_WIDTH, WINDOW_HEIGHT, "Cheepicus-8x8x2.png")
-        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT, "Zilk-16x16.png")
+        .with_font("Sapphos-square-16x16.png", 16, 16)
+        .with_font("Anikki-square-16x16.png", 16, 16)
+        .with_simple_console(WINDOW_WIDTH, WINDOW_HEIGHT, "Sapphos-square-16x16.png")
+        .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT, "Anikki-square-16x16.png")
         .with_fullscreen(true)
         .with_fps_cap(60.0)
         .build()?;
@@ -68,6 +68,7 @@ fn main() -> BError {
     world.register::<Consumable>();
     world.register::<PickupItem>();
     world.register::<DropItem>();
+    world.register::<ConsumeItem>();
     world.register::<InBackpack>();
     world.register::<SelectedItem>();
 

@@ -31,7 +31,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
             dirty: true,
         })
         .with(BaseStats {
-            health: Health { max_hp: 15, hp: 15 },
+            health: Health { max_hp: 15, hp: 10 },
             defense: 3,
             attack: 6,
             god: true,
@@ -78,7 +78,7 @@ pub fn test_consumable(ecs: &mut World, x: i32, y: i32) {
             name: "Test Consumable".to_string(),
         })
         .with(Item {})
-        .with(Consumable {})
+        .with(Consumable { heal: 5 })
         .build();
 }
 

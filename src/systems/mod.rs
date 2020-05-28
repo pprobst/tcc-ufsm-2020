@@ -3,6 +3,7 @@ pub mod damage;
 pub mod fov;
 pub mod inventory;
 pub mod item_drop;
+pub mod consumable;
 pub mod mapping;
 pub mod melee;
 pub mod missile;
