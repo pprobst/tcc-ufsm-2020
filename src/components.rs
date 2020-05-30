@@ -160,6 +160,24 @@ pub struct Target {
     pub covered: bool,
 }
 
+#[derive(Debug)]
+pub enum EquipSlot {
+    Head,
+    Torso,
+    Legs,
+    Feet,
+    Weapon1,
+    Weapon2,
+    Back,
+    Special,
+    Floating,
+}
+
+#[derive(Component, Debug)]
+pub struct Equipable {
+    pub slot: EquipSlot,
+}
+
 #[derive(Component, Debug)]
 pub struct Item {}
 

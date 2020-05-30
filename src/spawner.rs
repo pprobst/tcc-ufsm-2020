@@ -1,6 +1,6 @@
 use super::{
     map_gen::Map, utils::colors::*, BaseStats, Blocker, Consumable, Fov, Health, Item, Mob, Name,
-    Player, Position, Renderable,
+    Player, Position, Renderable, MeleeWeapon, Equipable, EquipSlot
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator, BLACK, RGB, WHITE};
 use specs::prelude::*;
@@ -82,6 +82,23 @@ pub fn test_consumable(ecs: &mut World, x: i32, y: i32) {
         .build();
 }
 
+pub fn test_sword(ecs: &mut World, x: i32, y: i32) {
+    ecs.create_entity()
+        .with(Position { x, y })
+        .with(Renderable {
+            glyph: to_cp437('/'),
+            color: ColorPair::new(RGB::from_hex(SWORD_GRAY).unwrap(), RGB::named(BLACK)),
+            layer: 0,
+        })
+        .with(Name {
+            name: "Test Sword".to_string(),
+        })
+        .with(Item {})
+        .with(Equipable {slot: EquipSlot::Weapon1})
+        .with(MeleeWeapon {base_damage: 5})
+        .build();
+}
+
 pub fn spawn_map(ecs: &mut World, map: &Map) {
     let idx = map.idx(map.width / 2 + 2, map.height / 2 + 2);
     let pt = map.idx_pos(idx);
@@ -91,6 +108,7 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
 
     test_consumable(ecs, pt.x + 1, pt.y + 1);
     test_consumable(ecs, pt.x + 2, pt.y + 1);
+    test_sword(ecs, pt.x + 2, pt.y + 2);
 
     let mut rng = RandomNumberGenerator::new();
 

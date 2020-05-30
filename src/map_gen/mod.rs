@@ -134,7 +134,7 @@ impl MapGenerator {
         //self.gen_digger(&mut rng);
         //self.gen_digger_inverted(&mut rng);
         self.map.add_borders();
-        //self.map.pretty_walls();
+        self.map.pretty_walls();
         //add_vegetation(&mut self.map);
         // future: apply_theme(map)
         println!("Map generated!");

@@ -114,6 +114,7 @@ pub fn show_inventory(
                 if select >= 0 && select < items_len {
                     let mut selected = ecs.write_storage::<SelectedItem>();
                     let selected_item = items_ent[select as usize];
+                    println!("{:?}, {:?}", items_ent, selected_item);
                     selected
                         .insert(
                             selected_item,
@@ -149,10 +150,9 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
     let white = RGB::named(WHITE);
     let gray = RGB::from_hex(UI_GRAY).unwrap();
 
-    let x1 = X_OFFSET + 20;
+    let x1 = X_OFFSET + 22;
     let y1 = 20;
-    //let w = X - X_OFFSET*3;
-    let w = item.1.name.len() as i32 + 1;
+    let w = i32::max(14, item.1.name.len() as i32 + 1);
     let h = 5; // Number of lines + 1
 
     draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
@@ -196,7 +196,7 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
     match term.key {
         None => InventoryResult::Idle,
         Some(key) => match key {
-            VirtualKeyCode::Escape => InventoryResult::Cancel,
+            VirtualKeyCode::Escape => { selected_item.clear(); InventoryResult::Cancel },
             VirtualKeyCode::D => {
                 let mut drop = ecs.write_storage::<DropItem>();
                 drop.insert(

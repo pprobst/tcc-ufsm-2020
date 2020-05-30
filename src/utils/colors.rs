@@ -31,3 +31,4 @@ pub const UI_CYAN: &str = "#157fa1";
 
 // Items
 pub const MED_RED: &str = "#BA3155";
+pub const SWORD_GRAY: &str = "#5F7D8B";
