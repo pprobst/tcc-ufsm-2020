@@ -42,7 +42,9 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
     - [x] Florestas;
     - [x] Ruínas;
     - [ ] Outros (cidades, canyons, etc.).
-- [ ] Equipamento e inventário;
+- [x] Inventário e consumo de itens;
+- [ ] Equipamento;
+- [ ] Baús de tesouro;
 - [ ] Sistema de spawning;
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
 - [ ] Sistema de serialização/desserialização usando RON +
@@ -60,6 +62,7 @@ Ou, _"se sobrar tempo eu faço!"_.
 - [ ] Narrativa procedural;
 - [ ] Sistema de partículas;
 - [ ] Otimizações gerais;
+- [ ] Refatoração na UI;
 - [ ] Salvar o jogo (tedioso de programar!).
 
 ## Problemas conhecidos, etc.
