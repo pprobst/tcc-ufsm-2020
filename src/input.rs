@@ -55,6 +55,8 @@ pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
             // Access inventory.
             VirtualKeyCode::I => return RunState::Inventory,
 
+            VirtualKeyCode::Space => return context_action(&mut gs.ecs),
+
             // Wait (skip turn).
             VirtualKeyCode::Period => return RunState::PlayerTurn,
 

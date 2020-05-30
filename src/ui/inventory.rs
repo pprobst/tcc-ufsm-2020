@@ -1,5 +1,5 @@
 use super::{WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{InBackpack, Name, SelectedItem, DropItem, ConsumeItem};
+use crate::components::{ConsumeItem, DropItem, InBackpack, Name, SelectedItem};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -115,7 +115,12 @@ pub fn show_inventory(
                     let mut selected = ecs.write_storage::<SelectedItem>();
                     let selected_item = items_ent[select as usize];
                     selected
-                        .insert(selected_item, SelectedItem { item: selected_item })
+                        .insert(
+                            selected_item,
+                            SelectedItem {
+                                item: selected_item,
+                            },
+                        )
                         .expect("Could not select item.");
                     InventoryResult::Select
                 } else {
@@ -194,18 +199,33 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
             VirtualKeyCode::Escape => InventoryResult::Cancel,
             VirtualKeyCode::D => {
                 let mut drop = ecs.write_storage::<DropItem>();
-                drop.insert(*player_ent, DropItem { item: item.0.item, dropper: *player_ent }).expect("FAILED to drop item.");
+                drop.insert(
+                    *player_ent,
+                    DropItem {
+                        item: item.0.item,
+                        dropper: *player_ent,
+                    },
+                )
+                .expect("FAILED to drop item.");
                 selected_item.clear();
                 InventoryResult::DropItem
-            },
+            }
             VirtualKeyCode::E => {
                 // TODO: check type of item used, because action may change.
                 let mut use_item = ecs.write_storage::<ConsumeItem>();
-                use_item.insert(*player_ent, ConsumeItem { target: *player_ent, item: item.0.item }).expect("FAILED to drop item.");
+                use_item
+                    .insert(
+                        *player_ent,
+                        ConsumeItem {
+                            target: *player_ent,
+                            item: item.0.item,
+                        },
+                    )
+                    .expect("FAILED to drop item.");
                 selected_item.clear();
                 InventoryResult::UseItem
-            },
-            _ => { InventoryResult::Idle },
             }
+            _ => InventoryResult::Idle,
+        },
     }
 }

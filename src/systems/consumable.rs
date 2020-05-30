@@ -1,4 +1,4 @@
-use crate::components::{InBackpack, Name, BaseStats, ConsumeItem, Consumable};
+use crate::components::{BaseStats, Consumable, ConsumeItem, InBackpack, Name};
 use crate::log::Log;
 use bracket_lib::prelude::{RGB, WHITE};
 use specs::prelude::*;
@@ -30,12 +30,19 @@ impl<'a> System<'a> for ConsumableSystem {
         for c in to_consume.join() {
             let item = consumable.get(c.item).unwrap();
             let mut target_stats = stats.get_mut(c.target).unwrap();
-            target_stats.health.hp = i32::min(target_stats.health.max_hp, target_stats.health.hp + item.heal);
+            target_stats.health.hp = i32::min(
+                target_stats.health.max_hp,
+                target_stats.health.hp + item.heal,
+            );
             backpack.remove(c.item);
 
             if c.target == *player {
                 log.add(
-                    format!("You consume the {}, healing {} hp.", name.get(c.item).unwrap().name, item.heal),
+                    format!(
+                        "You consume the {}, healing {} hp.",
+                        name.get(c.item).unwrap().name,
+                        item.heal
+                    ),
                     RGB::named(WHITE),
                 );
             }

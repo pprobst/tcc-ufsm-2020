@@ -1,4 +1,4 @@
-use crate::components::{InBackpack, Name, DropItem, Position};
+use crate::components::{DropItem, InBackpack, Name, Position};
 use crate::log::Log;
 use bracket_lib::prelude::{RGB, WHITE};
 use specs::prelude::*;
@@ -28,7 +28,8 @@ impl<'a> System<'a> for ItemDropSystem {
 
         for d in drop.join() {
             let drop_pos = pos.get(d.dropper).unwrap().clone();
-            pos.insert(d.item, Position::new(drop_pos.x, drop_pos.y)).expect("Unable to insert position");
+            pos.insert(d.item, Position::new(drop_pos.x, drop_pos.y))
+                .expect("Unable to insert position");
             backpack.remove(d.item);
 
             if d.dropper == *player {

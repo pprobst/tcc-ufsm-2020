@@ -4,8 +4,9 @@ use super::{
     map_gen::*,
     renderer::render_all,
     systems::{
-        ai::HostileAISystem, damage::DamageSystem, fov::FOVSystem, inventory::PickupSystem,
-        item_drop::ItemDropSystem, consumable::ConsumableSystem, mapping::MappingSystem, melee::MeleeSystem, missile::MissileSystem,
+        ai::HostileAISystem, consumable::ConsumableSystem, damage::DamageSystem, fov::FOVSystem,
+        inventory::PickupSystem, item_drop::ItemDropSystem, mapping::MappingSystem,
+        melee::MeleeSystem, missile::MissileSystem,
     },
 };
 use bracket_lib::prelude::*;

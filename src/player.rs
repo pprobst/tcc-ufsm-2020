@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, utils::directions::Direction, Fov, Item, MeleeAttack, MissileAttack, Mob,
-    PickupItem, Player, Position, RunState, Target,
+    map_gen::Map, map_gen::TileType, utils::directions::*, Fov, Item, MeleeAttack, MissileAttack,
+    Mob, PickupItem, Player, Position, RunState, Target,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -191,9 +191,62 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> 
 
 // TODO
 /// Switches between the two readied weapons.
-#[allow(dead_code)]
 pub fn switch_weapon(_ecs: &mut World) {}
 
+/// Does a contextual action (i.e. opens a door if there's one nearby, talk, etc).
+pub fn context_action(ecs: &mut World) -> RunState {
+    let ppos = &ecs.fetch::<Point>();
+    let mut map = ecs.fetch_mut::<Map>();
+
+    if check_for_door(&ppos, &mut map) {
+        let mut fov = ecs.write_storage::<Fov>();
+        let player = ecs.read_storage::<Player>();
+        for (_player, fov) in (&player, &mut fov).join() {
+            fov.dirty = true;
+        }
+        return RunState::PlayerTurn;
+    }
+
+    RunState::Waiting
+}
+
+fn check_for_door(pt: &Point, map: &mut Map) -> bool {
+    for i in 0..4 {
+        let idx = map.idx_pt(*pt + dir_idx(i));
+        let tile = map.tiles[idx].ttype;
+        match tile {
+            TileType::ClosedDoor => {
+                try_door(TileType::ClosedDoor, map, idx);
+                if map.entities[idx] != None {
+                    continue;
+                }
+                return true;
+            }
+            TileType::OpenDoor => {
+                try_door(TileType::OpenDoor, map, idx);
+                if map.entities[idx] != None {
+                    continue;
+                }
+                return true;
+            }
+            _ => {}
+        }
+    }
+
+    false
+}
+
+fn try_door(ttype: TileType, map: &mut Map, idx: usize) {
+    if ttype == TileType::ClosedDoor {
+        map.paint_tile(idx, TileType::OpenDoor);
+    } else {
+        map.paint_tile(idx, TileType::ClosedDoor);
+    }
+
+    map.reveal(idx);
+}
+
+/// Picks up item from the player's current position.
 pub fn pickup_item(ecs: &mut World) {
     let ents = ecs.entities();
     let items = ecs.read_storage::<Item>();

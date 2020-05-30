@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, ui::*, utils::colors::*, Position, Renderable, RunState, Target,
-    WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
+    map_gen::Map, ui::*, utils::colors::*, Position, Renderable, RunState, Target, WINDOW_HEIGHT,
+    WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -229,7 +229,9 @@ impl<'a> Renderer<'a> {
             let inventory_result = inventory::show_use_menu(self.ecs, self.term, draw_batch);
             if inventory_result == inventory::InventoryResult::Cancel {
                 *write_state = RunState::Running;
-            } else if inventory_result == inventory::InventoryResult::DropItem || inventory_result == inventory::InventoryResult::UseItem {
+            } else if inventory_result == inventory::InventoryResult::DropItem
+                || inventory_result == inventory::InventoryResult::UseItem
+            {
                 *write_state = RunState::MobTurn;
             }
         }

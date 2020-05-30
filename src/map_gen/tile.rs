@@ -16,7 +16,8 @@ pub enum TileType {
     Floor,
     Floor2,
     WoodenFloor,
-    Door,
+    ClosedDoor,
+    OpenDoor,
     Grass,
     TallGrass,
     Flower,
@@ -32,7 +33,7 @@ impl Default for TileType {
     }
 }
 
-#[derive(Copy, Clone, Default, PartialEq)]
+#[derive(Copy, Clone, Default, PartialEq, Debug)]
 pub struct Tile {
     pub ttype: TileType,
     pub block: bool,
@@ -45,18 +46,17 @@ pub struct Tile {
                           //                            some variable amount of heap memory.
 }
 
+#[allow(dead_code)]
 impl Tile {
-    /*
     pub fn empty() -> Self {
         Self {
             ttype: TileType::Empty,
             block: false,
             glyph: to_cp437(' '),
-            fg: RGB::named(BLACK),
+            color: ColorPair::new(RGB::named(BLACK), RGB::named(BLACK)),
             ..Default::default()
         }
     }
-    */
 
     pub fn wall() -> Self {
         Self {
@@ -95,16 +95,25 @@ impl Tile {
         }
     }
 
-    pub fn door() -> Self {
+    pub fn closed_door() -> Self {
         Self {
-            ttype: TileType::Door,
+            ttype: TileType::ClosedDoor,
             glyph: to_cp437('+'),
+            block: true,
             color: ColorPair::new(RGB::from_hex(DOOR_ORANGE).unwrap(), RGB::named(BLACK)),
             ..Default::default()
         }
     }
 
-    #[allow(dead_code)]
+    pub fn open_door() -> Self {
+        Self {
+            ttype: TileType::OpenDoor,
+            glyph: to_cp437('/'),
+            color: ColorPair::new(RGB::from_hex(DOOR_ORANGE).unwrap(), RGB::named(BLACK)),
+            ..Default::default()
+        }
+    }
+
     pub fn grass() -> Self {
         Self {
             ttype: TileType::Grass,
@@ -114,7 +123,6 @@ impl Tile {
         }
     }
 
-    #[allow(dead_code)]
     pub fn tallgrass() -> Self {
         Self {
             ttype: TileType::TallGrass,
@@ -127,7 +135,6 @@ impl Tile {
         }
     }
 
-    #[allow(dead_code)]
     pub fn flower() -> Self {
         Self {
             ttype: TileType::Flower,
@@ -137,7 +144,6 @@ impl Tile {
         }
     }
 
-    #[allow(dead_code)]
     pub fn tree() -> Self {
         Self {
             ttype: TileType::Tree,
@@ -148,7 +154,6 @@ impl Tile {
         }
     }
 
-    #[allow(dead_code)]
     pub fn deep_water() -> Self {
         Self {
             ttype: TileType::DeepWater,
@@ -161,7 +166,6 @@ impl Tile {
         }
     }
 
-    #[allow(dead_code)]
     pub fn shallow_water() -> Self {
         Self {
             ttype: TileType::ShallowWater,

@@ -1,7 +1,7 @@
 use super::{Point, Position};
 use bracket_lib::prelude::RandomNumberGenerator;
-mod tile;
-use tile::{Tile, TileType};
+pub mod tile;
+pub use tile::{Tile, TileType};
 mod room;
 use room::*;
 mod tunnel;

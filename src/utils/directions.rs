@@ -14,6 +14,11 @@ pub struct Direction {
     pub delta_y: i8,
 }
 
+pub const NONE: Direction = Direction {
+    delta_x: 0,
+    delta_y: 0,
+};
+
 pub const EAST: Direction = Direction {
     delta_x: 1,
     delta_y: 0,
@@ -74,6 +79,21 @@ pub fn opposite_idx(idx: usize) -> usize {
         _ => return 6, // SOUTHWEST -> SOUTHEAST
     }
 }
+
+#[allow(dead_code)]
+pub fn dir_idx(idx: usize) -> Direction {
+    match idx {
+        0 => return EAST,
+        1 => return WEST,
+        2 => return NORTH,
+        3 => return SOUTH,
+        4 => return NORTHEAST,
+        5 => return NORTHWEST,
+        6 => return SOUTHEAST,
+        _ => return SOUTHWEST,
+    }
+}
+
 #[allow(dead_code)]
 pub fn get_random_dir() -> Direction {
     let mut rng = RandomNumberGenerator::new();

@@ -12,7 +12,7 @@ use specs::prelude::Entity;
  *
  */
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Map {
     pub tiles: Vec<Tile>,
     pub size: i32,
@@ -142,8 +142,11 @@ impl Map {
             TileType::WoodenFloor => {
                 self.tiles[idx] = Tile::woodenfloor();
             }
-            TileType::Door => {
-                self.tiles[idx] = Tile::door();
+            TileType::ClosedDoor => {
+                self.tiles[idx] = Tile::closed_door();
+            }
+            TileType::OpenDoor => {
+                self.tiles[idx] = Tile::open_door();
             }
             TileType::Tree => {
                 self.tiles[idx] = Tile::tree();
@@ -184,7 +187,10 @@ impl Map {
                 self.tiles[idx] = Tile::woodenfloor();
             }
             '+' => {
-                self.tiles[idx] = Tile::door();
+                self.tiles[idx] = Tile::closed_door();
+            }
+            '/' => {
+                self.tiles[idx] = Tile::open_door();
             }
             '#' => {
                 self.tiles[idx] = Tile::wall();
@@ -281,6 +287,16 @@ impl Map {
         self.tiles[idx].block = true;
     }
 
+    pub fn reveal(&mut self, idx: usize) {
+        self.tiles[idx].revealed = true;
+        self.tiles[idx].visible = true;
+    }
+
+    pub fn hide(&mut self, idx: usize) {
+        self.tiles[idx].revealed = false;
+        self.tiles[idx].visible = false;
+    }
+
     pub fn refresh_entities(&mut self) {
         for i in 0..self.entities.len() {
             self.entities[i] = None
@@ -315,7 +331,7 @@ impl BaseMap for Map {
     // Automatically prevents FOV from looking behind opaque tiles.
     fn is_opaque(&self, idx: usize) -> bool {
         let ttype = self.tiles[idx as usize].ttype;
-        ttype == TileType::Wall || ttype == TileType::Tree
+        ttype == TileType::Wall || ttype == TileType::Tree || ttype == TileType::ClosedDoor
     }
 
     // A* needs this or it won't work!
