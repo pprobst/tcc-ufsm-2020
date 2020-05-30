@@ -4,9 +4,10 @@ use super::{
     map_gen::*,
     renderer::render_all,
     systems::{
-        ai::HostileAISystem, consumable::ConsumableSystem, damage::DamageSystem, fov::FOVSystem,
-        inventory::PickupSystem, item_drop::ItemDropSystem, mapping::MappingSystem,
-        melee::MeleeSystem, missile::MissileSystem,
+        ai::HostileAISystem, consumable::ConsumableSystem, damage::DamageSystem,
+        equipment::EquipmentSystem, fov::FOVSystem, inventory::PickupSystem,
+        item_drop::ItemDropSystem, mapping::MappingSystem, melee::MeleeSystem,
+        missile::MissileSystem,
     },
 };
 use bracket_lib::prelude::*;
@@ -77,6 +78,9 @@ impl State {
 
         let mut consumable = ConsumableSystem {};
         consumable.run_now(&self.ecs);
+
+        let mut equip = EquipmentSystem {};
+        equip.run_now(&self.ecs);
 
         self.ecs.maintain();
     }

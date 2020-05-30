@@ -1,5 +1,7 @@
 use super::{WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{ConsumeItem, DropItem, InBackpack, Name, SelectedItem};
+use crate::components::{
+    ConsumeItem, DropItem, Equipable, Equipment, InBackpack, Name, SelectedItem, TryEquip,
+};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -114,7 +116,6 @@ pub fn show_inventory(
                 if select >= 0 && select < items_len {
                     let mut selected = ecs.write_storage::<SelectedItem>();
                     let selected_item = items_ent[select as usize];
-                    println!("{:?}, {:?}", items_ent, selected_item);
                     selected
                         .insert(
                             selected_item,
@@ -141,10 +142,13 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
     let names = ecs.read_storage::<Name>();
     let entities = ecs.entities();
     let player_ent = ecs.fetch::<Entity>();
+    let equipable = ecs.read_storage::<Equipable>();
 
     let item = (&selected_item, &names, &entities)
         .join()
         .collect::<Vec<_>>()[0];
+
+    let is_equip = equipable.get(item.2);
 
     let black = RGB::named(BLACK);
     let white = RGB::named(WHITE);
@@ -152,7 +156,7 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
 
     let x1 = X_OFFSET + 22;
     let y1 = 20;
-    let w = i32::max(14, item.1.name.len() as i32 + 1);
+    let w = i32::max(15, item.1.name.len() as i32 + 1);
     let h = 5; // Number of lines + 1
 
     draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
@@ -177,7 +181,10 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
 
     draw_batch.print_color(
         Point::new(x1 + 2, y1 + 3),
-        format!(") Use item."),
+        match is_equip {
+            None => format!(") Use item."),
+            _ => format!(") Equip item."),
+        },
         ColorPair::new(white, black),
     );
 
@@ -196,7 +203,10 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
     match term.key {
         None => InventoryResult::Idle,
         Some(key) => match key {
-            VirtualKeyCode::Escape => { selected_item.clear(); InventoryResult::Cancel },
+            VirtualKeyCode::Escape => {
+                selected_item.clear();
+                InventoryResult::Cancel
+            }
             VirtualKeyCode::D => {
                 let mut drop = ecs.write_storage::<DropItem>();
                 drop.insert(
@@ -211,17 +221,36 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
                 InventoryResult::DropItem
             }
             VirtualKeyCode::E => {
-                // TODO: check type of item used, because action may change.
-                let mut use_item = ecs.write_storage::<ConsumeItem>();
-                use_item
-                    .insert(
-                        *player_ent,
-                        ConsumeItem {
-                            target: *player_ent,
-                            item: item.0.item,
-                        },
-                    )
-                    .expect("FAILED to drop item.");
+                match is_equip {
+                    None => {
+                        let mut use_item = ecs.write_storage::<ConsumeItem>();
+                        use_item
+                            .insert(
+                                *player_ent,
+                                ConsumeItem {
+                                    target: *player_ent,
+                                    item: item.0.item,
+                                },
+                            )
+                            .expect("FAILED to use item.");
+                    }
+                    _ => {
+                        let mut equip_item = ecs.write_storage::<TryEquip>();
+                        equip_item
+                            .insert(
+                                *player_ent,
+                                TryEquip {
+                                    equipment: {
+                                        Equipment {
+                                            user: *player_ent,
+                                            equip: item.0.item,
+                                        }
+                                    },
+                                },
+                            )
+                            .expect("FAILED to try to equip item.");
+                    }
+                };
                 selected_item.clear();
                 InventoryResult::UseItem
             }

@@ -160,7 +160,7 @@ pub struct Target {
     pub covered: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum EquipSlot {
     Head,
     Torso,
@@ -173,9 +173,20 @@ pub enum EquipSlot {
     Floating,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, PartialEq)]
 pub struct Equipable {
     pub slot: EquipSlot,
+}
+
+#[derive(Component, Debug)]
+pub struct Equipment {
+    pub user: Entity,
+    pub equip: Entity,
+}
+
+#[derive(Component, Debug)]
+pub struct TryEquip {
+    pub equipment: Equipment,
 }
 
 #[derive(Component, Debug)]

@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, utils::colors::*, BaseStats, Blocker, Consumable, Fov, Health, Item, Mob, Name,
-    Player, Position, Renderable, MeleeWeapon, Equipable, EquipSlot
+    map_gen::Map, utils::colors::*, BaseStats, Blocker, Consumable, EquipSlot, Equipable, Fov,
+    Health, Item, MeleeWeapon, Mob, Name, Player, Position, Renderable,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator, BLACK, RGB, WHITE};
 use specs::prelude::*;
@@ -94,8 +94,10 @@ pub fn test_sword(ecs: &mut World, x: i32, y: i32) {
             name: "Test Sword".to_string(),
         })
         .with(Item {})
-        .with(Equipable {slot: EquipSlot::Weapon1})
-        .with(MeleeWeapon {base_damage: 5})
+        .with(Equipable {
+            slot: EquipSlot::Weapon1,
+        })
+        .with(MeleeWeapon { base_damage: 5 })
         .build();
 }
 

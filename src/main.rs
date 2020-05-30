@@ -65,6 +65,8 @@ fn main() -> BError {
     world.register::<MissileWeapon>();
     world.register::<Target>();
     world.register::<Equipable>();
+    world.register::<Equipment>();
+    world.register::<TryEquip>();
     world.register::<Item>();
     world.register::<Consumable>();
     world.register::<PickupItem>();
