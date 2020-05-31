@@ -247,7 +247,7 @@ fn try_door(ttype: TileType, map: &mut Map, idx: usize) {
 }
 
 /// Picks up item from the player's current position.
-pub fn pickup_item(ecs: &mut World) {
+pub fn pickup_item(ecs: &mut World) -> RunState {
     let ents = ecs.entities();
     let items = ecs.read_storage::<Item>();
     let positions = ecs.read_storage::<Position>();
@@ -276,7 +276,8 @@ pub fn pickup_item(ecs: &mut World) {
                     },
                 )
                 .expect("FAILED to pickup item.");
+            RunState::PlayerTurn
         }
-        None => (),
+        None => RunState::Waiting,
     }
 }

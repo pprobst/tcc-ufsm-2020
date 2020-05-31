@@ -6,7 +6,7 @@ use specs::prelude::*;
 /*
  *
  * inventory.rs
- * --------
+ * ------------
  * Manages the acquiring of items on the map, inserting them in the player's backpack.
  *
  */

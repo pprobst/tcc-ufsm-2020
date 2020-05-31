@@ -163,6 +163,9 @@ impl Map {
             TileType::Grass => {
                 self.tiles[idx] = Tile::grass();
             }
+            TileType::Grass2 => {
+                self.tiles[idx] = Tile::grass2();
+            }
             TileType::TallGrass => {
                 self.tiles[idx] = Tile::tallgrass();
             }

@@ -26,7 +26,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
             name: "Severian".to_string(),
         })
         .with(Fov {
-            range: 10,
+            range: 20,
             visible_pos: Vec::new(),
             dirty: true,
         })
@@ -52,7 +52,7 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
             name: "Test Mob".to_string(),
         })
         .with(Fov {
-            range: 10,
+            range: 20,
             visible_pos: Vec::new(),
             dirty: true,
         })
@@ -111,6 +111,7 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
     test_consumable(ecs, pt.x + 1, pt.y + 1);
     test_consumable(ecs, pt.x + 2, pt.y + 1);
     test_sword(ecs, pt.x + 2, pt.y + 2);
+    test_sword(ecs, pt.x + 3, pt.y + 2);
 
     let mut rng = RandomNumberGenerator::new();
 

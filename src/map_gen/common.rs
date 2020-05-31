@@ -250,8 +250,10 @@ pub fn add_vegetation(map: &mut Map, trees: bool) {
                         chance = rng.range(0, 90);
                         if chance < 2 {
                             map.tiles[idx] = Tile::flower();
-                        } else if chance < 85 {
+                        } else if chance < 70 {
                             map.tiles[idx] = Tile::grass();
+                        } else if chance < 85 {
+                            map.tiles[idx] = Tile::grass2();
                         } else if trees {
                             map.tiles[idx] = Tile::tree();
                         }

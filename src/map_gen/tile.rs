@@ -19,6 +19,7 @@ pub enum TileType {
     ClosedDoor,
     OpenDoor,
     Grass,
+    Grass2,
     TallGrass,
     Flower,
     Tree,
@@ -119,6 +120,15 @@ impl Tile {
             ttype: TileType::Grass,
             glyph: to_cp437(','),
             color: ColorPair::new(RGB::from_hex(GRASS_GREEN).unwrap(), RGB::named(BLACK)),
+            ..Default::default()
+        }
+    }
+
+    pub fn grass2() -> Self {
+        Self {
+            ttype: TileType::Grass2,
+            glyph: to_cp437('`'),
+            color: ColorPair::new(RGB::from_hex(GRASS_YELLOW).unwrap(), RGB::named(BLACK)),
             ..Default::default()
         }
     }
