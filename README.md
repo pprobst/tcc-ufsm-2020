@@ -43,13 +43,14 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
     - [x] Ruínas;
     - [ ] Outros (cidades, canyons, etc.).
 - [x] Inventário e consumo de itens;
-- [ ] Equipamento;
+- [x] Equipamento;
 - [ ] Baús de tesouro;
 - [ ] Sistema de spawning;
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
 - [ ] Sistema de serialização/desserialização usando RON +
   serde para mobs, itens e cores.
 - [ ] Combate melhorado (e.g. torná-lo estocástico);
+    - [ ] Também aplicar bônus dos equipamentos!
 - [ ] Itens únicos com efeitos aleatórios;
 - [ ] IA relativamente avançada para os mobs.
 
@@ -62,8 +63,8 @@ Ou, _"se sobrar tempo eu faço!"_.
 - [ ] Narrativa procedural;
 - [ ] Sistema de partículas;
 - [ ] Otimizações gerais;
-- [ ] Refatoração na UI;
-- [ ] Salvar o jogo (tedioso de programar!).
+- [ ] Refatoração no código da UI (chato);
+- [ ] Salvar o jogo (extremamente tedioso).
 
 ## Problemas conhecidos, etc.
 - Distorção dos tiles dependendo da resolução.
