@@ -14,11 +14,30 @@ use std::cmp;
 
 /// Creates a rectangular room and returns it.
 #[allow(dead_code)]
-pub fn create_room(map: &mut Map, room: Room) -> Room {
-    for x in (room.x1 + 1)..room.x2 {
-        for y in (room.y1 + 1)..room.y2 {
+pub fn create_room(map: &mut Map, room: Room, ttype: TileType) -> Room {
+    for y in (room.y1 + 1)..room.y2 {
+        for x in (room.x1 + 1)..room.x2 {
             let idx = map.idx(x, y);
-            map.paint_tile(idx, TileType::Floor);
+            map.paint_tile(idx, ttype);
+        }
+    }
+
+    room
+}
+
+#[allow(dead_code)]
+/// Creates a circular room and returns it.
+pub fn create_circular_room(map: &mut Map, room: Room, ttype: TileType) -> Room {
+    let r = i32::min(room.x2 - room.x1, room.y2 - room.y1) as f32 / 2.0;
+    let cp = Point::from(room.center());
+
+    for y in (room.y1 + 1)..room.y2 {
+        for x in (room.x1 + 1)..room.x2 {
+            let d = DistanceAlg::Pythagoras.distance2d(cp, Point::new(x, y));
+            if d < r {
+                let idx = map.idx(x, y);
+                map.paint_tile(idx, ttype);
+            }
         }
     }
 
@@ -67,24 +86,24 @@ pub fn create_v_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32, size: i32) -> Tu
 }
 
 #[allow(dead_code)]
-pub fn create_h_tunnel_room(map: &mut Map, x1: i32, x2: i32, y: i32, size: i32) -> Room {
+pub fn create_h_tunnel_room(map: &mut Map, x1: i32, x2: i32, y: i32, size: i32, ttype: TileType) -> Room {
     let left = cmp::min(x1, x2);
     let right = cmp::max(x1, x2);
     let top = y - 1;
     let bottom = y + 1;
     let room = Room::with_size(left, top, right - left + size - 1, bottom - top + 1);
-    create_room(map, room);
+    create_room(map, room, ttype);
     room
 }
 
 #[allow(dead_code)]
-pub fn create_v_tunnel_room(map: &mut Map, y1: i32, y2: i32, x: i32, size: i32) -> Room {
+pub fn create_v_tunnel_room(map: &mut Map, y1: i32, y2: i32, x: i32, size: i32, ttype: TileType) -> Room {
     let top = cmp::min(y1, y2);
     let bottom = cmp::max(y1, y2);
     let left = x - 1;
     let right = x + 1;
     let room = Room::with_size(left, top, right - left + size - 1, bottom - top + 1);
-    create_room(map, room);
+    create_room(map, room, ttype);
     room
 }
 

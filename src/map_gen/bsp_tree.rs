@@ -1,4 +1,4 @@
-use super::{common::*, Map, Room, Tunnel};
+use super::{common::*, Map, Room, Tunnel, TileType};
 use bracket_lib::prelude::RandomNumberGenerator;
 
 /*
@@ -45,7 +45,13 @@ impl BSPDungeon {
         for node in root.iter() {
             if node.is_leaf() {
                 if let Some(room) = node.get_room() {
-                    create_room(map, room);
+                    if !self.connected {
+                        if rng.range(0, 5) < 4 {
+                            create_room(map, room, TileType::Floor);
+                        } else {
+                            create_circular_room(map, room, TileType::Floor);
+                        }
+                    } else { create_room(map, room, TileType::Floor); }
                     self.rooms.push(room);
                 }
             }
@@ -79,7 +85,7 @@ impl BSPDungeon {
             let room_c = room.center();
             let other_c = other.center();
 
-            let mut size = rng.range(2, 4);
+            let mut size = rng.range(1, 4);
             if self.connected {
                 size = 1;
             }

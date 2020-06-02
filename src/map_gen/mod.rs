@@ -126,7 +126,7 @@ impl MapGenerator {
         //cell_automata.generate(&mut self.map);
 
         self.gen_forest();
-        HOUSE01.generate(Point::new(10, 10), &mut self.map);
+        HOUSE01.generate(Point::new(20, 20), &mut self.map);
         //self.gen_cave(&mut rng);
         //self.gen_tight_cave(&mut rng);
         //self.gen_bsp(&mut rng);
@@ -136,7 +136,6 @@ impl MapGenerator {
         self.map.add_borders();
         self.map.pretty_walls();
         //add_vegetation(&mut self.map);
-        // future: apply_theme(map)
         println!("Map generated!");
     }
 
@@ -195,7 +194,7 @@ impl MapGenerator {
     }
 
     pub fn gen_bsp(&mut self, rng: &mut RandomNumberGenerator) {
-        let mut chance = rng.range(0, 3);
+        let mut chance = rng.range(0, 5);
         let c = if chance <= 1 { false } else { true };
 
         let mut bsp = BSPDungeon::new(10, c);
