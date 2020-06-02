@@ -1,7 +1,7 @@
 use super::{
     common::{create_h_tunnel_room, create_room, create_v_tunnel_room},
     room::Operations,
-    Map, Room, TileType
+    Map, Room, TileType,
 };
 use crate::utils::directions::*;
 use bracket_lib::prelude::{DistanceAlg, Point, RandomNumberGenerator};
@@ -141,42 +141,82 @@ impl Digger {
             0 => {
                 if room_c.x <= other_c.x {
                     self.rooms.push(create_h_tunnel_room(
-                        map, room_c.x, other_c.x, room_c.y, size, TileType::Floor
+                        map,
+                        room_c.x,
+                        other_c.x,
+                        room_c.y,
+                        size,
+                        TileType::Floor,
                     ));
                 } else {
                     self.rooms.push(create_h_tunnel_room(
-                        map, other_c.x, room_c.x, room_c.y, size, TileType::Floor
+                        map,
+                        other_c.x,
+                        room_c.x,
+                        room_c.y,
+                        size,
+                        TileType::Floor,
                     ));
                 }
 
                 if room_c.y <= other_c.y {
                     self.rooms.push(create_v_tunnel_room(
-                        map, room_c.y, other_c.y, other_c.x, size, TileType::Floor
+                        map,
+                        room_c.y,
+                        other_c.y,
+                        other_c.x,
+                        size,
+                        TileType::Floor,
                     ));
                 } else {
                     self.rooms.push(create_v_tunnel_room(
-                        map, other_c.y, room_c.y, other_c.x, size, TileType::Floor
+                        map,
+                        other_c.y,
+                        room_c.y,
+                        other_c.x,
+                        size,
+                        TileType::Floor,
                     ));
                 }
             }
             _ => {
                 if room_c.y <= other_c.y {
                     self.rooms.push(create_v_tunnel_room(
-                        map, room_c.y, other_c.y, room_c.x, size, TileType::Floor
+                        map,
+                        room_c.y,
+                        other_c.y,
+                        room_c.x,
+                        size,
+                        TileType::Floor,
                     ));
                 } else {
                     self.rooms.push(create_v_tunnel_room(
-                        map, other_c.y, room_c.y, room_c.x, size, TileType::Floor
+                        map,
+                        other_c.y,
+                        room_c.y,
+                        room_c.x,
+                        size,
+                        TileType::Floor,
                     ));
                 }
 
                 if room_c.x <= other_c.x {
                     self.rooms.push(create_h_tunnel_room(
-                        map, room_c.x, other_c.x, other_c.y, size, TileType::Floor
+                        map,
+                        room_c.x,
+                        other_c.x,
+                        other_c.y,
+                        size,
+                        TileType::Floor,
                     ));
                 } else {
                     self.rooms.push(create_h_tunnel_room(
-                        map, other_c.x, room_c.x, other_c.y, size, TileType::Floor
+                        map,
+                        other_c.x,
+                        room_c.x,
+                        other_c.y,
+                        size,
+                        TileType::Floor,
                     ));
                 }
             }

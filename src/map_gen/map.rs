@@ -251,6 +251,15 @@ impl Map {
         }
     }
 
+    pub fn is_door(&self, idx: usize) -> bool {
+        let ttype = self.tiles[idx].ttype;
+        match ttype {
+            TileType::OpenDoor => true,
+            TileType::ClosedDoor => true,
+            _ => false,
+        }
+    }
+
     /// Returns a map index from a given x, y coordinate.
     pub fn idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize
@@ -276,6 +285,23 @@ impl Map {
     /// Checks if a certain x, y coordinate is in the map.
     pub fn in_map_bounds_xy(&self, x: i32, y: i32) -> bool {
         x > 0 && x < self.width && y > 0 && y < self.height
+    }
+
+    /// Checks if a certain idx is in the map.
+    pub fn in_map_bounds_idx(&self, idx: usize) -> bool {
+        let pos = self.idx_pos(idx);
+        self.in_map_bounds(pos)
+    }
+
+    pub fn in_map_bounds_neighbors(&self, p: Position) -> bool {
+        self.in_map_bounds(p + NORTH)
+            && self.in_map_bounds(p + SOUTH)
+            && self.in_map_bounds(p + EAST)
+            && self.in_map_bounds(p + WEST)
+            && self.in_map_bounds(p + NORTHEAST)
+            && self.in_map_bounds(p + NORTHWEST)
+            && self.in_map_bounds(p + SOUTHEAST)
+            && self.in_map_bounds(p + SOUTHWEST)
     }
 
     /// Makes a tile passable.

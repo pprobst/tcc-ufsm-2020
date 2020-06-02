@@ -1,4 +1,4 @@
-use super::{common::*, Map, Room, Tunnel, TileType};
+use super::{common::*, Map, Room, TileType, Tunnel};
 use bracket_lib::prelude::RandomNumberGenerator;
 
 /*
@@ -51,7 +51,9 @@ impl BSPDungeon {
                         } else {
                             create_circular_room(map, room, TileType::Floor);
                         }
-                    } else { create_room(map, room, TileType::Floor); }
+                    } else {
+                        create_room(map, room, TileType::Floor);
+                    }
                     self.rooms.push(room);
                 }
             }

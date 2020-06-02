@@ -86,7 +86,14 @@ pub fn create_v_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32, size: i32) -> Tu
 }
 
 #[allow(dead_code)]
-pub fn create_h_tunnel_room(map: &mut Map, x1: i32, x2: i32, y: i32, size: i32, ttype: TileType) -> Room {
+pub fn create_h_tunnel_room(
+    map: &mut Map,
+    x1: i32,
+    x2: i32,
+    y: i32,
+    size: i32,
+    ttype: TileType,
+) -> Room {
     let left = cmp::min(x1, x2);
     let right = cmp::max(x1, x2);
     let top = y - 1;
@@ -97,7 +104,14 @@ pub fn create_h_tunnel_room(map: &mut Map, x1: i32, x2: i32, y: i32, size: i32, 
 }
 
 #[allow(dead_code)]
-pub fn create_v_tunnel_room(map: &mut Map, y1: i32, y2: i32, x: i32, size: i32, ttype: TileType) -> Room {
+pub fn create_v_tunnel_room(
+    map: &mut Map,
+    y1: i32,
+    y2: i32,
+    x: i32,
+    size: i32,
+    ttype: TileType,
+) -> Room {
     let top = cmp::min(y1, y2);
     let bottom = cmp::max(y1, y2);
     let left = x - 1;
@@ -391,4 +405,87 @@ pub fn connect_regions(map: &mut Map, regions: Vec<Region>, ttype: TileType, nat
             natural,
         );
     }
+}
+
+/// Adds doors to ROOMS of a map, given a certain chance.
+pub fn add_doors(
+    map: &mut Map,
+    rooms: Option<&Vec<Room>>,
+    chance: i32,
+    rng: &mut RandomNumberGenerator,
+) {
+    if rooms != None {
+        let mut locs_vec: Vec<Vec<usize>> = Vec::new();
+        for room in rooms.unwrap().iter() {
+            if rng.range(0, 100) >= chance {
+                continue;
+            }
+            let mut locs: Vec<usize> = Vec::new();
+            for y in room.y1..=room.y2 {
+                for x in room.x1..=room.x2 {
+                    if !map.in_map_bounds_xy(x, y) || !map.in_map_bounds_neighbors(Point::new(x, y))
+                    {
+                        continue;
+                    }
+                    let idx = map.idx(x, y);
+                    if map.is_floor(idx) {
+                        if y == room.y1 || y == room.y2 || x == room.x1 || x == room.x2 {
+                            locs.push(idx);
+                        }
+                    }
+                }
+            }
+            locs_vec.push(locs);
+        }
+
+        for locs in locs_vec.iter() {
+            if locs.len() <= 6 {
+                for loc in locs.iter() {
+                    if rng.range(0, 10) < 9 {
+                        map.tiles[*loc] = Tile::closed_door();
+                    } else {
+                        map.tiles[*loc] = Tile::open_door();
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[allow(dead_code)]
+pub fn can_place_door(map: &mut Map, idx: usize) -> bool {
+    if !map.in_map_bounds_idx(idx)
+        || !map.in_map_bounds_idx(idx - 1)
+        || !map.in_map_bounds_idx(idx + 1)
+        || !map.in_map_bounds_idx(idx - map.width as usize)
+        || !map.in_map_bounds_idx(idx + map.width as usize)
+    {
+        return false;
+    }
+
+    // North/South
+    if (map.is_floor(idx))
+        && (map.is_wall(idx - 1) || map.is_door(idx - 1))
+        && (map.is_wall(idx + 1) || map.is_door(idx + 1))
+        && !map.is_door(idx - map.width as usize)
+        && !map.is_door(idx - map.width as usize - 1)
+        && !map.is_door(idx + map.width as usize)
+        && !map.is_door(idx + map.width as usize + 1)
+    {
+        return true;
+    }
+
+    // East/West
+    if map.is_floor(idx)
+        && (map.is_wall(idx - map.width as usize) || map.is_door(idx - map.width as usize))
+        && (map.is_wall(idx + map.width as usize) || map.is_door(idx + map.width as usize))
+        && !map.is_door(idx - 1)
+        && !map.is_door(idx - 2)
+        && !map.is_door(idx + 1)
+        && !map.is_door(idx + 2)
+    {
+        return true;
+    }
+
+    false
 }

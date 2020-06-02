@@ -125,11 +125,11 @@ impl MapGenerator {
         //let mut cell_automata = CellularAutomata::new(1, 4, 100, false, true);
         //cell_automata.generate(&mut self.map);
 
-        self.gen_forest();
-        HOUSE01.generate(Point::new(20, 20), &mut self.map);
+        //self.gen_forest();
+        //HOUSE01.generate(Point::new(20, 20), &mut self.map);
         //self.gen_cave(&mut rng);
         //self.gen_tight_cave(&mut rng);
-        //self.gen_bsp(&mut rng);
+        self.gen_bsp(&mut rng);
         //self.gen_bsp_ruin(&mut rng);
         //self.gen_digger(&mut rng);
         //self.gen_digger_inverted(&mut rng);
@@ -195,7 +195,7 @@ impl MapGenerator {
 
     pub fn gen_bsp(&mut self, rng: &mut RandomNumberGenerator) {
         let mut chance = rng.range(0, 5);
-        let c = if chance <= 1 { false } else { true };
+        let c = if chance < 4 { false } else { true };
 
         let mut bsp = BSPDungeon::new(10, c);
         bsp.generate(&mut self.map, rng);
@@ -222,6 +222,8 @@ impl MapGenerator {
                 }
             }
         }
+        self.rooms = Some(bsp.get_rooms());
+        add_doors(&mut self.map, self.rooms.as_ref(), 25, rng);
     }
 
     pub fn gen_bsp_ruin(&mut self, rng: &mut RandomNumberGenerator) {
