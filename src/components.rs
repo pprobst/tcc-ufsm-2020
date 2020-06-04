@@ -160,16 +160,16 @@ pub struct Target {
     pub covered: bool,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum EquipSlot {
-    Head,
-    Torso,
-    Legs,
-    Feet,
     Weapon1,
     Weapon2,
+    Head,
+    Torso,
+    Hands,
+    Legs,
+    Feet,
     Back,
-    Special,
     Floating,
 }
 

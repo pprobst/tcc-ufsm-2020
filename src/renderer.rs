@@ -216,6 +216,7 @@ impl<'a> Renderer<'a> {
     fn render_ui(&mut self, draw_batch: &mut DrawBatch) {
         hud::boxes(draw_batch);
         hud::name_stats(self.ecs, draw_batch);
+        hud::show_equipped(self.ecs, draw_batch);
         hud::game_log(self.ecs, draw_batch);
         let mut write_state = self.ecs.write_resource::<RunState>();
         if self.state == RunState::Inventory {

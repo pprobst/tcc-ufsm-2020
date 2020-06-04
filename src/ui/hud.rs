@@ -1,5 +1,5 @@
 use super::{Log, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{BaseStats, Name};
+use crate::components::{BaseStats, Name, Equipment, Equipable, EquipSlot, EquipSlot::*};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -94,6 +94,57 @@ pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
         phealth,
         ColorPair::new(white, black),
     );
+}
+
+pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
+    let equips = ecs.read_storage::<Equipment>();
+    let equipables = ecs.read_storage::<Equipable>();
+    let names = ecs.read_storage::<Name>();
+    let player = ecs.fetch::<Entity>();
+    
+    let mut equipment: Vec<(&str, EquipSlot)> = 
+        vec![("None", Weapon1), ("None", Weapon2), ("None", Head), ("None", Torso), ("None", Hands),
+        ("None", Legs), ("None", Feet), ("None", Back), ("None", Floating)];
+
+    for (equip, equipable, name) in (&equips, &equipables, &names).join() {
+        if equip.user == *player {
+            match equipable.slot {
+                Weapon1 => equipment[0].0 = &name.name,
+                Weapon2 => equipment[1].0 = &name.name,
+                Head => equipment[2].0 = &name.name,
+                Torso => equipment[3].0 = &name.name,
+                Hands => equipment[4].0 = &name.name,
+                Legs => equipment[5].0 = &name.name,
+                Feet => equipment[6].0 = &name.name,
+                Back => equipment[7].0 = &name.name,
+                _ => equipment[8].0 = &name.name,
+            }
+        }
+    }
+
+    let black = RGB::named(BLACK);
+    let white = RGB::named(WHITE);
+    let gray = RGB::from_hex(UI_GRAY).unwrap();
+
+    let y = 8;
+    draw_batch.print_color(Point::new(0, y), "├─ WEAPON #1", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(3, y+1), equipment[0].0, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(0, y+3), "├─ WEAPON #2", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(3, y+4), equipment[1].0, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(0, y+6), "├─ HEAD", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(3, y+7), equipment[2].0, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(0, y+9), "├─ TORSO", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(3, y+10), equipment[3].0, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(0, y+12), "├─ HANDS", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(3, y+13), equipment[4].0, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(0, y+15), "├─ LEGS", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(3, y+16), equipment[5].0, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(0, y+18), "├─ FEET", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(3, y+19), equipment[6].0, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(0, y+21), "├─ BACK", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(3, y+22), equipment[7].0, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(0, y+24), "├─ FLOATING", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(3, y+25), equipment[8].0, ColorPair::new(white, black));
 }
 
 /// Renders messages from the log structure.
