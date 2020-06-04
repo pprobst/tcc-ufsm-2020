@@ -94,6 +94,24 @@ pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
         phealth,
         ColorPair::new(white, black),
     );
+
+    let mut health_status = "• Fine";
+    let mut health_status_color = RGB::from_hex(GRASS_GREEN).unwrap();
+    if player_stats.health.hp < player_stats.health.max_hp / 10 + 2 { 
+        health_status = "• Danger";
+        health_status_color = RGB::from_hex(MED_RED).unwrap();
+    }
+    else if player_stats.health.hp <= player_stats.health.max_hp / 2 { 
+        health_status = "• Wounded";
+        health_status_color = RGB::named(ORANGE);
+    }
+
+    draw_batch.print_color(
+        Point::new(2, y + 4),
+        health_status,
+        ColorPair::new(health_status_color, black),
+    );
+
 }
 
 pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
@@ -126,24 +144,24 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
     let white = RGB::named(WHITE);
     let gray = RGB::from_hex(UI_GRAY).unwrap();
 
-    let y = 8;
-    draw_batch.print_color(Point::new(0, y), "├─ WEAPON #1", ColorPair::new(gray, black));
+    let y = 10;
+    draw_batch.print_color(Point::new(0, y), "╞═ MELEE", ColorPair::new(gray, black));
     draw_batch.print_color(Point::new(3, y+1), equipment[0].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+3), "├─ WEAPON #2", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(0, y+3), "╞═ RANGED", ColorPair::new(gray, black));
     draw_batch.print_color(Point::new(3, y+4), equipment[1].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+6), "├─ HEAD", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(0, y+6), "╞═ HEAD", ColorPair::new(gray, black));
     draw_batch.print_color(Point::new(3, y+7), equipment[2].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+9), "├─ TORSO", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(0, y+9), "╞═ TORSO", ColorPair::new(gray, black));
     draw_batch.print_color(Point::new(3, y+10), equipment[3].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+12), "├─ HANDS", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(0, y+12), "╞═ HANDS", ColorPair::new(gray, black));
     draw_batch.print_color(Point::new(3, y+13), equipment[4].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+15), "├─ LEGS", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(0, y+15), "╞═ LEGS", ColorPair::new(gray, black));
     draw_batch.print_color(Point::new(3, y+16), equipment[5].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+18), "├─ FEET", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(0, y+18), "╞═ FEET", ColorPair::new(gray, black));
     draw_batch.print_color(Point::new(3, y+19), equipment[6].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+21), "├─ BACK", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(0, y+21), "╞═ BACK", ColorPair::new(gray, black));
     draw_batch.print_color(Point::new(3, y+22), equipment[7].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+24), "├─ FLOATING", ColorPair::new(gray, black));
+    draw_batch.print_color(Point::new(0, y+24), "╞═ FLOATING", ColorPair::new(gray, black));
     draw_batch.print_color(Point::new(3, y+25), equipment[8].0, ColorPair::new(white, black));
 }
 

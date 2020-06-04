@@ -31,7 +31,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
             dirty: true,
         })
         .with(BaseStats {
-            health: Health { max_hp: 15, hp: 10 },
+            health: Health { max_hp: 15, hp: 2 },
             defense: 3,
             attack: 6,
             god: true,

@@ -131,7 +131,8 @@ impl MapGenerator {
         //self.gen_tight_cave(&mut rng);
         //self.gen_bsp(&mut rng);
         //self.gen_bsp_ruin(&mut rng);
-        self.gen_digger(&mut rng);
+        self.gen_bsp_ruin_2(&mut rng);
+        //self.gen_digger(&mut rng);
         //self.gen_digger_inverted(&mut rng);
         self.map.add_borders();
         self.map.pretty_walls();
@@ -166,12 +167,14 @@ impl MapGenerator {
         walker.generate(&mut self.map, rng);
 
         // n_iterations, n_walls_rule, min_cave_size, open_halls, dry_caves
-        let mut cell_automata = CellularAutomata::new(12, 5, 20, false, true);
+        let mut cell_automata = CellularAutomata::new(12, 5, 20, false, false);
         cell_automata.generate(&mut self.map);
         make_lake(&mut self.map, TileType::ShallowWater, 200);
 
         let mut cell_automata2 = CellularAutomata::new(1, 4, 5, true, true);
         cell_automata2.generate(&mut self.map);
+
+        if rng.range(0, 3) < 1 { add_vegetation(&mut self.map, false); }
     }
 
     pub fn gen_tight_cave(&mut self, rng: &mut RandomNumberGenerator) {
@@ -191,6 +194,8 @@ impl MapGenerator {
 
         let mut cell_automata2 = CellularAutomata::new(5, rule, 5, true, true);
         cell_automata2.generate(&mut self.map);
+
+        if rng.range(0, 5) < 1 { add_vegetation(&mut self.map, false); }
     }
 
     pub fn gen_bsp(&mut self, rng: &mut RandomNumberGenerator) {
@@ -231,6 +236,15 @@ impl MapGenerator {
         make_lake(&mut self.map, TileType::ShallowWater, 100);
         let mut cell_automata = CellularAutomata::new(2, 3, 10, true, false);
         cell_automata.generate(&mut self.map);
+        add_vegetation(&mut self.map, false);
+    }
+
+    pub fn gen_bsp_ruin_2(&mut self, rng: &mut RandomNumberGenerator) {
+        self.gen_tight_cave(rng);
+        self.gen_bsp(rng);
+        make_lake(&mut self.map, TileType::ShallowWater, 100);
+        //let mut cell_automata = CellularAutomata::new(1, 1, 5, true, false);
+        //cell_automata.generate(&mut self.map);
         add_vegetation(&mut self.map, false);
     }
 
