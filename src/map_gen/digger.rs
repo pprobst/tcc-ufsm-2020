@@ -21,6 +21,7 @@ pub struct Digger {
     min_size: u8,
     max_size: u8,
     num_features: i32,
+    peripheral: bool,
 }
 
 #[allow(dead_code)]
@@ -31,16 +32,21 @@ impl Digger {
             min_size,
             max_size,
             num_features,
+            peripheral: false,
         }
+    }
+
+    pub fn get_rooms(&self) -> Vec<Room> {
+        self.rooms.clone()
     }
 
     pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
         // Create initial room somewhere on the map.
         let xi = map.width / 2 - map.width / 10;
         let yi = map.height / 3;
-        let wi = rng.range(self.min_size * 2, self.max_size * 2) as i32;
+        let wi = rng.range(self.min_size, self.max_size) as i32;
         let hi = wi as i32;
-        let initial_room = Room::with_size(xi, yi, wi, hi);
+        let initial_room = Room::with_size(xi, yi, wi+self.min_size as i32, hi+self.min_size as i32);
         create_room(map, initial_room, TileType::Floor);
         self.rooms.push(initial_room);
         self.gen_feature(map, rng);
@@ -53,7 +59,7 @@ impl Digger {
         let ndir = dir.clone();
 
         let mut pt = room.get_wall(map, dir);
-        let room_gap = rng.range(1, 10);
+        let room_gap = rng.range(3, 10);
 
         match ndir {
             NORTH => {
@@ -88,8 +94,21 @@ impl Digger {
     }
 
     fn gen_feature(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
-        let mut num_features = 0;
-        let mut repeat = self.num_features * 3; // max number of iterations
+        let num_features = 0;
+        let repeat = self.num_features * 3; // max number of iterations
+
+        // Main, bigger rooms.
+        self.gen_feature_loop(num_features, repeat, map, rng);
+
+        self.min_size /= 2;
+        self.max_size /= 2;
+
+        // Peripheric, smaller rooms.
+        self.peripheral = true;
+        self.gen_feature_loop(num_features, repeat, map, rng);
+    }
+
+    fn gen_feature_loop(&mut self, mut num_features: i32, mut repeat: i32, map: &mut Map, rng: &mut RandomNumberGenerator) {
         let mut prev_idx = 0;
         while num_features <= self.num_features {
             repeat -= 1;
@@ -135,7 +154,8 @@ impl Digger {
             }
         }
 
-        let size = rng.range(1, 4) as i32;
+        let mut size = rng.range(2, 4) as i32;
+        if self.peripheral { size = 1; }
 
         match rng.range(0, 2) {
             0 => {

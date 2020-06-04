@@ -416,7 +416,10 @@ pub fn add_doors(
 ) {
     if rooms != None {
         let mut locs_vec: Vec<Vec<usize>> = Vec::new();
-        for room in rooms.unwrap().iter() {
+        let mut r = rooms.unwrap().clone();
+        r.retain(|a| a.width() >= 5);
+        //r.sort_by(|a, b| a.x2.cmp(&b.x2));
+        for room in r.iter() {
             if rng.range(0, 100) >= chance {
                 continue;
             }
@@ -439,13 +442,14 @@ pub fn add_doors(
         }
 
         for locs in locs_vec.iter() {
-            if locs.len() <= 6 {
+            if locs.len() <= 5 {
                 for loc in locs.iter() {
-                    if rng.range(0, 10) < 9 {
-                        map.tiles[*loc] = Tile::closed_door();
-                    } else {
-                        map.tiles[*loc] = Tile::open_door();
-                    }
+                    let pt = map.idx_pos(*loc);
+                    let door_count = count_neighbor_tile(map, pt, TileType::ClosedDoor, true); 
+                    let wall_count = count_neighbor_tile(map, pt, TileType::Wall, false); 
+                    if door_count >= 2 { continue; }
+                    if wall_count >= 3 && door_count < 2 { continue; }
+                    map.tiles[*loc] = Tile::closed_door();
                 }
             }
         }

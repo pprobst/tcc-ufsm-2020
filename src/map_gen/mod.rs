@@ -129,9 +129,9 @@ impl MapGenerator {
         //HOUSE01.generate(Point::new(20, 20), &mut self.map);
         //self.gen_cave(&mut rng);
         //self.gen_tight_cave(&mut rng);
-        self.gen_bsp(&mut rng);
+        //self.gen_bsp(&mut rng);
         //self.gen_bsp_ruin(&mut rng);
-        //self.gen_digger(&mut rng);
+        self.gen_digger(&mut rng);
         //self.gen_digger_inverted(&mut rng);
         self.map.add_borders();
         self.map.pretty_walls();
@@ -223,7 +223,7 @@ impl MapGenerator {
             }
         }
         self.rooms = Some(bsp.get_rooms());
-        add_doors(&mut self.map, self.rooms.as_ref(), 25, rng);
+        add_doors(&mut self.map, self.rooms.as_ref(), 30, rng);
     }
 
     pub fn gen_bsp_ruin(&mut self, rng: &mut RandomNumberGenerator) {
@@ -240,15 +240,17 @@ impl MapGenerator {
         // Biggers rooms are more aesthetically pleasing, but require a much greater map (from
         // 100x100 to 200x200) to have more features.
         // (min_size, max_size, num_features (approx)
-        let mut digger = Digger::new(5, 10, 30);
+        let mut digger = Digger::new(10, 15, 30);
         digger.generate(&mut self.map, rng);
+        self.rooms = Some(digger.get_rooms());
+        add_doors(&mut self.map, self.rooms.as_ref(), 30, rng);
     }
 
     pub fn gen_digger_inverted(&mut self, rng: &mut RandomNumberGenerator) {
         self.gen_digger(rng);
         let mut cell_automata = CellularAutomata::new(3, 7, 10, false, false);
         cell_automata.generate(&mut self.map);
-        add_vegetation(&mut self.map, false);
+        if rng.range(0, 2) < 1 { add_vegetation(&mut self.map, false); }
     }
 
     pub fn get_map(&self) -> Map {
