@@ -69,7 +69,7 @@ fn main() -> BError {
     world.register::<TryEquip>();
     world.register::<Item>();
     world.register::<Consumable>();
-    world.register::<PickupItem>();
+    world.register::<CollectItem>();
     world.register::<DropItem>();
     world.register::<ConsumeItem>();
     world.register::<InBackpack>();

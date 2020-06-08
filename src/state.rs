@@ -5,7 +5,7 @@ use super::{
     renderer::render_all,
     systems::{
         ai::HostileAISystem, consumable::ConsumableSystem, damage::DamageSystem,
-        equipment::EquipmentSystem, fov::FOVSystem, inventory::PickupSystem,
+        equipment::EquipmentSystem, fov::FOVSystem, item_collect::ItemCollectSystem,
         item_drop::ItemDropSystem, mapping::MappingSystem, melee::MeleeSystem,
         missile::MissileSystem,
     },
@@ -70,8 +70,8 @@ impl State {
         let mut damage = DamageSystem {};
         damage.run_now(&self.ecs);
 
-        let mut pickup = PickupSystem {};
-        pickup.run_now(&self.ecs);
+        let mut collect_item = ItemCollectSystem {};
+        collect_item.run_now(&self.ecs);
 
         let mut drop_item = ItemDropSystem {};
         drop_item.run_now(&self.ecs);

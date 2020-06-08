@@ -198,7 +198,7 @@ pub struct Consumable {
 }
 
 #[derive(Component, Debug, Clone)]
-pub struct PickupItem {
+pub struct CollectItem {
     pub collector: Entity,
     pub item: Entity,
 }
@@ -224,3 +224,6 @@ pub struct InBackpack {
 pub struct SelectedItem {
     pub item: Entity,
 }
+
+#[derive(Component, Debug)]
+pub struct Container {} // Chests and other types of containers.

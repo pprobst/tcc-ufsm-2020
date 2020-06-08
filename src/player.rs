@@ -1,6 +1,6 @@
 use super::{
     map_gen::Map, map_gen::TileType, utils::directions::*, Fov, Item, MeleeAttack, MissileAttack,
-    Mob, PickupItem, Player, Position, RunState, Target,
+    Mob, CollectItem, Player, Position, RunState, Target,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -247,14 +247,14 @@ fn try_door(ttype: TileType, map: &mut Map, idx: usize) {
 }
 
 /// Picks up item from the player's current position.
-pub fn pickup_item(ecs: &mut World) -> RunState {
+pub fn collect_item(ecs: &mut World) -> RunState {
     let ents = ecs.entities();
     let items = ecs.read_storage::<Item>();
     let positions = ecs.read_storage::<Position>();
     let player_ent = ecs.fetch::<Entity>();
     let ppos = ecs.fetch::<Point>();
 
-    let item_to_pickup: Option<Entity> =
+    let item_to_collect: Option<Entity> =
         (&ents, &items, &positions)
             .join()
             .find_map(|(ent, _item, pos)| {
@@ -264,13 +264,13 @@ pub fn pickup_item(ecs: &mut World) -> RunState {
                 return None;
             });
 
-    match item_to_pickup {
+    match item_to_collect {
         Some(item) => {
-            let mut pickup = ecs.write_storage::<PickupItem>();
-            pickup
+            let mut collect = ecs.write_storage::<CollectItem>();
+            collect
                 .insert(
                     *player_ent,
-                    PickupItem {
+                    CollectItem {
                         collector: *player_ent,
                         item,
                     },

@@ -91,7 +91,7 @@ pub fn test_sword(ecs: &mut World, x: i32, y: i32) {
             layer: 0,
         })
         .with(Name {
-            name: "Test Sword".to_string(),
+            name: "Terminus Est".to_string(),
         })
         .with(Item {})
         .with(Equipable {
@@ -111,7 +111,6 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
     test_consumable(ecs, pt.x + 1, pt.y + 1);
     test_consumable(ecs, pt.x + 2, pt.y + 1);
     test_sword(ecs, pt.x + 2, pt.y + 2);
-    test_sword(ecs, pt.x + 3, pt.y + 2);
 
     let mut rng = RandomNumberGenerator::new();
 

@@ -50,7 +50,7 @@ pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
             VirtualKeyCode::Z => switch_weapon(&mut gs.ecs),
 
             // Pickup item.
-            VirtualKeyCode::G => return pickup_item(&mut gs.ecs),
+            VirtualKeyCode::G => return collect_item(&mut gs.ecs),
 
             // Access inventory.
             VirtualKeyCode::I => return RunState::Inventory,
