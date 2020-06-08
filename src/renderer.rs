@@ -219,22 +219,32 @@ impl<'a> Renderer<'a> {
         hud::show_equipped(self.ecs, draw_batch);
         hud::game_log(self.ecs, draw_batch);
         let mut write_state = self.ecs.write_resource::<RunState>();
-        if self.state == RunState::Inventory {
-            let inventory_result = inventory::show_inventory(self.ecs, self.term, draw_batch);
-            if inventory_result == inventory::InventoryResult::Cancel {
-                *write_state = RunState::Running;
-            } else if inventory_result == inventory::InventoryResult::Select {
-                *write_state = RunState::ItemUse;
+        match self.state {
+            RunState::Inventory => {
+                let inventory_result = inventory::show_inventory(self.ecs, self.term, draw_batch);
+                if inventory_result == inventory::InventoryResult::Cancel {
+                    *write_state = RunState::Running;
+                } else if inventory_result == inventory::InventoryResult::Select {
+                    *write_state = RunState::ItemUse;
+                }
+            },
+            RunState::ItemUse => {
+                let inventory_result = inventory::show_use_menu(self.ecs, self.term, draw_batch);
+                if inventory_result == inventory::InventoryResult::Cancel {
+                    *write_state = RunState::Running;
+                } else if inventory_result == inventory::InventoryResult::DropItem
+                    || inventory_result == inventory::InventoryResult::UseItem
+                {
+                    *write_state = RunState::MobTurn;
+                }
+            },
+            RunState::AccessContainer => {
+                let container_result = container::show_container(self.ecs, self.term, draw_batch);
+                if container_result == container::ContainerResult::Cancel {
+                    *write_state = RunState::Running;
+                }
             }
-        } else if self.state == RunState::ItemUse {
-            let inventory_result = inventory::show_use_menu(self.ecs, self.term, draw_batch);
-            if inventory_result == inventory::InventoryResult::Cancel {
-                *write_state = RunState::Running;
-            } else if inventory_result == inventory::InventoryResult::DropItem
-                || inventory_result == inventory::InventoryResult::UseItem
-            {
-                *write_state = RunState::MobTurn;
-            }
+            _ => {}
         }
     }
 }

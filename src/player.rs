@@ -1,6 +1,6 @@
 use super::{
     map_gen::Map, map_gen::TileType, utils::directions::*, Fov, Item, MeleeAttack, MissileAttack,
-    Mob, CollectItem, Player, Position, RunState, Target, Container
+    Mob, CollectItem, Player, Position, RunState, Target, Container, SelectedPosition
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -230,9 +230,12 @@ fn check_near(ecs: &World, pt: &Point, map: &mut Map) -> PossibleContexts {
 
         // Check for entities (e.g. containers).
         if map.entities[idx] != None {
+            let ent = map.entities[idx].unwrap();
             let containers = ecs.read_storage::<Container>();
-            let c = containers.get(map.entities[idx].unwrap());
+            let c = containers.get(ent);
             if let Some(_c) = c {
+                let mut selected_pos = ecs.write_storage::<SelectedPosition>();
+                selected_pos.insert(ent, SelectedPosition { pos: *pt }).expect("Could not select position.");
                 return PossibleContexts::Container;
             }
         }

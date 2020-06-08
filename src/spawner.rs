@@ -1,6 +1,6 @@
 use super::{
     map_gen::Map, utils::colors::*, BaseStats, Blocker, Consumable, EquipSlot, Equipable, Fov,
-    Health, Item, MeleeWeapon, Mob, Name, Player, Position, Renderable, Container
+    Health, Item, MeleeWeapon, Mob, Name, Player, Position, Renderable, Container,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator, BLACK, RGB, WHITE};
 use specs::prelude::*;
@@ -66,7 +66,7 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
         .build()
 }
 
-pub fn test_consumable(ecs: &mut World, x: i32, y: i32) {
+pub fn test_consumable(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -79,10 +79,10 @@ pub fn test_consumable(ecs: &mut World, x: i32, y: i32) {
         })
         .with(Item {})
         .with(Consumable { heal: 5 })
-        .build();
+        .build()
 }
 
-pub fn test_sword(ecs: &mut World, x: i32, y: i32) {
+pub fn test_sword(ecs: &mut World, x: i32, y: i32) -> Entity {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -98,7 +98,7 @@ pub fn test_sword(ecs: &mut World, x: i32, y: i32) {
             slot: EquipSlot::Weapon1,
         })
         .with(MeleeWeapon { base_damage: 5 })
-        .build();
+        .build()
 }
 
 pub fn test_container(ecs: &mut World, x: i32, y: i32) {
@@ -115,6 +115,11 @@ pub fn test_container(ecs: &mut World, x: i32, y: i32) {
         .with(Blocker {})
         .with(Container {})
         .build();
+}
+
+// TODO
+pub fn spawn_items_in_chests(ecs: &mut World) {
+
 }
 
 pub fn spawn_map(ecs: &mut World, map: &Map) {

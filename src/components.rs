@@ -226,4 +226,14 @@ pub struct SelectedItem {
 }
 
 #[derive(Component, Debug)]
+pub struct SelectedPosition {
+    pub pos: Position,
+}
+
+#[derive(Component, Debug)]
 pub struct Container {} // Chests and other types of containers.
+
+#[derive(Component)]
+pub struct Contained { // Similar to InBackpack, but specifically for containers.
+    pub container: Entity,
+}

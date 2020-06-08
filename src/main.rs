@@ -74,7 +74,9 @@ fn main() -> BError {
     world.register::<ConsumeItem>();
     world.register::<InBackpack>();
     world.register::<SelectedItem>();
+    world.register::<SelectedPosition>();
     world.register::<Container>();
+    world.register::<Contained>();
 
     // Create game state.
     let mut game_state = State::new(world);
