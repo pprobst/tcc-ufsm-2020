@@ -41,6 +41,7 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
     - [x] TDML (top-down mansion-like);
     - [x] Florestas;
     - [x] Ruínas;
+    - [ ] Algo envolvendo WFC (importante!!!)
     - [ ] Outros (cidades, canyons, etc.).
 - [x] Inventário e consumo de itens;
 - [x] Equipamento;

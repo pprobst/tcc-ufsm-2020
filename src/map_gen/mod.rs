@@ -126,7 +126,7 @@ impl MapGenerator {
         //cell_automata.generate(&mut self.map);
 
         self.gen_forest();
-        HOUSE01.generate(Point::new(20, 20), &mut self.map);
+        //HOUSE01.generate(Point::new(20, 20), &mut self.map);
         //self.gen_cave(&mut rng);
         //self.gen_tight_cave(&mut rng);
         //self.gen_bsp(&mut rng);
@@ -262,6 +262,7 @@ impl MapGenerator {
 
     pub fn gen_digger_inverted(&mut self, rng: &mut RandomNumberGenerator) {
         self.gen_digger(rng);
+        // n_iterations, n_walls_rule, min_cave_size, open_halls, dry_caves
         let mut cell_automata = CellularAutomata::new(3, 7, 10, false, false);
         cell_automata.generate(&mut self.map);
         if rng.range(0, 2) < 1 { add_vegetation(&mut self.map, false); }

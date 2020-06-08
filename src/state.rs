@@ -33,6 +33,7 @@ pub enum RunState {
     Targeting,
     Inventory,
     ItemUse,
+    AccessContainer,
     Mapgen,
 }
 
@@ -148,6 +149,9 @@ impl GameState for State {
             }
             RunState::ItemUse => {
                 curr_state = RunState::ItemUse;
+            }
+            RunState::AccessContainer => {
+                curr_state = RunState::AccessContainer;
             }
             RunState::Mapgen => match term.key {
                 None => {}

@@ -1,6 +1,6 @@
 use super::{
     map_gen::Map, map_gen::TileType, utils::directions::*, Fov, Item, MeleeAttack, MissileAttack,
-    Mob, CollectItem, Player, Position, RunState, Target,
+    Mob, CollectItem, Player, Position, RunState, Target, Container
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -193,47 +193,71 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> 
 /// Switches between the two readied weapons.
 pub fn switch_weapon(_ecs: &mut World) {}
 
+enum PossibleContexts {
+    Nothing,
+    Door,
+    Container
+}
+
 /// Does a contextual action (i.e. opens a door if there's one nearby, talk, etc).
 pub fn context_action(ecs: &mut World) -> RunState {
     let ppos = &ecs.fetch::<Point>();
     let mut map = ecs.fetch_mut::<Map>();
 
-    if check_for_door(&ppos, &mut map) {
-        let mut fov = ecs.write_storage::<Fov>();
-        let player = ecs.read_storage::<Player>();
-        for (_player, fov) in (&player, &mut fov).join() {
-            fov.dirty = true;
-        }
-        return RunState::PlayerTurn;
+    let context = check_near(&ecs, &ppos, &mut map);
+
+    match context {
+        PossibleContexts::Door => {
+            let mut fov = ecs.write_storage::<Fov>();
+            let ents = ecs.entities();
+            for (_ent, fov) in (&ents, &mut fov).join() {
+                fov.dirty = true;
+            }
+        },
+        PossibleContexts::Container => {
+            return RunState::AccessContainer
+        },
+        _ => return RunState::Waiting
     }
 
-    RunState::Waiting
+    return RunState::PlayerTurn;
 }
 
-fn check_for_door(pt: &Point, map: &mut Map) -> bool {
+fn check_near(ecs: &World, pt: &Point, map: &mut Map) -> PossibleContexts {
     for i in 0..4 {
         let idx = map.idx_pt(*pt + dir_idx(i));
         let tile = map.tiles[idx].ttype;
+
+        // Check for entities (e.g. containers).
+        if map.entities[idx] != None {
+            let containers = ecs.read_storage::<Container>();
+            let c = containers.get(map.entities[idx].unwrap());
+            if let Some(_c) = c {
+                return PossibleContexts::Container;
+            }
+        }
+
+        // Check for tiles (e.g. doors).
         match tile {
             TileType::ClosedDoor => {
                 try_door(TileType::ClosedDoor, map, idx);
                 if map.entities[idx] != None {
                     continue;
                 }
-                return true;
+                return PossibleContexts::Door;
             }
             TileType::OpenDoor => {
                 try_door(TileType::OpenDoor, map, idx);
                 if map.entities[idx] != None {
                     continue;
                 }
-                return true;
+                return PossibleContexts::Door;
             }
             _ => {}
         }
     }
 
-    false
+    PossibleContexts::Nothing
 }
 
 fn try_door(ttype: TileType, map: &mut Map, idx: usize) {
