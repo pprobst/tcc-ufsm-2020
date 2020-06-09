@@ -45,15 +45,12 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
     - [ ] Outros (cidades, canyons, etc.).
 - [x] Inventário e consumo de itens;
 - [x] Equipamento;
-- [ ] Baús de tesouro;
-- [ ] Sistema de spawning;
+- [x] Baús de tesouro;
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
 - [ ] Sistema de serialização/desserialização usando RON +
   serde para mobs, itens e cores.
-- [ ] Combate melhorado (e.g. torná-lo estocástico);
-    - [ ] Também aplicar bônus dos equipamentos!
+- [ ] Sistema de spawning;
 - [ ] Itens únicos com efeitos aleatórios;
-- [ ] IA relativamente avançada para os mobs.
 
 Naturalmente, à medida que vou desenvolvendo posso ter de 
 alterar/aprimorar itens da checklist já marcados. Isso é um processo natural;
@@ -61,6 +58,10 @@ considere que itens marcados já possuem a _estrutura básica_ concluída.
 
 ###  Sidequests
 Ou, _"se sobrar tempo eu faço!"_.
+- [ ] Combate melhorado (e.g. torná-lo estocástico);
+    - [ ] Também aplicar bônus dos equipamentos, que por enquanto não fazem
+      nada.
+- [ ] IA relativamente avançada para os mobs.
 - [ ] Narrativa procedural;
 - [ ] Sistema de partículas;
 - [ ] Otimizações gerais;
