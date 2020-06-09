@@ -86,6 +86,11 @@ impl State {
         self.ecs.maintain();
     }
 
+    fn run_collect_system(&mut self) {
+        let mut collect_item = ItemCollectSystem {};
+        collect_item.run_now(&self.ecs);
+    }
+
     pub fn generate_map(&mut self, width: i32, height: i32) -> Map {
         let mut mapgen = MapGenerator::new(width, height);
         mapgen.gen_map();
@@ -151,6 +156,7 @@ impl GameState for State {
                 curr_state = RunState::ItemUse;
             }
             RunState::AccessContainer => {
+                self.run_collect_system();
                 curr_state = RunState::AccessContainer;
             }
             RunState::Mapgen => match term.key {

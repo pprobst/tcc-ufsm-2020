@@ -174,7 +174,9 @@ impl MapGenerator {
         let mut cell_automata2 = CellularAutomata::new(1, 4, 5, true, true);
         cell_automata2.generate(&mut self.map);
 
-        if rng.range(0, 3) < 1 { add_vegetation(&mut self.map, false); }
+        if rng.range(0, 3) < 1 {
+            add_vegetation(&mut self.map, false);
+        }
     }
 
     pub fn gen_tight_cave(&mut self, rng: &mut RandomNumberGenerator) {
@@ -195,7 +197,9 @@ impl MapGenerator {
         let mut cell_automata2 = CellularAutomata::new(5, rule, 5, true, true);
         cell_automata2.generate(&mut self.map);
 
-        if rng.range(0, 5) < 1 { add_vegetation(&mut self.map, false); }
+        if rng.range(0, 5) < 1 {
+            add_vegetation(&mut self.map, false);
+        }
     }
 
     pub fn gen_bsp(&mut self, rng: &mut RandomNumberGenerator) {
@@ -265,7 +269,9 @@ impl MapGenerator {
         // n_iterations, n_walls_rule, min_cave_size, open_halls, dry_caves
         let mut cell_automata = CellularAutomata::new(3, 7, 10, false, false);
         cell_automata.generate(&mut self.map);
-        if rng.range(0, 2) < 1 { add_vegetation(&mut self.map, false); }
+        if rng.range(0, 2) < 1 {
+            add_vegetation(&mut self.map, false);
+        }
     }
 
     pub fn get_map(&self) -> Map {

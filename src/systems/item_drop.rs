@@ -1,4 +1,4 @@
-use crate::components::{DropItem, InBackpack, Name, Position};
+use crate::components::{DropItem, InBackpack, InventoryCapacity, Name, Position};
 use crate::log::Log;
 use bracket_lib::prelude::{RGB, WHITE};
 use specs::prelude::*;
@@ -18,14 +18,16 @@ impl<'a> System<'a> for ItemDropSystem {
         ReadExpect<'a, Entity>,
         ReadStorage<'a, Name>,
         WriteExpect<'a, Log>,
+        WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, DropItem>,
         WriteStorage<'a, InBackpack>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, name, mut log, mut pos, mut drop, mut backpack) = data;
+        let (player, name, mut log, mut capacity, mut pos, mut drop, mut backpack) = data;
 
+        let mut inventory_cap = capacity.get_mut(*player).unwrap();
         for d in drop.join() {
             let drop_pos = pos.get(d.dropper).unwrap().clone();
             pos.insert(d.item, Position::new(drop_pos.x, drop_pos.y))
@@ -33,6 +35,7 @@ impl<'a> System<'a> for ItemDropSystem {
             backpack.remove(d.item);
 
             if d.dropper == *player {
+                inventory_cap.curr -= 1;
                 log.add(
                     format!("You drop the {}", name.get(d.item).unwrap().name),
                     RGB::named(WHITE),

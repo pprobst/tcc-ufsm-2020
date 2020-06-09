@@ -1,11 +1,20 @@
-use super::{WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
+use super::{common::draw_list_items, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
 use crate::components::{
-    ConsumeItem, DropItem, Equipable, Equipment, InBackpack, Name, SelectedItem, TryEquip,
+    ConsumeItem, DropItem, Equipable, Equipment, InBackpack, InventoryCapacity, Name, SelectedItem,
+    TryEquip,
 };
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
 use std::collections::HashMap;
+
+/*
+ *
+ * inventory.rs
+ * ------------
+ * UI regarding the inventory screen.
+ *
+ */
 
 const X: i32 = WINDOW_WIDTH;
 const Y: i32 = WINDOW_HEIGHT;
@@ -27,16 +36,16 @@ pub fn show_inventory(
     let names = ecs.read_storage::<Name>();
     let player = ecs.fetch::<Entity>();
     let backpack = ecs.read_storage::<InBackpack>();
+    let inventory_cap = ecs.read_storage::<InventoryCapacity>();
     let entities = ecs.entities();
 
     let black = RGB::named(BLACK);
-    let white = RGB::named(WHITE);
     let gray = RGB::from_hex(UI_GRAY).unwrap();
 
     let x1 = X_OFFSET + 5;
-    let y1 = 4;
+    let y1 = 10;
     let w = X - X_OFFSET - 10;
-    let h = Y - Y_OFFSET - 9;
+    let h = Y - Y_OFFSET - 25;
 
     draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
 
@@ -59,39 +68,14 @@ pub fn show_inventory(
         item_count += 1;
     }
 
-    let mut i = 0;
-    let mut y = y1 + 1;
-
-    for item in items_vec.iter() {
-        //for item in items.iter() {
-        draw_batch.set(
-            Point::new(x1 + 1, y),
-            ColorPair::new(white, black),
-            97 + i as FontCharType,
-        );
-        draw_batch.print_color(
-            Point::new(x1 + 2, y),
-            //format!(") {}", &item.0),
-            format!(") {}", item),
-            ColorPair::new(white, black),
-        );
-        //let x2 = x1 + (item.0.len() as i32) + 4;
-        let x2 = x1 + (item.len() as i32) + 4;
-        let ct = (x1 + w) - x2 - 4;
-        draw_batch.print_color(
-            Point::new(x2, y),
-            //format!(" {} x{}", ".".repeat(ct as usize), &item.1),
-            format!(
-                " {} x{}",
-                ".".repeat(ct as usize),
-                &items.get(item).unwrap()
-            ),
-            ColorPair::new(white, black),
-        );
-
-        i += 1;
-        y += 1;
-    }
+    items_vec.sort();
+    items_ent.sort_by(|a, b| {
+        names
+            .get(*a)
+            .unwrap()
+            .name
+            .cmp(&names.get(*b).unwrap().name)
+    });
 
     draw_batch.print_color(
         Point::new(w - 5, y1),
@@ -99,10 +83,16 @@ pub fn show_inventory(
         ColorPair::new(gray, black),
     );
 
+    draw_list_items(&items, &items_vec, x1, y1, w, draw_batch);
+
     let count_w = if item_count < 10 { w - 2 } else { w - 3 };
     draw_batch.print_color(
         Point::new(count_w, y1 + h),
-        format!("({}/26)", item_count),
+        format!(
+            "({}/{})",
+            item_count,
+            inventory_cap.get(*player).unwrap().max
+        ),
         ColorPair::new(gray, black),
     );
 

@@ -1,4 +1,4 @@
-use crate::components::{Equipable, Equipment, InBackpack, Name, TryEquip};
+use crate::components::{Equipable, Equipment, InBackpack, InventoryCapacity, Name, TryEquip};
 use crate::log::Log;
 use bracket_lib::prelude::{RGB, WHITE};
 use specs::prelude::*;
@@ -20,12 +20,24 @@ impl<'a> System<'a> for EquipmentSystem {
         WriteStorage<'a, Equipment>,
         WriteExpect<'a, Log>,
         ReadStorage<'a, Equipable>,
+        WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, InBackpack>,
         WriteStorage<'a, TryEquip>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, name, mut equips, mut log, equipable, mut backpack, mut try_equip) = data;
+        let (
+            player,
+            name,
+            mut equips,
+            mut log,
+            equipable,
+            mut capacity,
+            mut backpack,
+            mut try_equip,
+        ) = data;
+
+        let mut inventory_cap = capacity.get_mut(*player).unwrap();
 
         for e in try_equip.join() {
             let to_equip_slot = &equipable.get(e.equipment.equip).unwrap().slot;
@@ -52,8 +64,10 @@ impl<'a> System<'a> for EquipmentSystem {
                         },
                     )
                     .expect("FAILED inserting item in backpack.");
+                inventory_cap.curr += 1;
             }
             backpack.remove(e.equipment.equip);
+            inventory_cap.curr -= 1;
             equips
                 .insert(
                     e.equipment.equip,

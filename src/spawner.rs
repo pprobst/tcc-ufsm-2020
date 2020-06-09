@@ -1,6 +1,7 @@
 use super::{
-    map_gen::Map, utils::colors::*, BaseStats, Blocker, Consumable, EquipSlot, Equipable, Fov,
-    Health, Item, MeleeWeapon, Mob, Name, Player, Position, Renderable, Container,
+    map_gen::Map, utils::colors::*, BaseStats, Blocker, Consumable, Contained, Container,
+    EquipSlot, Equipable, Fov, Health, InventoryCapacity, Item, MeleeWeapon, Mob, Name, Player,
+    Position, Renderable,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator, BLACK, RGB, WHITE};
 use specs::prelude::*;
@@ -13,8 +14,19 @@ use specs::prelude::*;
  *
  */
 
+// Some of this stuff is based on https://github.com/tylervipond/apprentice/blob/master/src/spawner.rs
+fn entity_in_container(ecs: &mut World, container: Entity) -> EntityBuilder {
+    ecs.create_entity().with(Contained {
+        container: container,
+    })
+}
+
+fn entity_with_position(ecs: &mut World, x: i32, y: i32) -> EntityBuilder {
+    ecs.create_entity().with(Position { x, y })
+}
+
 pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
-    ecs.create_entity()
+    entity_with_position(ecs, x, y)
         .with(Position { x, y })
         .with(Renderable {
             glyph: to_cp437('@'),
@@ -36,12 +48,12 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
             attack: 6,
             god: true,
         })
+        .with(InventoryCapacity { curr: 0, max: 15 })
         .build()
 }
 
 pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
-    ecs.create_entity()
-        .with(Position { x, y })
+    entity_with_position(ecs, x, y)
         .with(Mob {})
         .with(Renderable {
             glyph: to_cp437('t'),
@@ -66,9 +78,8 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
         .build()
 }
 
-pub fn test_consumable(ecs: &mut World, x: i32, y: i32) -> Entity {
-    ecs.create_entity()
-        .with(Position { x, y })
+pub fn test_consumable(builder: EntityBuilder) -> Entity {
+    builder
         .with(Renderable {
             glyph: to_cp437('!'),
             color: ColorPair::new(RGB::from_hex(MED_RED).unwrap(), RGB::named(BLACK)),
@@ -82,9 +93,8 @@ pub fn test_consumable(ecs: &mut World, x: i32, y: i32) -> Entity {
         .build()
 }
 
-pub fn test_sword(ecs: &mut World, x: i32, y: i32) -> Entity {
-    ecs.create_entity()
-        .with(Position { x, y })
+pub fn test_sword(builder: EntityBuilder) -> Entity {
+    builder
         .with(Renderable {
             glyph: to_cp437('/'),
             color: ColorPair::new(RGB::from_hex(SWORD_GRAY).unwrap(), RGB::named(BLACK)),
@@ -101,9 +111,16 @@ pub fn test_sword(ecs: &mut World, x: i32, y: i32) -> Entity {
         .build()
 }
 
-pub fn test_container(ecs: &mut World, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
+pub fn test_sword_container(ecs: &mut World, container: Entity) -> Entity {
+    test_sword(entity_in_container(ecs, container))
+}
+
+pub fn test_consumable_container(ecs: &mut World, container: Entity) -> Entity {
+    test_consumable(entity_in_container(ecs, container))
+}
+
+pub fn test_container(builder: EntityBuilder) -> Entity {
+    builder
         .with(Renderable {
             glyph: to_cp437('Æ'),
             color: ColorPair::new(RGB::from_hex(CHEST_BROWN).unwrap(), RGB::named(BLACK)),
@@ -114,12 +131,28 @@ pub fn test_container(ecs: &mut World, x: i32, y: i32) {
         })
         .with(Blocker {})
         .with(Container {})
-        .build();
+        .build()
 }
 
-// TODO
-pub fn spawn_items_in_chests(ecs: &mut World) {
+fn get_all_containers(ecs: &World) -> Vec<Entity> {
+    let entities = ecs.entities();
+    let pos = ecs.read_storage::<Position>();
+    let containers = ecs.read_storage::<Container>();
 
+    (&containers, &pos, &entities)
+        .join()
+        .map(|(_c, _p, e)| e)
+        .collect()
+}
+
+pub fn populate_containers(ecs: &mut World) {
+    let containers = get_all_containers(ecs);
+
+    for c in containers {
+        test_sword_container(ecs, c);
+        test_consumable_container(ecs, c);
+        test_consumable_container(ecs, c);
+    }
 }
 
 pub fn spawn_map(ecs: &mut World, map: &Map) {
@@ -129,10 +162,12 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
     let player = player(ecs, pt.x, pt.y);
     ecs.insert(player);
 
-    test_consumable(ecs, pt.x + 1, pt.y + 1);
-    test_consumable(ecs, pt.x + 2, pt.y + 1);
-    test_container(ecs, pt.x + 3, pt.y + 1);
-    test_sword(ecs, pt.x + 2, pt.y + 2);
+    test_consumable(entity_with_position(ecs, pt.x + 1, pt.y + 1));
+    test_consumable(entity_with_position(ecs, pt.x + 2, pt.y + 1));
+    test_container(entity_with_position(ecs, pt.x + 3, pt.y + 1));
+    test_sword(entity_with_position(ecs, pt.x + 2, pt.y + 2));
+
+    populate_containers(ecs);
 
     let mut rng = RandomNumberGenerator::new();
 

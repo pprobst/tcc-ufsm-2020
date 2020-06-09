@@ -227,7 +227,7 @@ impl<'a> Renderer<'a> {
                 } else if inventory_result == inventory::InventoryResult::Select {
                     *write_state = RunState::ItemUse;
                 }
-            },
+            }
             RunState::ItemUse => {
                 let inventory_result = inventory::show_use_menu(self.ecs, self.term, draw_batch);
                 if inventory_result == inventory::InventoryResult::Cancel {
@@ -237,11 +237,13 @@ impl<'a> Renderer<'a> {
                 {
                     *write_state = RunState::MobTurn;
                 }
-            },
+            }
             RunState::AccessContainer => {
                 let container_result = container::show_container(self.ecs, self.term, draw_batch);
                 if container_result == container::ContainerResult::Cancel {
-                    *write_state = RunState::Running;
+                    *write_state = RunState::MobTurn;
+                } else if container_result == container::ContainerResult::Select {
+                    *write_state = RunState::AccessContainer;
                 }
             }
             _ => {}

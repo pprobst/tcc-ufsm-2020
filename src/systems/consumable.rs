@@ -1,4 +1,4 @@
-use crate::components::{BaseStats, Consumable, ConsumeItem, InBackpack, Name};
+use crate::components::{BaseStats, Consumable, ConsumeItem, InBackpack, InventoryCapacity, Name};
 use crate::log::Log;
 use bracket_lib::prelude::{RGB, WHITE};
 use specs::prelude::*;
@@ -19,13 +19,25 @@ impl<'a> System<'a> for ConsumableSystem {
         ReadStorage<'a, Name>,
         ReadStorage<'a, Consumable>,
         WriteExpect<'a, Log>,
+        WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, ConsumeItem>,
         WriteStorage<'a, InBackpack>,
         WriteStorage<'a, BaseStats>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, name, consumable, mut log, mut to_consume, mut backpack, mut stats) = data;
+        let (
+            player,
+            name,
+            consumable,
+            mut log,
+            mut capacity,
+            mut to_consume,
+            mut backpack,
+            mut stats,
+        ) = data;
+
+        let mut inventory_cap = capacity.get_mut(*player).unwrap();
 
         for c in to_consume.join() {
             let item = consumable.get(c.item).unwrap();
@@ -45,6 +57,7 @@ impl<'a> System<'a> for ConsumableSystem {
                     ),
                     RGB::named(WHITE),
                 );
+                inventory_cap.curr -= 1;
             }
         }
 

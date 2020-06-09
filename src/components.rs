@@ -74,6 +74,12 @@ pub struct Name {
     pub name: String,
 }
 
+#[derive(Component)]
+pub struct InventoryCapacity {
+    pub max: u8,
+    pub curr: u8,
+}
+
 #[derive(Component, PartialEq)]
 // An entity's field of view (fov).
 pub struct Fov {
@@ -199,8 +205,26 @@ pub struct Consumable {
 
 #[derive(Component, Debug, Clone)]
 pub struct CollectItem {
-    pub collector: Entity,
-    pub item: Entity,
+    pub collects: Vec<(Entity, Entity)>,
+}
+
+impl CollectItem {
+    pub fn add_collect(
+        item_store: &mut WriteStorage<CollectItem>,
+        item: Entity,
+        collector: Entity,
+    ) {
+        if let Some(collecting) = item_store.get_mut(collector) {
+            collecting.collects.push((item, collector));
+        } else {
+            let itm = CollectItem {
+                collects: vec![(item, collector)],
+            };
+            item_store
+                .insert(collector, itm)
+                .expect("Unable to insert item");
+        }
+    }
 }
 
 #[derive(Component, Debug, Clone)]
@@ -215,7 +239,7 @@ pub struct ConsumeItem {
     pub item: Entity,
 }
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct InBackpack {
     pub owner: Entity,
 }
@@ -234,6 +258,7 @@ pub struct SelectedPosition {
 pub struct Container {} // Chests and other types of containers.
 
 #[derive(Component)]
-pub struct Contained { // Similar to InBackpack, but specifically for containers.
+pub struct Contained {
+    // Similar to InBackpack, but specifically for containers.
     pub container: Entity,
 }

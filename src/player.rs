@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, map_gen::TileType, utils::directions::*, Fov, Item, MeleeAttack, MissileAttack,
-    Mob, CollectItem, Player, Position, RunState, Target, Container, SelectedPosition
+    map_gen::Map, map_gen::TileType, utils::directions::*, CollectItem, Container, Fov, Item,
+    MeleeAttack, MissileAttack, Mob, Player, Position, RunState, SelectedPosition, Target,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -29,7 +29,7 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
         let dir_y = dir.delta_y as i32;
         let dest = map.idx(pos.x + dir_x, pos.y + dir_y);
 
-        // Tries melee if you're trying to move into a occupied tile.
+        // Tries melee if you're trying to move into an occupied tile.
         for ent in map.entities[dest].iter() {
             //let t = stats.get(*ent);
             let t = mobs.get(*ent);
@@ -196,7 +196,7 @@ pub fn switch_weapon(_ecs: &mut World) {}
 enum PossibleContexts {
     Nothing,
     Door,
-    Container
+    Container,
 }
 
 /// Does a contextual action (i.e. opens a door if there's one nearby, talk, etc).
@@ -213,11 +213,9 @@ pub fn context_action(ecs: &mut World) -> RunState {
             for (_ent, fov) in (&ents, &mut fov).join() {
                 fov.dirty = true;
             }
-        },
-        PossibleContexts::Container => {
-            return RunState::AccessContainer
-        },
-        _ => return RunState::Waiting
+        }
+        PossibleContexts::Container => return RunState::AccessContainer,
+        _ => return RunState::Waiting,
     }
 
     return RunState::PlayerTurn;
@@ -225,7 +223,8 @@ pub fn context_action(ecs: &mut World) -> RunState {
 
 fn check_near(ecs: &World, pt: &Point, map: &mut Map) -> PossibleContexts {
     for i in 0..4 {
-        let idx = map.idx_pt(*pt + dir_idx(i));
+        let selected_pt = *pt + dir_idx(i);
+        let idx = map.idx_pt(selected_pt);
         let tile = map.tiles[idx].ttype;
 
         // Check for entities (e.g. containers).
@@ -235,7 +234,9 @@ fn check_near(ecs: &World, pt: &Point, map: &mut Map) -> PossibleContexts {
             let c = containers.get(ent);
             if let Some(_c) = c {
                 let mut selected_pos = ecs.write_storage::<SelectedPosition>();
-                selected_pos.insert(ent, SelectedPosition { pos: *pt }).expect("Could not select position.");
+                selected_pos
+                    .insert(ent, SelectedPosition { pos: selected_pt })
+                    .expect("Could not select position.");
                 return PossibleContexts::Container;
             }
         }
@@ -294,15 +295,7 @@ pub fn collect_item(ecs: &mut World) -> RunState {
     match item_to_collect {
         Some(item) => {
             let mut collect = ecs.write_storage::<CollectItem>();
-            collect
-                .insert(
-                    *player_ent,
-                    CollectItem {
-                        collector: *player_ent,
-                        item,
-                    },
-                )
-                .expect("FAILED to pickup item.");
+            CollectItem::add_collect(&mut collect, item, *player_ent);
             RunState::PlayerTurn
         }
         None => RunState::Waiting,

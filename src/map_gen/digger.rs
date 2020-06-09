@@ -46,7 +46,8 @@ impl Digger {
         let yi = map.height / 3;
         let wi = rng.range(self.min_size, self.max_size) as i32;
         let hi = wi as i32;
-        let initial_room = Room::with_size(xi, yi, wi+self.min_size as i32, hi+self.min_size as i32);
+        let initial_room =
+            Room::with_size(xi, yi, wi + self.min_size as i32, hi + self.min_size as i32);
         create_room(map, initial_room, TileType::Floor);
         self.rooms.push(initial_room);
         self.gen_feature(map, rng);
@@ -108,7 +109,13 @@ impl Digger {
         self.gen_feature_loop(num_features, repeat, map, rng);
     }
 
-    fn gen_feature_loop(&mut self, mut num_features: i32, mut repeat: i32, map: &mut Map, rng: &mut RandomNumberGenerator) {
+    fn gen_feature_loop(
+        &mut self,
+        mut num_features: i32,
+        mut repeat: i32,
+        map: &mut Map,
+        rng: &mut RandomNumberGenerator,
+    ) {
         let mut prev_idx = 0;
         while num_features <= self.num_features {
             repeat -= 1;
@@ -155,7 +162,9 @@ impl Digger {
         }
 
         let mut size = rng.range(2, 4) as i32;
-        if self.peripheral { size = 1; }
+        if self.peripheral {
+            size = 1;
+        }
 
         match rng.range(0, 2) {
             0 => {

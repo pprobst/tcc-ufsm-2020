@@ -445,10 +445,14 @@ pub fn add_doors(
             if locs.len() <= 5 {
                 for loc in locs.iter() {
                     let pt = map.idx_pos(*loc);
-                    let door_count = count_neighbor_tile(map, pt, TileType::ClosedDoor, true); 
-                    let wall_count = count_neighbor_tile(map, pt, TileType::Wall, false); 
-                    if door_count >= 2 { continue; }
-                    if wall_count >= 3 && door_count < 2 { continue; }
+                    let door_count = count_neighbor_tile(map, pt, TileType::ClosedDoor, true);
+                    let wall_count = count_neighbor_tile(map, pt, TileType::Wall, false);
+                    if door_count >= 2 {
+                        continue;
+                    }
+                    if wall_count >= 3 && door_count < 2 {
+                        continue;
+                    }
                     map.tiles[*loc] = Tile::closed_door();
                 }
             }

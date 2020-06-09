@@ -1,6 +1,6 @@
-use crate::components::{InBackpack, Name, CollectItem, Position};
+use crate::components::{CollectItem, Contained, InBackpack, InventoryCapacity, Name, Position};
 use crate::log::Log;
-use bracket_lib::prelude::{RGB, WHITE};
+use bracket_lib::prelude::{ORANGE, RGB, WHITE};
 use specs::prelude::*;
 
 /*
@@ -18,23 +18,43 @@ impl<'a> System<'a> for ItemCollectSystem {
         ReadExpect<'a, Entity>,
         ReadStorage<'a, Name>,
         WriteExpect<'a, Log>,
+        WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, CollectItem>,
         WriteStorage<'a, InBackpack>,
+        WriteStorage<'a, Contained>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, name, mut log, mut pos, mut collect, mut backpack) = data;
+        let (
+            player,
+            name,
+            mut log,
+            mut capacity,
+            mut pos,
+            mut collect,
+            mut backpack,
+            mut contained,
+        ) = data;
+        let mut inventory_cap = capacity.get_mut(*player).unwrap();
         for p in collect.join() {
-            pos.remove(p.item);
-            backpack
-                .insert(p.item, InBackpack { owner: p.collector })
-                .expect("FAILED to insert item in backpack.");
-            if p.collector == *player {
-                log.add(
-                    format!("You pick up {}.", name.get(p.item).unwrap().name),
-                    RGB::named(WHITE),
-                );
+            for c in p.collects.iter() {
+                if inventory_cap.curr == inventory_cap.max && c.1 == *player {
+                    log.add(format!("Your inventory is full!"), RGB::named(ORANGE));
+                    break;
+                }
+                backpack
+                    .insert(c.0, InBackpack { owner: c.1 })
+                    .expect("FAILED to insert item in backpack.");
+                if c.1 == *player {
+                    log.add(
+                        format!("You pick up {}.", name.get(c.0).unwrap().name),
+                        RGB::named(WHITE),
+                    );
+                }
+                pos.remove(c.0);
+                contained.remove(c.0);
+                inventory_cap.curr += 1;
             }
         }
         collect.clear();

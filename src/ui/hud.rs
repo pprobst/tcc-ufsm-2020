@@ -1,5 +1,5 @@
 use super::{Log, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{BaseStats, Name, Equipment, Equipable, EquipSlot, EquipSlot::*};
+use crate::components::{BaseStats, EquipSlot, EquipSlot::*, Equipable, Equipment, Name};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -97,11 +97,10 @@ pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
 
     let mut health_status = "• Fine";
     let mut health_status_color = RGB::from_hex(GRASS_GREEN).unwrap();
-    if player_stats.health.hp < player_stats.health.max_hp / 10 + 2 { 
+    if player_stats.health.hp < player_stats.health.max_hp / 10 + 2 {
         health_status = "• Danger";
         health_status_color = RGB::from_hex(MED_RED).unwrap();
-    }
-    else if player_stats.health.hp <= player_stats.health.max_hp / 2 { 
+    } else if player_stats.health.hp <= player_stats.health.max_hp / 2 {
         health_status = "• Wounded";
         health_status_color = RGB::named(ORANGE);
     }
@@ -111,7 +110,6 @@ pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
         health_status,
         ColorPair::new(health_status_color, black),
     );
-
 }
 
 pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
@@ -119,10 +117,18 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
     let equipables = ecs.read_storage::<Equipable>();
     let names = ecs.read_storage::<Name>();
     let player = ecs.fetch::<Entity>();
-    
-    let mut equipment: Vec<(&str, EquipSlot)> = 
-        vec![("None", Weapon1), ("None", Weapon2), ("None", Head), ("None", Torso), ("None", Hands),
-        ("None", Legs), ("None", Feet), ("None", Back), ("None", Floating)];
+
+    let mut equipment: Vec<(&str, EquipSlot)> = vec![
+        ("None", Weapon1),
+        ("None", Weapon2),
+        ("None", Head),
+        ("None", Torso),
+        ("None", Hands),
+        ("None", Legs),
+        ("None", Feet),
+        ("None", Back),
+        ("None", Floating),
+    ];
 
     for (equip, equipable, name) in (&equips, &equipables, &names).join() {
         if equip.user == *player {
@@ -146,23 +152,87 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
 
     let y = 10;
     draw_batch.print_color(Point::new(0, y), "╞═ MELEE", ColorPair::new(gray, black));
-    draw_batch.print_color(Point::new(3, y+1), equipment[0].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+3), "╞═ RANGED", ColorPair::new(gray, black));
-    draw_batch.print_color(Point::new(3, y+4), equipment[1].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+6), "╞═ HEAD", ColorPair::new(gray, black));
-    draw_batch.print_color(Point::new(3, y+7), equipment[2].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+9), "╞═ TORSO", ColorPair::new(gray, black));
-    draw_batch.print_color(Point::new(3, y+10), equipment[3].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+12), "╞═ HANDS", ColorPair::new(gray, black));
-    draw_batch.print_color(Point::new(3, y+13), equipment[4].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+15), "╞═ LEGS", ColorPair::new(gray, black));
-    draw_batch.print_color(Point::new(3, y+16), equipment[5].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+18), "╞═ FEET", ColorPair::new(gray, black));
-    draw_batch.print_color(Point::new(3, y+19), equipment[6].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+21), "╞═ BACK", ColorPair::new(gray, black));
-    draw_batch.print_color(Point::new(3, y+22), equipment[7].0, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(0, y+24), "╞═ FLOATING", ColorPair::new(gray, black));
-    draw_batch.print_color(Point::new(3, y+25), equipment[8].0, ColorPair::new(white, black));
+    draw_batch.print_color(
+        Point::new(3, y + 1),
+        equipment[0].0,
+        ColorPair::new(white, black),
+    );
+    draw_batch.print_color(
+        Point::new(0, y + 3),
+        "╞═ RANGED",
+        ColorPair::new(gray, black),
+    );
+    draw_batch.print_color(
+        Point::new(3, y + 4),
+        equipment[1].0,
+        ColorPair::new(white, black),
+    );
+    draw_batch.print_color(Point::new(0, y + 6), "╞═ HEAD", ColorPair::new(gray, black));
+    draw_batch.print_color(
+        Point::new(3, y + 7),
+        equipment[2].0,
+        ColorPair::new(white, black),
+    );
+    draw_batch.print_color(
+        Point::new(0, y + 9),
+        "╞═ TORSO",
+        ColorPair::new(gray, black),
+    );
+    draw_batch.print_color(
+        Point::new(3, y + 10),
+        equipment[3].0,
+        ColorPair::new(white, black),
+    );
+    draw_batch.print_color(
+        Point::new(0, y + 12),
+        "╞═ HANDS",
+        ColorPair::new(gray, black),
+    );
+    draw_batch.print_color(
+        Point::new(3, y + 13),
+        equipment[4].0,
+        ColorPair::new(white, black),
+    );
+    draw_batch.print_color(
+        Point::new(0, y + 15),
+        "╞═ LEGS",
+        ColorPair::new(gray, black),
+    );
+    draw_batch.print_color(
+        Point::new(3, y + 16),
+        equipment[5].0,
+        ColorPair::new(white, black),
+    );
+    draw_batch.print_color(
+        Point::new(0, y + 18),
+        "╞═ FEET",
+        ColorPair::new(gray, black),
+    );
+    draw_batch.print_color(
+        Point::new(3, y + 19),
+        equipment[6].0,
+        ColorPair::new(white, black),
+    );
+    draw_batch.print_color(
+        Point::new(0, y + 21),
+        "╞═ BACK",
+        ColorPair::new(gray, black),
+    );
+    draw_batch.print_color(
+        Point::new(3, y + 22),
+        equipment[7].0,
+        ColorPair::new(white, black),
+    );
+    draw_batch.print_color(
+        Point::new(0, y + 24),
+        "╞═ FLOATING",
+        ColorPair::new(gray, black),
+    );
+    draw_batch.print_color(
+        Point::new(3, y + 25),
+        equipment[8].0,
+        ColorPair::new(white, black),
+    );
 }
 
 /// Renders messages from the log structure.
