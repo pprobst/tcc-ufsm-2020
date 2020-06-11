@@ -4,6 +4,21 @@ Este é o repositório do meu trabalho de conclusão de curso (TCC) da UFSM.
 Como o trabalho ainda está em sua fase inicial, os detalhes serão descritos
 futuramente.
 
+Note que este TCC se difere da maioria por uma miríade de motivos. Além das
+linhas de código, está o fato de que eu apenas tenho interesse (e me divirto) em
+aprender sobre como fazer jogos e geração procedural, que são interesses
+recentes (desde quando comecei a jogar [_Caves of
+Qud_](https://store.steampowered.com/app/333640/Caves_of_Qud/) em 2019); também
+pretendo continuar a trabalhar neste jogo após a conclusão do TCC, já que nem
+50% do que tenho como visão estará implementado. Este trabalho também utiliza
+de várias referências da indústria e outras que achei "in the wild", além de
+referências propriamente acadêmicas.
+
+Ou seja, é um TCC muito menos "científico" do que a maioria, podendo ser
+considerado mais como um _passion project_ meu que apenas estou aproveitando
+como trabalho. De qualquer forma, eu absolutamente discordo de que haja apenas
+um método de fazer ciência, muito menos acredito cegamente no método científico.
+
 ## Execução
 Primeiro, [instale e configure o Rust na sua
 máquina](https://doc.rust-lang.org/book/ch01-01-installation.html).
