@@ -41,6 +41,7 @@ pub struct State {
     pub ecs: World,
     pub runstate: RunState,
     pub show_map: bool,
+    pub map_generator: MapGenerator,
 }
 
 impl State {
@@ -49,6 +50,7 @@ impl State {
             ecs: world,
             runstate: RunState::Start,
             show_map: SHOW_MAP,
+            map_generator: MapGenerator::new(),
         }
     }
 
@@ -91,12 +93,17 @@ impl State {
         collect_item.run_now(&self.ecs);
     }
 
-    pub fn generate_map(&mut self, width: i32, height: i32) -> Map {
-        let mut mapgen = MapGenerator::new(width, height);
-        mapgen.gen_map();
-        let mut this_map = self.ecs.write_resource::<Map>();
-        *this_map = mapgen.get_map();
-        mapgen.get_map()
+    pub fn generate_new_map(&mut self, width: i32, height: i32) -> Map {
+        self.map_generator.push_map(width, height);
+        let idx = self.map_generator.maps.len() - 1;
+        self.map_generator.gen_map(idx);
+        self.set_curr_map(idx);
+        self.map_generator.get_map(idx)
+    }
+
+    pub fn set_curr_map(&mut self, idx: usize) {
+        let mut curr_map = self.ecs.write_resource::<Map>();
+        *curr_map = self.map_generator.get_map(idx);
     }
 }
 
@@ -163,7 +170,7 @@ impl GameState for State {
                 None => {}
                 Some(key) => {
                     if let VirtualKeyCode::Space = key {
-                        self.generate_map(80, 60);
+                        self.generate_new_map(80, 60);
                     }
                     if let VirtualKeyCode::Return = key {
                         self.show_map = false;

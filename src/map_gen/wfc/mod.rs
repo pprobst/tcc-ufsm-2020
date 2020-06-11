@@ -61,11 +61,13 @@ impl<'a> WaveFunctionCollapse<'a> {
         map.tiles = vec![Tile::woodenfloor(); (map.width * map.height) as usize];
         deduplicate(&mut self.patterns);
 
+        /*
         println!(
             "All patterns: {}, Unique patterns: {}",
             patterns.len(),
             self.patterns.len()
         );
+        */
 
         self.build_constraints(); // patterns + adjacency rules
         let constraints = self.constraints.clone();
