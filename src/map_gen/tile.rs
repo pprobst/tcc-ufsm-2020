@@ -13,6 +13,7 @@ use bracket_lib::prelude::{to_cp437, ColorPair, BLACK, RGB, RGBA};
 pub enum TileType {
     Empty,
     Wall,
+    InvisibleWall,
     Floor,
     Floor2,
     WoodenFloor,
@@ -65,6 +66,16 @@ impl Tile {
             block: true,
             glyph: to_cp437('█'),
             color: ColorPair::new(RGB::from_hex(WALL_GRAY).unwrap(), RGB::named(BLACK)),
+            ..Default::default()
+        }
+    }
+
+    pub fn invisible_wall() -> Self { // Can't believe I'm doing this.
+        Self {
+            ttype: TileType::InvisibleWall,
+            block: true,
+            glyph: to_cp437(' '),
+            color: ColorPair::new(RGB::named(BLACK), RGB::named(BLACK)),
             ..Default::default()
         }
     }

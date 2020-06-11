@@ -1,4 +1,4 @@
-use super::{Map, Position, Tile, TileType};
+use super::{Map, Position, Tile, TileType, CustomRegion, common::{region_width, region_height}};
 use crate::utils::directions::*;
 use bracket_lib::prelude::RandomNumberGenerator;
 
@@ -14,7 +14,6 @@ use bracket_lib::prelude::RandomNumberGenerator;
 
 #[derive(Clone)]
 struct Walker {
-    size: i32,
     life: i32,
     pos: Position,
 }
@@ -25,6 +24,7 @@ struct Walker {
 // while allowing diagonal movement produces chaotic dungeons.
 #[allow(dead_code)]
 pub struct RandomWalker {
+    region: CustomRegion,
     percent: f32,
     grouped_walkers: bool,
     can_walk_diagonally: bool,
@@ -32,46 +32,54 @@ pub struct RandomWalker {
 
 #[allow(dead_code)]
 impl RandomWalker {
-    pub fn new(percent: f32, grouped_walkers: bool, can_walk_diagonally: bool) -> Self {
+    pub fn new(region: CustomRegion, percent: f32, grouped_walkers: bool, can_walk_diagonally: bool) -> Self {
+    //pub fn new(percent: f32, grouped_walkers: bool, can_walk_diagonally: bool) -> Self {
         Self {
+            region,
             percent,
             grouped_walkers,
             can_walk_diagonally,
         }
     }
     pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
-        let w = map.width - 1;
-        let h = map.height - 1;
+        /*
+        let w = self.region.width-1;
+        let h = self.region.height-1;
 
         let mut n_floor_tiles = map
             .tiles
             .iter()
             .filter(|tile| tile.ttype == TileType::Floor)
             .count();
-        let needed_floor_tiles = (self.percent * map.size as f32) as usize;
+        */
 
-        let mut _n_walkers = 0;
+        let mut n_floor_tiles = self.region.pos.iter().filter(|p| map.is_floor(map.idx_pt(**p))).count();
+        let needed_floor_tiles = (self.percent * self.region.size as f32) as usize;
+        let center = self.region.get_center();
+
+        let max = 1000;
+        let mut n_walkers = 0;
         // While insufficient cells have been turned into floor, take one step in a random direction.
         // If the new map cell is wall, turn the new map cell into floor and increment the count of floor tiles.
-        while n_floor_tiles < needed_floor_tiles {
+        while n_floor_tiles < needed_floor_tiles || n_walkers >= max {
             let mut walker;
             if self.grouped_walkers {
                 walker = Walker {
-                    size: rng.range(1, 3),
                     life: rng.range(200, 500),
-                    pos: Position::new(w / 2, h / 2),
+                    pos: center,
                 };
             } else {
                 walker = Walker {
-                    size: rng.range(1, 3),
                     life: rng.range(200, 500),
-                    pos: Position::new(rng.range(2, w - 1), rng.range(2, h - 1)),
+                    pos: Position::new(rng.range(self.region.x1, self.region.x2), 
+                                       rng.range(self.region.y1, self.region.y2)),
                 };
             }
-            _n_walkers += 1;
+            println!("{}", n_walkers);
+            n_walkers += 1;
             while walker.life > 0 {
                 let idx = map.idx(walker.pos.x, walker.pos.y);
-                if map.in_map_bounds(walker.pos) {
+                if self.region.in_bounds(walker.pos) {
                     let new_dir = rng.range(0, 8);
                     match new_dir {
                         0 => {

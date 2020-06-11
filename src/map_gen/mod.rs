@@ -8,6 +8,8 @@ mod tunnel;
 use tunnel::*;
 mod region;
 use region::*;
+mod custom_region;
+use custom_region::*;
 pub mod map;
 pub use map::Map;
 mod common;
@@ -49,21 +51,36 @@ impl MapGenerator {
     }
 
     pub fn push_map(&mut self, width: i32, height: i32) {
-        self.maps.push(Map::new(width, height));
+        let map = Map::new(width, height, false);
+        self.maps.push(map);
     }
 
     pub fn gen_map(&mut self, idx: usize) {
-        self.gen_forest(idx);
+        //let room = Room::with_size(2, 2, 10, 10);
+        //create_circular_room(&mut self.maps[idx], room, TileType::WoodenFloor);
+        //rect_region(&mut self.maps[idx], 2, 2, 10, 10);
+        let region = CustomRegion::new_circ(2, 2, 50);
+        //let region = rect_region(&mut self.maps[idx], 2, 2, 10, 11);
+        //println!("{:?}", region.len());
+        /*
+        for pt in region.iter() {
+            let i = self.maps[idx].idx_pt(*pt);
+            self.maps[idx].paint_tile(i, TileType::ShallowWater);
+        }
+        */
+        let mut walker = RandomWalker::new(region, 0.55, false, true);
+        walker.generate(&mut self.maps[idx], &mut self.rng);
+        //self.gen_forest(idx);
         //HOUSE01.generate(Point::new(20, 20), &mut self.map);
-        //self.gen_cave(&mut rng);
+        //self.gen_cave(idx);
         //self.gen_tight_cave(&mut rng);
         //self.gen_bsp(&mut rng);
         //self.gen_bsp_ruin(&mut rng);
         //self.gen_bsp_ruin_2(&mut rng);
         //self.gen_digger(&mut rng);
         //self.gen_digger_inverted(&mut rng);
-        //self.map.add_borders();
-        //self.map.pretty_walls();
+        self.maps[idx].add_borders(TileType::InvisibleWall);
+        self.maps[idx].pretty_walls();
         //add_vegetation(&mut self.map);
         println!("Map generated!");
     }
@@ -91,7 +108,7 @@ impl MapGenerator {
         let d: bool = if chance == 0 { false } else { true };
 
         // floor_percent, grouped_walkers, diagonals
-        let mut walker = RandomWalker::new(0.55, false, d);
+        let mut walker = RandomWalker::new(self.maps[idx].get_region(), 0.55, false, d);
         walker.generate(&mut self.maps[idx], &mut self.rng);
 
         // n_iterations, n_walls_rule, min_cave_size, open_halls, dry_caves
@@ -112,7 +129,7 @@ impl MapGenerator {
         let d = if chance == 0 { false } else { true };
 
         // floor_percent, grouped_walkers, diagonals
-        let mut walker = RandomWalker::new(0.60, true, d);
+        let mut walker = RandomWalker::new(self.maps[idx].get_region(), 0.60, true, d);
         walker.generate(&mut self.maps[idx], &mut self.rng);
 
         // n_iterations, n_walls_rule, min_cave_size, open_halls, dry_caves

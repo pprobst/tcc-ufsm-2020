@@ -12,8 +12,67 @@ use std::cmp;
  *
  */
 
-/// Creates a rectangular room and returns it.
+
 #[allow(dead_code)]
+pub fn region_center(x1: i32, y1: i32, x2: i32, y2: i32) -> Point {
+    Point::new((x1+x2)/2, (y1+y2)/2)
+}
+
+#[allow(dead_code)]
+pub fn rect_region(x1: i32, y1: i32, w: i32, h: i32) -> Vec<Point>{
+    let x2 = x1 + w;
+    let y2 = y1 + h;
+    let mut points = Vec::new();
+
+    for y in y1..y2 {
+        for x in x1..x2 {
+            points.push(Point::new(x, y));
+            //let idx = map.idx(x, y);
+            //map.paint_tile(idx, TileType::WoodenFloor);
+        }
+    }
+
+    points
+}
+
+#[allow(dead_code)]
+pub fn circular_region(x1: i32, y1: i32, radius: i32) -> Vec<Point>{
+    let x2 = x1 + radius;
+    let y2 = y1 + radius;
+    let r = (x2 - x1) / 2;
+    let center = Point::new((x1+x2)/2, (y1+y2)/2);
+    let mut points = Vec::new();
+
+    for y in y1..y2 {
+        for x in x1..x2 {
+            let d = DistanceAlg::Pythagoras.distance2d(center, Point::new(x, y));
+            if d < r as f32 {
+                points.push(Point::new(x, y));
+                //let idx = map.idx(x, y);
+                //map.paint_tile(idx, TileType::WoodenFloor);
+            }
+        }
+    }
+
+    points
+}
+
+#[allow(dead_code)]
+pub fn region_width(region: &Vec<Point>) -> i32 {
+    let max = region.iter().max_by_key(|p| p.x).unwrap().x;
+    let min = region.iter().min_by_key(|p| p.x).unwrap().x;
+    max - min
+}
+
+#[allow(dead_code)]
+pub fn region_height(region: &Vec<Point>) -> i32 {
+    let max = region.iter().max_by_key(|p| p.y).unwrap().y;
+    let min = region.iter().min_by_key(|p| p.y).unwrap().y;
+    max - min
+}
+
+#[allow(dead_code)]
+/// Creates a rectangular room and returns it.
 pub fn create_room(map: &mut Map, room: Room, ttype: TileType) -> Room {
     for y in (room.y1 + 1)..room.y2 {
         for x in (room.x1 + 1)..room.x2 {

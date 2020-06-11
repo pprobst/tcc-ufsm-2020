@@ -1,4 +1,4 @@
-use super::{Tile, TileType};
+use super::{Tile, TileType, CustomRegion};
 use crate::components::Position;
 use crate::utils::directions::*;
 use bracket_lib::prelude::*;
@@ -15,6 +15,7 @@ use specs::prelude::Entity;
 #[derive(Clone, Debug)]
 pub struct Map {
     pub tiles: Vec<Tile>,
+    pub region: CustomRegion,
     pub size: i32,
     pub width: i32,
     pub height: i32,
@@ -24,16 +25,21 @@ pub struct Map {
 
 #[allow(dead_code)]
 impl Map {
-    pub fn new(width: i32, height: i32) -> Map {
+    pub fn new(width: i32, height: i32, empty: bool) -> Map {
         let map_size = width * height;
+        let tile = if empty { Tile::floor() } else { Tile::wall() };
         Self {
-            //tiles: vec![Tile::floor(); map_size as usize],
-            tiles: vec![Tile::wall(); map_size as usize],
+            tiles: vec![tile; map_size as usize],
+            region: CustomRegion::new_rect(0, 0, width, height),
             size: map_size,
             width,
             height,
             entities: vec![None; map_size as usize],
         }
+    }
+
+    pub fn get_region(&self) -> CustomRegion {
+        self.region.clone()
     }
 
     /// Makes map chaotic with a chance of floor_chance to change a tile to floor.
@@ -51,19 +57,19 @@ impl Map {
     }
 
     /// Add solid borders to the map.
-    pub fn add_borders(&mut self) {
+    pub fn add_borders(&mut self, ttype: TileType) {
         let mut idx;
-        for x in 1..self.width {
-            idx = self.idx(x, 1);
-            self.tiles[idx] = Tile::wall();
+        for x in 0..self.width {
+            idx = self.idx(x, 0);
+            self.paint_tile(idx, ttype);
             idx = self.idx(x, self.height - 1);
-            self.tiles[idx] = Tile::wall();
+            self.paint_tile(idx, ttype);
         }
-        for y in 1..self.height {
-            idx = self.idx(1, y);
-            self.tiles[idx] = Tile::wall();
+        for y in 0..self.height {
+            idx = self.idx(0, y);
+            self.paint_tile(idx, ttype);
             idx = self.idx(self.width - 1, y);
-            self.tiles[idx] = Tile::wall();
+            self.paint_tile(idx, ttype);
         }
     }
 
@@ -153,6 +159,9 @@ impl Map {
             }
             TileType::Wall => {
                 self.tiles[idx] = Tile::wall();
+            }
+            TileType::InvisibleWall => {
+                self.tiles[idx] = Tile::invisible_wall();
             }
             TileType::ShallowWater => {
                 self.tiles[idx] = Tile::shallow_water();
