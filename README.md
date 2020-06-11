@@ -61,6 +61,7 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
 - [x] Inventário e consumo de itens;
 - [x] Equipamento;
 - [x] Baús de tesouro;
+- [ ] Seleção de regiões no mapa para aplicar algoritmos de geração;
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
 - [ ] Sistema de serialização/desserialização usando RON +
   serde para mobs, itens e cores.
