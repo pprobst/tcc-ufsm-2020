@@ -1,7 +1,7 @@
 use super::{
     common::{create_h_tunnel_room, create_room, create_v_tunnel_room},
     room::Operations,
-    Map, Room, TileType,
+    CustomRegion, Map, Room, TileType,
 };
 use crate::utils::directions::*;
 use bracket_lib::prelude::{DistanceAlg, Point, RandomNumberGenerator};
@@ -16,7 +16,8 @@ use bracket_lib::prelude::{DistanceAlg, Point, RandomNumberGenerator};
  */
 
 #[allow(dead_code)]
-pub struct Digger {
+pub struct Digger<'a> {
+    region: &'a CustomRegion,
     rooms: Vec<Room>,
     min_size: u8,
     max_size: u8,
@@ -25,9 +26,10 @@ pub struct Digger {
 }
 
 #[allow(dead_code)]
-impl Digger {
-    pub fn new(min_size: u8, max_size: u8, num_features: i32) -> Self {
+impl<'a> Digger<'a> {
+    pub fn new(region: &'a CustomRegion, min_size: u8, max_size: u8, num_features: i32) -> Self {
         Self {
+            region,
             rooms: vec![],
             min_size,
             max_size,
@@ -41,13 +43,11 @@ impl Digger {
     }
 
     pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
-        // Create initial room somewhere on the map.
-        let xi = map.width / 2 - map.width / 10;
-        let yi = map.height / 3;
+        // Create initial room on the center of the map.
+        let center = self.region.get_center();
         let wi = rng.range(self.min_size, self.max_size) as i32;
         let hi = wi as i32;
-        let initial_room =
-            Room::with_size(xi, yi, wi + self.min_size as i32, hi + self.min_size as i32);
+        let initial_room = Room::with_size(center.x - 5, center.y - 5, wi, hi);
         create_room(map, initial_room, TileType::Floor);
         self.rooms.push(initial_room);
         self.gen_feature(map, rng);
@@ -81,8 +81,14 @@ impl Digger {
 
         for r in self.rooms.iter() {
             if new_room.intersect(r)
-                || !map.in_map_bounds_xy(new_room.x1, new_room.y1)
-                || !map.in_map_bounds_xy(new_room.x2, new_room.y2)
+                || !self.region.in_bounds(Point {
+                    x: new_room.x1,
+                    y: new_room.y1,
+                })
+                || !self.region.in_bounds(Point {
+                    x: new_room.x2,
+                    y: new_room.y2,
+                })
             {
                 return false;
             }

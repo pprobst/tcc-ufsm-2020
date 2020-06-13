@@ -42,20 +42,6 @@ impl Map {
         self.region.clone()
     }
 
-    /// Makes map chaotic with a chance of floor_chance to change a tile to floor.
-    /// Used in mapgen algorithms that require a "chaotic map" like Cellular Automata.
-    pub fn make_chaotic(&mut self, floor_chance: u8) {
-        let mut rng = RandomNumberGenerator::new();
-        let floor = Tile::floor();
-
-        for mut _tile in self.tiles.iter_mut() {
-            let chance = rng.range(1, 101);
-            if chance <= floor_chance {
-                *_tile = floor;
-            }
-        }
-    }
-
     /// Add solid borders to the map.
     pub fn add_borders(&mut self, ttype: TileType) {
         let mut idx;
@@ -74,8 +60,8 @@ impl Map {
     }
 
     pub fn pretty_walls(&mut self) {
-        for y in 1..self.height {
-            for x in 1..self.width {
+        for y in 1..self.height - 1 {
+            for x in 1..self.width - 1 {
                 let idx = self.idx(x, y);
                 if self.tiles[idx].ttype == TileType::Wall {
                     let glyph = self.get_wall_glyph(x, y);
@@ -221,14 +207,6 @@ impl Map {
             }
             _ => {
                 self.tiles[idx] = Tile::floor();
-            }
-        }
-    }
-
-    pub fn apply_forest_theme(&mut self) {
-        for idx in 0..self.tiles.len() {
-            if self.is_wall(idx) {
-                self.tiles[idx] = Tile::tree();
             }
         }
     }

@@ -1,4 +1,4 @@
-use super::{common::*, Map, Room, TileType, Tunnel};
+use super::{common::*, CustomRegion, Map, Room, TileType, Tunnel};
 use bracket_lib::prelude::RandomNumberGenerator;
 
 /*
@@ -18,16 +18,18 @@ use bracket_lib::prelude::RandomNumberGenerator;
  */
 
 #[allow(dead_code)]
-pub struct BSPDungeon {
+pub struct BSPDungeon<'a> {
+    region: &'a CustomRegion,
     rooms: Vec<Room>, // nodes (rooms)
     optimal_block_size: i32,
     connected: bool,
 }
 
 #[allow(dead_code)]
-impl BSPDungeon {
-    pub fn new(optimal_block_size: i32, connected: bool) -> Self {
+impl<'a> BSPDungeon<'a> {
+    pub fn new(region: &'a CustomRegion, optimal_block_size: i32, connected: bool) -> Self {
         Self {
+            region,
             rooms: vec![],
             optimal_block_size,
             connected,
@@ -35,10 +37,14 @@ impl BSPDungeon {
     }
 
     pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
-        let w = map.width - 1;
-        let h = map.height - 1;
+        let mut root = Node::new(
+            self.region.x1,
+            self.region.y1,
+            self.region.width,
+            self.region.height,
+            self.optimal_block_size,
+        );
 
-        let mut root = Node::new(1, 1, w, h, self.optimal_block_size);
         root.gen(rng);
         root.make_rooms(rng, self.connected);
 

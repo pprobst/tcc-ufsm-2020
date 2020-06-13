@@ -2,7 +2,7 @@ use super::common::{circular_region, rect_region};
 use crate::components::Position;
 use bracket_lib::prelude::DistanceAlg;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct CustomRegion {
     pub pos: Vec<Position>,
     pub x1: i32,

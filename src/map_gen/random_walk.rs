@@ -1,7 +1,4 @@
-use super::{
-    common::{region_height, region_width},
-    CustomRegion, Map, Position, Tile, TileType,
-};
+use super::{CustomRegion, Map, Position, Tile, TileType};
 use crate::utils::directions::*;
 use bracket_lib::prelude::RandomNumberGenerator;
 
@@ -26,17 +23,17 @@ struct Walker {
 // Walkers that can only move orthogonally produce neater dungeons,
 // while allowing diagonal movement produces chaotic dungeons.
 #[allow(dead_code)]
-pub struct RandomWalker {
-    region: CustomRegion,
+pub struct RandomWalker<'a> {
+    region: &'a CustomRegion,
     percent: f32,
     grouped_walkers: bool,
     can_walk_diagonally: bool,
 }
 
 #[allow(dead_code)]
-impl RandomWalker {
+impl<'a> RandomWalker<'a> {
     pub fn new(
-        region: CustomRegion,
+        region: &'a CustomRegion,
         percent: f32,
         grouped_walkers: bool,
         can_walk_diagonally: bool,
@@ -49,18 +46,8 @@ impl RandomWalker {
             can_walk_diagonally,
         }
     }
+
     pub fn generate(&mut self, map: &mut Map, rng: &mut RandomNumberGenerator) {
-        /*
-        let w = self.region.width-1;
-        let h = self.region.height-1;
-
-        let mut n_floor_tiles = map
-            .tiles
-            .iter()
-            .filter(|tile| tile.ttype == TileType::Floor)
-            .count();
-        */
-
         let mut n_floor_tiles = self
             .region
             .pos
@@ -70,11 +57,12 @@ impl RandomWalker {
         let needed_floor_tiles = (self.percent * self.region.size as f32) as usize;
         let center = self.region.get_center();
 
-        let max = 1000;
+        let max = 500;
         let mut n_walkers = 0;
         // While insufficient cells have been turned into floor, take one step in a random direction.
         // If the new map cell is wall, turn the new map cell into floor and increment the count of floor tiles.
-        while n_floor_tiles < needed_floor_tiles || n_walkers >= max {
+        while n_floor_tiles < needed_floor_tiles && n_walkers < max {
+            n_walkers += 1;
             let mut walker;
             if self.grouped_walkers {
                 walker = Walker {
@@ -90,7 +78,7 @@ impl RandomWalker {
                     ),
                 };
             }
-            n_walkers += 1;
+            //println!("{}", n_walkers);
             while walker.life > 0 {
                 let idx = map.idx(walker.pos.x, walker.pos.y);
                 if self.region.in_bounds(walker.pos) {

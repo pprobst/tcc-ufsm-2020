@@ -2,7 +2,7 @@ use super::{
     common::{connect_regions, count_neighbor_tile},
     get_all_regions,
     region::Operations,
-    Map, Point, Tile, TileType,
+    CustomRegion, Map, Point, Tile, TileType,
 };
 
 /*
@@ -17,7 +17,8 @@ use super::{
  */
 
 #[allow(dead_code)]
-pub struct CellularAutomata {
+pub struct CellularAutomata<'a> {
+    region: &'a CustomRegion,
     n_iterations: u8, // the more iterations we have, the smoother the map will be
     n_walls_rule: u8,
     min_cave_size: usize,
@@ -26,8 +27,9 @@ pub struct CellularAutomata {
 }
 
 #[allow(dead_code)]
-impl CellularAutomata {
+impl<'a> CellularAutomata<'a> {
     pub fn new(
+        region: &'a CustomRegion,
         n_iterations: u8,
         n_walls_rule: u8,
         min_cave_size: usize,
@@ -35,6 +37,7 @@ impl CellularAutomata {
         dry_caves: bool,
     ) -> Self {
         Self {
+            region,
             n_iterations,
             n_walls_rule,
             min_cave_size,
@@ -44,16 +47,13 @@ impl CellularAutomata {
     }
 
     pub fn generate(&mut self, map: &mut Map) {
-        let w = map.width - 1;
-        let h = map.height - 1;
-
         // We need to make a clone here because the already replaced cells MUST NOT
         // affect the current cell.
         let mut tiles = map.tiles.clone();
 
         for _i in 0..self.n_iterations {
-            for y in 1..h {
-                for x in 1..w {
+            for y in self.region.y1..self.region.y2 {
+                for x in self.region.x1..self.region.x2 {
                     let mut flag = false;
                     let curr_pt = Point::new(x, y);
                     let curr_idx = map.idx(x, y);
@@ -118,8 +118,8 @@ impl CellularAutomata {
         let mut tiles = map.tiles.clone();
 
         for _i in 0..self.n_iterations {
-            for y in 1..map.height - 1 {
-                for x in 1..map.width - 1 {
+            for y in self.region.y1..self.region.y2 {
+                for x in self.region.x1..self.region.x2 {
                     let curr_pt = Point::new(x, y);
                     let curr_idx = map.idx(x, y);
                     if !map.is_water(curr_idx) {

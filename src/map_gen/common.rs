@@ -1,4 +1,4 @@
-use super::{region::Operations, Map, Region, Room, Tile, TileType, Tunnel};
+use super::{region::Operations, CustomRegion, Map, Region, Room, Tile, TileType, Tunnel};
 use crate::utils::directions::*;
 use bracket_lib::prelude::{DistanceAlg, Point, RandomNumberGenerator};
 use std::cmp;
@@ -11,11 +11,6 @@ use std::cmp;
  * https://github.com/Vinatorul/dungeon-generator-rs/blob/master/src/bsp_generator.rs
  *
  */
-
-#[allow(dead_code)]
-pub fn region_center(x1: i32, y1: i32, x2: i32, y2: i32) -> Point {
-    Point::new((x1 + x2) / 2, (y1 + y2) / 2)
-}
 
 #[allow(dead_code)]
 pub fn rect_region(x1: i32, y1: i32, w: i32, h: i32) -> Vec<Point> {
@@ -99,8 +94,8 @@ pub fn create_circular_room(map: &mut Map, room: Room, ttype: TileType) -> Room 
     room
 }
 
-/// Creates a horizontal tunnel (corridor) and returns it.
 #[allow(dead_code)]
+/// Creates a horizontal tunnel (corridor) and returns it.
 pub fn create_h_tunnel(map: &mut Map, x1: i32, x2: i32, y: i32, size: i32) -> Tunnel {
     let mut tunnel = Vec::new();
 
@@ -120,8 +115,8 @@ pub fn create_h_tunnel(map: &mut Map, x1: i32, x2: i32, y: i32, size: i32) -> Tu
     tunnel
 }
 
-/// Creates a vertical tunnel and returns it.
 #[allow(dead_code)]
+/// Creates a vertical tunnel and returns it.
 pub fn create_v_tunnel(map: &mut Map, y1: i32, y2: i32, x: i32, size: i32) -> Tunnel {
     let mut tunnel = Vec::new();
     for y in cmp::min(y1, y2)..cmp::max(y1, y2) + 1 {
@@ -235,18 +230,18 @@ pub fn make_exact_tunnel(
 }
 
 #[allow(dead_code)]
-pub fn make_lake(map: &mut Map, liquid: TileType, total_tiles: u32) {
+pub fn make_lake(map: &mut Map, region: &CustomRegion, liquid: TileType, total_tiles: u32) {
     let mut rng = RandomNumberGenerator::new();
 
-    let x = rng.range(15, map.width - 15);
-    let y = rng.range(15, map.height - 15);
+    let x = rng.range(region.x1, region.x2);
+    let y = rng.range(region.y1, region.y2);
 
     let mut walker_pos = Point::new(x, y);
     let mut n_tiles = 0;
     let mut max_tries = total_tiles * 5;
 
     while n_tiles <= total_tiles && max_tries > 0 {
-        if map.in_map_bounds(walker_pos) {
+        if region.in_bounds(walker_pos) {
             let idx = map.idx_pt(walker_pos);
             match liquid {
                 TileType::DeepWater => {
@@ -260,21 +255,8 @@ pub fn make_lake(map: &mut Map, liquid: TileType, total_tiles: u32) {
                     map.tiles[idx - 1] = Tile::shallow_water();
                 }
             }
-            let dir = rng.range(0, 4);
-            match dir {
-                0 => {
-                    walker_pos += EAST;
-                }
-                1 => {
-                    walker_pos += WEST;
-                }
-                2 => {
-                    walker_pos += NORTH;
-                }
-                _ => {
-                    walker_pos += SOUTH;
-                }
-            }
+            let dir = get_random_dir();
+            walker_pos += dir;
             n_tiles += 1;
         }
         max_tries -= 1;
@@ -286,46 +268,25 @@ pub fn make_lake(map: &mut Map, liquid: TileType, total_tiles: u32) {
 /// If moore == false, considers a von Neumann neighborhood (orthogonal neighbors).
 pub fn count_neighbor_tile(map: &Map, curr_pt: Point, tt: TileType, moore: bool) -> u8 {
     let mut counter = 0;
-
-    /*if map.tiles[map.idx_pt(curr_pt)].ttype == tt {
-        wall_counter += 1;
-    } // avoid many single tile blockers
-    */
-    if map.tiles[map.idx_pt(curr_pt + EAST)].ttype == tt {
-        counter += 1;
-    }
-    if map.tiles[map.idx_pt(curr_pt + WEST)].ttype == tt {
-        counter += 1;
-    }
-    if map.tiles[map.idx_pt(curr_pt + NORTH)].ttype == tt {
-        counter += 1;
-    }
-    if map.tiles[map.idx_pt(curr_pt + SOUTH)].ttype == tt {
-        counter += 1;
-    }
-    if moore {
-        if map.tiles[map.idx_pt(curr_pt + NORTHEAST)].ttype == tt {
-            counter += 1;
+    for i in 0..8 {
+        if !moore && i >= 4 {
+            break;
         }
-        if map.tiles[map.idx_pt(curr_pt + NORTHWEST)].ttype == tt {
-            counter += 1;
-        }
-        if map.tiles[map.idx_pt(curr_pt + SOUTHEAST)].ttype == tt {
-            counter += 1;
-        }
-        if map.tiles[map.idx_pt(curr_pt + SOUTHWEST)].ttype == tt {
-            counter += 1;
+        let pt = curr_pt + dir_idx(i);
+        if map.in_map_bounds(pt) {
+            if map.tiles[map.idx_pt(pt)].ttype == tt {
+                counter += 1;
+            }
         }
     }
-
     counter
 }
 
 #[allow(dead_code)]
-pub fn add_vegetation(map: &mut Map, trees: bool) {
+pub fn add_vegetation(map: &mut Map, region: &CustomRegion, trees: bool) {
     let mut rng = RandomNumberGenerator::new();
-    for y in 1..map.height - 1 {
-        for x in 1..map.width - 1 {
+    for y in region.y1..region.y2 {
+        for x in region.x1..region.x2 {
             let idx = map.idx(x, y);
             if !map.tiles[idx].block && !map.is_water(idx) {
                 let mut chance = rng.range(0, 4);
@@ -459,6 +420,28 @@ pub fn connect_regions(map: &mut Map, regions: Vec<Region>, ttype: TileType, nat
             ttype,
             natural,
         );
+    }
+}
+
+/// Makes map chaotic with a chance of floor_chance to change a tile to floor.
+/// Used in mapgen algorithms that require a "chaotic map" like Cellular Automata.
+pub fn make_chaotic(map: &mut Map, region: &CustomRegion, floor_chance: u8) {
+    let mut rng = RandomNumberGenerator::new();
+
+    for pt in region.pos.iter() {
+        let idx = map.idx_pt(*pt);
+        if rng.range(1, 101) <= floor_chance {
+            map.tiles[idx] = Tile::floor();
+        };
+    }
+}
+
+pub fn apply_forest_theme(map: &mut Map, region: &CustomRegion) {
+    for pt in region.pos.iter() {
+        let idx = map.idx_pt(*pt);
+        if map.is_wall(idx) {
+            map.tiles[idx] = Tile::tree();
+        }
     }
 }
 
