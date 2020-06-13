@@ -1,5 +1,6 @@
-use super::{common::{rect_region, circular_region, region_width, region_height}};
+use super::common::{circular_region, rect_region};
 use crate::components::Position;
+use bracket_lib::prelude::DistanceAlg;
 
 #[derive(Clone, Debug)]
 pub struct CustomRegion {
@@ -11,6 +12,7 @@ pub struct CustomRegion {
     pub width: i32,
     pub height: i32,
     pub size: i32,
+    pub circular: bool,
 }
 
 #[allow(dead_code)]
@@ -26,28 +28,39 @@ impl CustomRegion {
             width,
             height,
             size: s,
+            circular: false,
         }
     }
 
     pub fn new_circ(x1: i32, y1: i32, radius: i32) -> Self {
         let region = circular_region(x1, y1, radius);
-        let w = region_width(&region);
-        let h = region_height(&region);
+        let w = radius * 2;
+        let h = radius * 2;
         let s = w * h;
         Self {
             pos: region,
             x1,
-            x2: x1 + radius,
+            x2: x1 + w,
             y1,
-            y2: y1 + radius,
+            y2: y1 + h,
             width: w,
             height: h,
             size: s,
+            circular: true,
         }
     }
 
     pub fn in_bounds(&self, p: Position) -> bool {
-        p.x > self.x1 && p.x < self.width && p.y > 0 && p.y < self.height
+        if !self.circular {
+            return p.x > self.x1 && p.x < self.x2 && p.y > self.y1 && p.y < self.y2;
+        }
+        self.in_bounds_circle(p)
+    }
+
+    pub fn in_bounds_circle(&self, p: Position) -> bool {
+        let c = self.get_center();
+        let d = DistanceAlg::Pythagoras.distance2d(c, p);
+        d < ((self.x2 - self.x1) / 2) as f32
     }
 
     pub fn get_positions(&self) -> Vec<Position> {
@@ -55,6 +68,6 @@ impl CustomRegion {
     }
 
     pub fn get_center(&self) -> Position {
-        Position::new((self.x1+self.x2)/2, (self.y1+self.y2)/2)
+        Position::new((self.x1 + self.x2) / 2, (self.y1 + self.y2) / 2)
     }
 }

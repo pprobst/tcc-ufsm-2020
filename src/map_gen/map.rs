@@ -1,4 +1,4 @@
-use super::{Tile, TileType, CustomRegion};
+use super::{CustomRegion, Tile, TileType};
 use crate::components::Position;
 use crate::utils::directions::*;
 use bracket_lib::prelude::*;

@@ -1,4 +1,7 @@
-use super::{Map, Position, Tile, TileType, CustomRegion, common::{region_width, region_height}};
+use super::{
+    common::{region_height, region_width},
+    CustomRegion, Map, Position, Tile, TileType,
+};
 use crate::utils::directions::*;
 use bracket_lib::prelude::RandomNumberGenerator;
 
@@ -32,8 +35,13 @@ pub struct RandomWalker {
 
 #[allow(dead_code)]
 impl RandomWalker {
-    pub fn new(region: CustomRegion, percent: f32, grouped_walkers: bool, can_walk_diagonally: bool) -> Self {
-    //pub fn new(percent: f32, grouped_walkers: bool, can_walk_diagonally: bool) -> Self {
+    pub fn new(
+        region: CustomRegion,
+        percent: f32,
+        grouped_walkers: bool,
+        can_walk_diagonally: bool,
+    ) -> Self {
+        //pub fn new(percent: f32, grouped_walkers: bool, can_walk_diagonally: bool) -> Self {
         Self {
             region,
             percent,
@@ -53,7 +61,12 @@ impl RandomWalker {
             .count();
         */
 
-        let mut n_floor_tiles = self.region.pos.iter().filter(|p| map.is_floor(map.idx_pt(**p))).count();
+        let mut n_floor_tiles = self
+            .region
+            .pos
+            .iter()
+            .filter(|p| map.is_floor(map.idx_pt(**p)))
+            .count();
         let needed_floor_tiles = (self.percent * self.region.size as f32) as usize;
         let center = self.region.get_center();
 
@@ -71,11 +84,12 @@ impl RandomWalker {
             } else {
                 walker = Walker {
                     life: rng.range(200, 500),
-                    pos: Position::new(rng.range(self.region.x1, self.region.x2), 
-                                       rng.range(self.region.y1, self.region.y2)),
+                    pos: Position::new(
+                        rng.range(self.region.x1, self.region.x2),
+                        rng.range(self.region.y1, self.region.y2),
+                    ),
                 };
             }
-            println!("{}", n_walkers);
             n_walkers += 1;
             while walker.life > 0 {
                 let idx = map.idx(walker.pos.x, walker.pos.y);

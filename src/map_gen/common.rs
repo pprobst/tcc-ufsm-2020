@@ -12,14 +12,13 @@ use std::cmp;
  *
  */
 
-
 #[allow(dead_code)]
 pub fn region_center(x1: i32, y1: i32, x2: i32, y2: i32) -> Point {
-    Point::new((x1+x2)/2, (y1+y2)/2)
+    Point::new((x1 + x2) / 2, (y1 + y2) / 2)
 }
 
 #[allow(dead_code)]
-pub fn rect_region(x1: i32, y1: i32, w: i32, h: i32) -> Vec<Point>{
+pub fn rect_region(x1: i32, y1: i32, w: i32, h: i32) -> Vec<Point> {
     let x2 = x1 + w;
     let y2 = y1 + h;
     let mut points = Vec::new();
@@ -27,8 +26,6 @@ pub fn rect_region(x1: i32, y1: i32, w: i32, h: i32) -> Vec<Point>{
     for y in y1..y2 {
         for x in x1..x2 {
             points.push(Point::new(x, y));
-            //let idx = map.idx(x, y);
-            //map.paint_tile(idx, TileType::WoodenFloor);
         }
     }
 
@@ -36,11 +33,12 @@ pub fn rect_region(x1: i32, y1: i32, w: i32, h: i32) -> Vec<Point>{
 }
 
 #[allow(dead_code)]
-pub fn circular_region(x1: i32, y1: i32, radius: i32) -> Vec<Point>{
-    let x2 = x1 + radius;
-    let y2 = y1 + radius;
+pub fn circular_region(x1: i32, y1: i32, radius: i32) -> Vec<Point> {
+    let diameter = radius * 2;
+    let x2 = x1 + diameter;
+    let y2 = y1 + diameter;
     let r = (x2 - x1) / 2;
-    let center = Point::new((x1+x2)/2, (y1+y2)/2);
+    let center = Point::new((x1 + x2) / 2, (y1 + y2) / 2);
     let mut points = Vec::new();
 
     for y in y1..y2 {
@@ -48,8 +46,6 @@ pub fn circular_region(x1: i32, y1: i32, radius: i32) -> Vec<Point>{
             let d = DistanceAlg::Pythagoras.distance2d(center, Point::new(x, y));
             if d < r as f32 {
                 points.push(Point::new(x, y));
-                //let idx = map.idx(x, y);
-                //map.paint_tile(idx, TileType::WoodenFloor);
             }
         }
     }

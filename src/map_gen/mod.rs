@@ -56,10 +56,9 @@ impl MapGenerator {
     }
 
     pub fn gen_map(&mut self, idx: usize) {
-        //let room = Room::with_size(2, 2, 10, 10);
-        //create_circular_room(&mut self.maps[idx], room, TileType::WoodenFloor);
-        //rect_region(&mut self.maps[idx], 2, 2, 10, 10);
-        let region = CustomRegion::new_circ(2, 2, 50);
+        //let region = CustomRegion::new_circ(2, 2, 50);
+        let region = CustomRegion::new_circ(30, 10, 10);
+        let region2 = CustomRegion::new_rect(5, 5, 20, 50);
         //let region = rect_region(&mut self.maps[idx], 2, 2, 10, 11);
         //println!("{:?}", region.len());
         /*
@@ -68,8 +67,10 @@ impl MapGenerator {
             self.maps[idx].paint_tile(i, TileType::ShallowWater);
         }
         */
-        let mut walker = RandomWalker::new(region, 0.55, false, true);
+        let mut walker = RandomWalker::new(region2, 0.55, false, false);
         walker.generate(&mut self.maps[idx], &mut self.rng);
+        let mut walker2 = RandomWalker::new(region, 0.55, false, false);
+        walker2.generate(&mut self.maps[idx], &mut self.rng);
         //self.gen_forest(idx);
         //HOUSE01.generate(Point::new(20, 20), &mut self.map);
         //self.gen_cave(idx);

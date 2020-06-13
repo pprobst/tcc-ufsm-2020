@@ -70,7 +70,8 @@ impl Tile {
         }
     }
 
-    pub fn invisible_wall() -> Self { // Can't believe I'm doing this.
+    pub fn invisible_wall() -> Self {
+        // Can't believe I'm doing this.
         Self {
             ttype: TileType::InvisibleWall,
             block: true,
