@@ -1,4 +1,4 @@
-use super::{Map, Point, Tile, TileType};
+use super::{CustomRegion, Map, Point, TileType};
 use crate::utils::directions::*;
 use bracket_lib::prelude::RandomNumberGenerator;
 use std::collections::HashMap;
@@ -33,54 +33,53 @@ pub struct WaveFunctionCollapse<'a> {
     patterns: Vec<Vec<TileType>>,
     constraints: Vec<MapTile>,
     frequencies: HashMap<usize, f32>,
-    adjacency_mode: &'a str,
+    region: &'a CustomRegion,
 }
 
 #[allow(dead_code)]
 impl<'a> WaveFunctionCollapse<'a> {
-    pub fn new(tile_size: i32, adjacency_mode: &'a str) -> Self {
+    pub fn new(tile_size: i32, region: &'a CustomRegion) -> Self {
         Self {
             tile_size,
             patterns: Vec::new(),
             constraints: Vec::new(),
             frequencies: HashMap::new(),
-            adjacency_mode,
+            region,
         }
     }
 
     /// Runs the whole WFC algorithm.
     pub fn generate(
         &mut self,
-        map: &mut Map,
+        output_map: &mut Map,
+        input_map: &Map,
         input_x: i32,
         input_y: i32,
         rng: &mut RandomNumberGenerator,
     ) -> bool {
-        self.build_patterns(map, input_x, input_y);
+        self.build_patterns(input_map, input_x, input_y);
         let patterns = self.patterns.clone();
-        map.tiles = vec![Tile::woodenfloor(); (map.width * map.height) as usize];
+        //map.tiles = vec![Tile::woodenfloor(); (map.width * map.height) as usize];
         deduplicate(&mut self.patterns);
-
-        /*
-        println!(
-            "All patterns: {}, Unique patterns: {}",
-            patterns.len(),
-            self.patterns.len()
-        );
-        */
 
         self.build_constraints(); // patterns + adjacency rules
         let constraints = self.constraints.clone();
         self.compute_frequencies(&patterns, &constraints); // frequency hints
 
-        let out_width = map.width / self.tile_size;
-        let out_height = map.height / self.tile_size;
-        let output_size = out_width * out_height;
+        /*
+        let out_width = output_map.width / self.tile_size;
+        let out_height = output_map.height / self.tile_size;
+        let out_size = out_width * out_height;
+        */
+        let out_width = self.region.width / self.tile_size;
+        let out_height = self.region.height / self.tile_size;
+        let out_size = out_width * out_height;
 
         // Initialize Cells.
-        let cells = self.init_cells(output_size, rng);
+        let cells = self.init_cells(out_size, rng);
 
         // Initialize Wave.
+        //let mut wave = Wave::new(cells, constraints, out_width, out_height);
         let mut wave = Wave::new(cells, constraints, out_width, out_height);
         wave.init_entropy_queue();
 
@@ -89,9 +88,9 @@ impl<'a> WaveFunctionCollapse<'a> {
             return false;
         }
 
-        // Clear the previous map and generate the output.
-        map.tiles = vec![Tile::wall(); (map.width * map.height) as usize];
-        self.generate_output(wave, map);
+        // Generate the output.
+        //map.tiles = vec![Tile::wall(); (output_map.width * output_map.height) as usize];
+        self.generate_output(wave, output_map);
 
         true
     }
@@ -130,15 +129,18 @@ impl<'a> WaveFunctionCollapse<'a> {
         for (i, cell) in wave.cells.iter().enumerate() {
             let cell_x = i as i32 % wave.out_width;
             let cell_y = i as i32 / wave.out_width;
-            let left_x = cell_x * self.tile_size;
-            let right_x = (cell_x + 1) * self.tile_size;
-            let top_y = cell_y * self.tile_size;
-            let bottom_y = (cell_y + 1) * self.tile_size;
-            //println!("{}, {}", left_x, bottom_y);
+            //let x1 = cell_x * self.tile_size;
+            let x1 = self.region.x1 + cell_x * self.tile_size;
+            //let x2 = (cell_x + 1) * self.tile_size;
+            let x2 = self.region.x1 + (cell_x + 1) * self.tile_size;
+            //let y1 = cell_y * self.tile_size;
+            let y1 = self.region.y1 + cell_y * self.tile_size;
+            //let y2 = (cell_y + 1) * self.tile_size;
+            let y2 = self.region.y1 + (cell_y + 1) * self.tile_size;
 
             let mut j: usize = 0;
-            for y in top_y..bottom_y {
-                for x in left_x..right_x {
+            for y in y1..y2 {
+                for x in x1..x2 {
                     let map_idx = map.idx(x, y);
                     let tile_idx = cell.possible_tiles[0];
                     let tile = self.constraints[tile_idx].pattern[j];
@@ -150,7 +152,7 @@ impl<'a> WaveFunctionCollapse<'a> {
     }
 
     /// Builds tiles of size tile_size*tile_size from the given map cells.
-    fn build_patterns(&mut self, map: &mut Map, input_x: i32, input_y: i32) {
+    fn build_patterns(&mut self, map: &Map, input_x: i32, input_y: i32) {
         self.patterns.clear();
         // Navigate the coordinates of each tile.
         for ty in 0..(input_y / self.tile_size) {
@@ -260,14 +262,10 @@ impl<'a> WaveFunctionCollapse<'a> {
             for x in xmin..xmax {
                 let p1_pos = Point::new(x, y);
                 let offset = p1_pos - dir;
-                if self.adjacency_mode == "connect" {
-                    unimplemented!("Adjacency by connectivity is not yet implemented!");
-                } else {
-                    if p1[tile_idx(self.tile_size, p1_pos.x, p1_pos.y)]
-                        != p2[tile_idx(self.tile_size, offset.x, offset.y)]
-                    {
-                        return false;
-                    }
+                if p1[tile_idx(self.tile_size, p1_pos.x, p1_pos.y)]
+                    != p2[tile_idx(self.tile_size, offset.x, offset.y)]
+                {
+                    return false;
                 }
             }
         }
@@ -275,7 +273,7 @@ impl<'a> WaveFunctionCollapse<'a> {
     }
 
     /// Returns a pattern (reflected or not) taken from the input.
-    fn get_pattern(&mut self, map: &mut Map, start: Point, end: Point, rot: &str) -> Vec<TileType> {
+    fn get_pattern(&mut self, map: &Map, start: Point, end: Point, rot: &str) -> Vec<TileType> {
         let mut pattern: Vec<TileType> = Vec::new();
         for y in start.y..end.y {
             for x in start.x..end.x {

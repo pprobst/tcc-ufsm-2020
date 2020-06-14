@@ -34,6 +34,7 @@ pub struct MapGenerator {
     pub rooms: Option<Vec<Room>>,
     pub tunnels: Option<Vec<Tunnel>>,
     pub regions: Option<Vec<Region>>,
+    pub wfc_input: Map,
     pub rng: RandomNumberGenerator,
 }
 
@@ -46,6 +47,7 @@ impl MapGenerator {
             rooms: None,
             tunnels: None,
             regions: None,
+            wfc_input: Map::new(80, 60, false),
             rng: RandomNumberGenerator::new(),
         }
     }
@@ -56,8 +58,9 @@ impl MapGenerator {
     }
 
     pub fn gen_map(&mut self, idx: usize) {
-        let region = &CustomRegion::new_circ(25, 10, 20);
-        //let region = &CustomRegion::new_rect(5, 2, 30, 50);
+        //let region = &CustomRegion::new_circ(25, 10, 20);
+        let region = &CustomRegion::new_rect(0, 0, 80, 10);
+        //let region = &CustomRegion::new_rect(0, 0, 80, 60);
 
         //self.gen_bsp(idx, Some(region));
         //self.gen_bsp(idx, None);
@@ -70,11 +73,36 @@ impl MapGenerator {
         //HOUSE01.generate(Point::new(20, 20), &mut self.map);
         //self.gen_tight_cave(idx, Some(region));
         //self.gen_tight_cave(idx, None);
-        self.gen_cave(idx, Some(region));
-        self.maps[idx].add_borders(TileType::Wall);
+        //self.gen_cave(idx, Some(region));
+
+        self.gen_wfc(idx, Some(region), "../rex_resources/wfc_20x20_4.xp", 20, 20);
+
+        self.maps[idx].add_borders(TileType::InvisibleWall);
         self.maps[idx].pretty_walls();
         //add_vegetation(&mut self.map);
         println!("Map generated!");
+    }
+
+    pub fn gen_wfc(
+        &mut self,
+        idx: usize,
+        region: Option<&CustomRegion>,
+        template: &'static str,
+        w: i32,
+        h: i32,
+    ) {
+        let map_region = &self.maps[idx].get_region();
+        let reg = if region != None {
+            region.unwrap()
+        } else {
+            map_region
+        };
+
+        let mut input = PrefabMap::new(template);
+        input.generate(&mut self.wfc_input);
+        let mut wfc = WaveFunctionCollapse::new(5, &reg);
+        // (output, input taken, template width, template height, rng)
+        wfc.generate(&mut self.maps[idx], &self.wfc_input, w, h, &mut self.rng);
     }
 
     pub fn gen_forest(&mut self, idx: usize, region: Option<&CustomRegion>) {
