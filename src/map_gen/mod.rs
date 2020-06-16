@@ -59,8 +59,7 @@ impl MapGenerator {
 
     pub fn gen_map(&mut self, idx: usize) {
         //let region = &CustomRegion::new_circ(25, 10, 20);
-        let region = &CustomRegion::new_rect(0, 0, 80, 10);
-        //let region = &CustomRegion::new_rect(0, 0, 80, 60);
+        let region = &CustomRegion::new_rect(0, 0, 30, 60);
 
         //self.gen_bsp(idx, Some(region));
         //self.gen_bsp(idx, None);
@@ -75,12 +74,42 @@ impl MapGenerator {
         //self.gen_tight_cave(idx, None);
         //self.gen_cave(idx, Some(region));
 
-        self.gen_wfc(idx, Some(region), "../rex_resources/wfc_20x20_4.xp", 20, 20);
+        //self.forest_bsp_ruin(idx);
+        self.wfc_01(idx);
 
         self.maps[idx].add_borders(TileType::InvisibleWall);
         self.maps[idx].pretty_walls();
         //add_vegetation(&mut self.map);
         println!("Map generated!");
+    }
+
+    pub fn forest_bsp_ruin(&mut self, idx: usize) {
+        let region_top = &CustomRegion::new_rect(0, 0, self.maps[idx].width, 25);
+        let region_middle = &CustomRegion::new_rect(0, 20, self.maps[idx].width, 15);
+        let region_bottom = &CustomRegion::new_rect(0, 30, self.maps[idx].width, self.maps[idx].height-30);
+        self.gen_bsp(idx, Some(region_top));
+        self.gen_forest(idx, Some(region_middle));
+        self.gen_bsp_ruin(idx, Some(region_bottom));
+        add_vegetation(&mut self.maps[idx], region_top, false);
+    }
+
+    pub fn wfc_01(&mut self, idx: usize) {
+        let region_left = &CustomRegion::new_rect(0, 20, 30, 40);
+        let region_middle = &CustomRegion::new_rect(28, 0, 30, 60);
+        let region_right = &CustomRegion::new_rect(60, 0, 20, 60);
+        let region_top_left = &CustomRegion::new_circ(0, 0, 10);
+        self.gen_wfc(idx, Some(region_left), "../rex_resources/wfc_20x20_5.xp", 20, 20, 10);
+        if self.rng.range(0, 2) < 1 {
+            self.gen_digger(idx, Some(region_middle));
+        } else { self.gen_bsp(idx, Some(region_middle)); }
+
+        if self.rng.range(0, 2) < 1 {
+            self.gen_cave(idx, Some(region_right));
+        } else { self.gen_bsp_ruin(idx, Some(region_right)) }
+
+        self.gen_forest(idx, Some(region_top_left));
+        let all_regions = get_all_regions(&self.maps[idx], &self.maps[idx].get_region());
+        connect_regions(&mut self.maps[idx], all_regions, TileType::Floor, false);
     }
 
     pub fn gen_wfc(
@@ -90,6 +119,7 @@ impl MapGenerator {
         template: &'static str,
         w: i32,
         h: i32,
+        tile_size: i32,
     ) {
         let map_region = &self.maps[idx].get_region();
         let reg = if region != None {
@@ -100,7 +130,8 @@ impl MapGenerator {
 
         let mut input = PrefabMap::new(template);
         input.generate(&mut self.wfc_input);
-        let mut wfc = WaveFunctionCollapse::new(5, &reg);
+        //input.generate(&mut self.maps[idx]);
+        let mut wfc = WaveFunctionCollapse::new(tile_size, &reg);
         // (output, input taken, template width, template height, rng)
         wfc.generate(&mut self.maps[idx], &self.wfc_input, w, h, &mut self.rng);
     }

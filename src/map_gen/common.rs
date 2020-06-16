@@ -314,16 +314,18 @@ pub fn add_vegetation(map: &mut Map, region: &CustomRegion, trees: bool) {
 }
 
 /// Gets all the separated regions on a map.
-pub fn get_all_regions(map: &Map) -> Vec<Region> {
-    let w = map.width;
-    let h = map.height;
+pub fn get_all_regions(map: &Map, inside: &CustomRegion) -> Vec<Region> {
+    //let w = map.width;
+    //let h = map.height;
     let mut caves: Vec<Region> = Vec::new();
     let mut marked_map: Vec<bool> = vec![false; map.size as usize];
 
-    for y in 1..h - 1 {
-        for x in 1..w - 1 {
+    let y1 = if inside.y1 == 0 { 1 } else { inside.y1 };
+    let x1 = if inside.x1 == 0 { 1 } else { inside.x1 };
+    for y in y1..inside.y2-1 {
+        for x in x1..inside.x2-1 {
             let idx = map.idx(x, y);
-            if !marked_map[idx] && map.is_floor(idx) {
+            if !marked_map[idx] && (map.is_walkable(idx) || map.is_door(idx)) {
                 let new_cave = get_region(idx, map);
 
                 for idx in new_cave.iter() {
@@ -356,7 +358,7 @@ pub fn get_region(start_idx: usize, map: &Map) -> Region {
             for x in pt.x - 1..pt.x + 2 {
                 let idx = map.idx(x, y);
                 if map.in_map_bounds_xy(x, y) && (y == pt.y || x == pt.x) {
-                    if !marked_map[idx] && map.is_floor(idx) {
+                    if !marked_map[idx] && (map.is_walkable(idx) || map.is_door(idx)) {
                         marked_map[idx] = true;
                         queue.push_back(idx);
                     }

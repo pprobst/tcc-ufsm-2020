@@ -50,7 +50,7 @@ pub fn show_container(
     let mut items_vec: Vec<String> = Vec::new();
     let mut items_ent: Vec<Entity> = Vec::new();
 
-    let mut contained = ecs.write_storage::<Contained>();
+    let contained = ecs.write_storage::<Contained>();
 
     for (_c, name, ent) in (&contained, &names, &entities)
         .join()

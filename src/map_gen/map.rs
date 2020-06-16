@@ -178,7 +178,7 @@ impl Map {
             '.' => {
                 self.tiles[idx] = Tile::floor();
             }
-            '∙' => {
+            '-' => {
                 self.tiles[idx] = Tile::floor2();
             }
             '_' => {
@@ -205,6 +205,10 @@ impl Map {
             ',' => {
                 self.tiles[idx] = Tile::grass();
             }
+            '¥' => {
+                println!("ok");
+                self.tiles[idx] = Tile::flower();
+            }
             _ => {
                 self.tiles[idx] = Tile::floor();
             }
@@ -228,6 +232,21 @@ impl Map {
             TileType::WoodenFloor => true,
             _ => false,
         }
+    }
+
+    pub fn is_foliage(&self, idx: usize) -> bool {
+     let ttype = self.tiles[idx].ttype;
+        match ttype {
+            TileType::Grass => true,
+            TileType::Grass2 => true,
+            TileType::Flower => true,
+            TileType::TallGrass => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_walkable(&self, idx: usize) -> bool {
+        self.is_floor(idx) || self.is_water(idx) || self.is_foliage(idx)
     }
 
     pub fn is_wall(&self, idx: usize) -> bool {

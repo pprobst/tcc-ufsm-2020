@@ -82,7 +82,7 @@ impl<'a> CellularAutomata<'a> {
 
         map.tiles = tiles.clone();
 
-        let mut main_caves = get_all_regions(map);
+        let mut main_caves = get_all_regions(map, self.region);
         let mut lesser_caves = main_caves.clone();
 
         // Get caves < min_cave_size.
