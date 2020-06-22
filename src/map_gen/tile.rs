@@ -64,7 +64,7 @@ impl Tile {
         Self {
             ttype: TileType::Wall,
             block: true,
-            glyph: to_cp437('█'),
+            glyph: to_cp437('#'),
             color: ColorPair::new(RGB::from_hex(WALL_GRAY).unwrap(), RGB::named(BLACK)),
             ..Default::default()
         }

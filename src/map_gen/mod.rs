@@ -59,7 +59,7 @@ impl MapGenerator {
 
     pub fn gen_map(&mut self, idx: usize) {
         //let region = &CustomRegion::new_circ(25, 10, 20);
-        let region = &CustomRegion::new_rect(0, 0, 30, 60);
+        let region = &CustomRegion::new_rect(0, 0, 60, 60);
 
         //self.gen_bsp(idx, Some(region));
         //self.gen_bsp(idx, None);
@@ -76,9 +76,10 @@ impl MapGenerator {
 
         //self.forest_bsp_ruin(idx);
         self.wfc_01(idx);
+        //self.gen_wfc(idx, Some(region), "../rex_resources/wfc_9x9_1.xp", 15, 15, 5);
 
-        self.maps[idx].add_borders(TileType::InvisibleWall);
-        self.maps[idx].pretty_walls();
+        //self.maps[idx].add_borders(TileType::InvisibleWall);
+        //self.maps[idx].pretty_walls();
         //add_vegetation(&mut self.map);
         println!("Map generated!");
     }
