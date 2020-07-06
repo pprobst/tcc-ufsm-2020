@@ -48,37 +48,36 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
   - [x] Carregar mapa externo desenhado manualmente;
   - [x] Aplicar WFC sobre o mapa atual;
   - [x] Assegurar conectividade pelo método do flood-fill (CA);
-  - [ ] Assegurar conectividade por outros métodos;
-  - [ ] Melhoramentos (e.g. wrapping), etc. 
+  - [ ] Melhoramentos (e.g. wrapping, ?), etc. 
 - [x] Inserção de estruturas pré-fabricadas no mapa;
 - [x] Temáticas diferentes de mapas:
     - [x] TDCL (top-down cavern-like);
     - [x] TDML (top-down mansion-like);
     - [x] Florestas;
     - [x] Ruínas;
-    - [ ] Algo envolvendo WFC (importante!!!)
-    - [ ] Outros (cidades, canyons, etc.).
+    - [x] WFC como arquitetura externa/interna.
 - [x] Inventário e consumo de itens;
 - [x] Equipamento;
 - [x] Baús de tesouro;
-- [ ] Seleção de regiões no mapa para aplicar algoritmos de geração;
+- [x] Seleção de regiões no mapa para aplicar algoritmos de geração;
 - [ ] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
 - [ ] Sistema de serialização/desserialização usando RON +
   serde para mobs, itens e cores.
-- [ ] Sistema de spawning;
-- [ ] Itens únicos com efeitos aleatórios;
 
 Naturalmente, à medida que vou desenvolvendo posso ter de 
 alterar/aprimorar itens da checklist já marcados. Isso é um processo natural;
 considere que itens marcados já possuem a _estrutura básica_ concluída. 
 
 ###  Sidequests
-Ou, _"se sobrar tempo eu faço!"_.
+Objetivos opcionais. Provavelmente não serão realizados no momento, mas de
+qualquer forma serão inseridos no futuro.
 - [ ] Combate melhorado (e.g. torná-lo estocástico);
     - [ ] Também aplicar bônus dos equipamentos, que por enquanto não fazem
       nada.
 - [ ] IA relativamente avançada para os mobs.
+- [ ] Sistema de spawning;
 - [ ] Narrativa procedural;
+- [ ] Itens únicos com efeitos aleatórios;
 - [ ] Sistema de partículas;
 - [ ] Otimizações gerais;
 - [ ] Refatoração no código da UI (chato);
