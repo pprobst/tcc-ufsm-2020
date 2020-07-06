@@ -36,3 +36,4 @@ pub const SWORD_GRAY: &str = "#5F7D8B";
 
 // Furniture
 pub const CHEST_BROWN: &str = "#653D26";
+pub const COMPUTER: &str = "#6F3176";

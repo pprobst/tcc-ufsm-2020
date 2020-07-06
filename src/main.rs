@@ -12,10 +12,14 @@ mod map_gen;
 mod player;
 mod renderer;
 mod rexloader;
+mod raws;
 mod spawner;
 mod systems;
 mod ui;
 mod utils;
+
+#[macro_use]
+extern crate lazy_static;
 
 pub const X_OFFSET: i32 = 20; // Left box
 pub const Y_OFFSET: i32 = 10; // Bottom box
@@ -82,8 +86,8 @@ fn main() -> BError {
     // Create game state.
     let mut game_state = State::new(world);
 
-    //game_state.ecs.insert(rexloader::RexResource::new("../rex_resources/dungeon80x60.xp"));
     rexloader::load_dungeons();
+    raws::load_raws();
 
     // Insert map into the ECS and generate it.
     let (height, width) = (80, 60);

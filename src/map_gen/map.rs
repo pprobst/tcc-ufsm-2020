@@ -167,6 +167,12 @@ impl Map {
             TileType::Flower => {
                 self.tiles[idx] = Tile::flower();
             }
+            TileType::Computer => {
+                self.tiles[idx] = Tile::computer();
+            }
+            TileType::FakeMob => {
+                self.tiles[idx] = Tile::fakemob();
+            }
             _ => {
                 self.tiles[idx] = Tile::floor();
             }
@@ -193,6 +199,12 @@ impl Map {
             '#' => {
                 self.tiles[idx] = Tile::wall();
             }
+            'g' => {
+                self.tiles[idx] = Tile::fakemob();
+            }
+            'C' => {
+                self.tiles[idx] = Tile::computer();
+            }
             '~' => {
                 self.tiles[idx] = Tile::shallow_water();
             }
@@ -206,7 +218,6 @@ impl Map {
                 self.tiles[idx] = Tile::grass();
             }
             '¥' => {
-                println!("ok");
                 self.tiles[idx] = Tile::flower();
             }
             _ => {

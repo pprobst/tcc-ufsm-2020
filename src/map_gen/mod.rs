@@ -59,28 +59,39 @@ impl MapGenerator {
 
     pub fn gen_map(&mut self, idx: usize) {
         //let region = &CustomRegion::new_circ(25, 10, 20);
-        let region = &CustomRegion::new_rect(0, 0, 60, 60);
+        let region = &CustomRegion::new_rect(10, 10, 60, 30);
 
         //self.gen_bsp(idx, Some(region));
         //self.gen_bsp(idx, None);
         //self.gen_bsp_ruin(idx, None);
         //self.gen_bsp_ruin(idx, Some(region));
-        //self.gen_digger_inverted(idx, Some(region));
-        //self.gen_digger(idx, Some(region));
+        //self.gen_digger_inverted(idx, None);
+        //self.gen_digger(idx, None);
         //self.gen_forest(idx, Some(region));
         //self.gen_forest(idx, None);
-        //HOUSE01.generate(Point::new(20, 20), &mut self.map);
+        //HOUSE01.generate(Point::new(20, 20), &mut self.maps[idx]);
         //self.gen_tight_cave(idx, Some(region));
         //self.gen_tight_cave(idx, None);
-        //self.gen_cave(idx, Some(region));
+        //self.gen_cave(idx, None);
 
         //self.forest_bsp_ruin(idx);
         self.wfc_01(idx);
-        //self.gen_wfc(idx, Some(region), "../rex_resources/wfc_9x9_1.xp", 15, 15, 5);
+        /*
+        let room = self.rooms.as_ref().unwrap()[0];
+        let region = &CustomRegion::new_rect(room.x1, room.y1, room.width(), room.height());
+        self.gen_wfc(idx, Some(region), "../rex_resources/wfc_6x6_internal.xp", 9, 9, 3);
+
+        let room = self.rooms.as_ref().unwrap()[1];
+        let region = &CustomRegion::new_rect(room.x1, room.y1, room.width(), room.height());
+        self.gen_wfc(idx, Some(region), "../rex_resources/wfc_6x6_internal.xp", 9, 9, 3);
+        */
+
+        //self.gen_wfc(idx, None, "../rex_resources/wfc_15x15.xp", 15, 15, 5);
 
         //self.maps[idx].add_borders(TileType::InvisibleWall);
+        //self.maps[idx].add_borders(TileType::Wall);
         //self.maps[idx].pretty_walls();
-        //add_vegetation(&mut self.map);
+        //add_vegetation(&mut self.maps[idx]);
         println!("Map generated!");
     }
 

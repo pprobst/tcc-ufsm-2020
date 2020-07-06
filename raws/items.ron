@@ -1,0 +1,19 @@
+#![enable(implicit_some)]
+(
+    items: [
+        (
+            name: "Med-Kit",
+            renderable: (
+                glyph: '!',
+                fg: "MED_RED",
+                bg: "BLACK",
+                layer: 0,
+            ),
+            consumable: (
+                effects: { 
+                    "heal": "5", 
+                },
+            ),
+        ),
+    ],
+)

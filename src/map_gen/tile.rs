@@ -27,6 +27,8 @@ pub enum TileType {
     //Mushroom,
     ShallowWater,
     DeepWater,
+    Computer,
+    FakeMob,
 }
 
 impl Default for TileType {
@@ -195,6 +197,32 @@ impl Tile {
             color: ColorPair::new(
                 RGB::from_hex(WATER_BLUE).unwrap(),
                 RGBA::from_hex(SHALLOW_BLUE).unwrap(),
+            ),
+            ..Default::default()
+        }
+    }
+
+    pub fn computer() -> Self {
+        Self {
+            ttype: TileType::Computer,
+            block: true,
+            glyph: to_cp437('Φ'),
+            color: ColorPair::new(
+                RGB::from_hex(COMPUTER).unwrap(),
+                RGB::named(BLACK),
+            ),
+            ..Default::default()
+        }
+    }
+
+    pub fn fakemob() -> Self {
+        Self {
+            ttype: TileType::FakeMob,
+            block: true,
+            glyph: to_cp437('g'),
+            color: ColorPair::new(
+                RGB::from_hex(BLOOD_RED).unwrap(),
+                RGB::named(BLACK),
             ),
             ..Default::default()
         }
