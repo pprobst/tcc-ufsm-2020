@@ -109,28 +109,14 @@ impl State {
 
     pub fn set_colorscheme(&mut self, colorscheme: &str) {
         &RAWS.lock().unwrap().set_curr_colorscheme(colorscheme);
+        let mut map = self.ecs.fetch_mut::<Map>();
+        map.reload_colors();
     }
 }
 
 impl GameState for State {
     fn tick(&mut self, term: &mut BTerm) {
         //term.cls();
-
-        // F3 to enable/disable post-processing effects.
-        match term.key {
-            None => {}
-            Some(key) => {
-                if let VirtualKeyCode::F3 = key {
-                    term.with_post_scanlines(false);
-                }
-                if let VirtualKeyCode::F5 = key {
-                    self.set_colorscheme("elemental");
-                }
-                if let VirtualKeyCode::F6 = key {
-                    self.set_colorscheme("ayu");
-                }
-            }
-        }
 
         let mut curr_state;
         // We need scope because we'll do mutable borrow later.
@@ -190,6 +176,23 @@ impl GameState for State {
                 }
             },
         }
+
+        // F3 to enable/disable post-processing effects.
+        match term.key {
+            None => {}
+            Some(key) => {
+                if let VirtualKeyCode::F3 = key {
+                    term.with_post_scanlines(false);
+                }
+                if let VirtualKeyCode::F5 = key {
+                    self.set_colorscheme("elemental");
+                }
+                if let VirtualKeyCode::F6 = key {
+                    self.set_colorscheme("ayu");
+                }
+            }
+        }
+
 
         {
             let mut write_state = self.ecs.write_resource::<RunState>();

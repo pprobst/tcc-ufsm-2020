@@ -88,9 +88,9 @@ impl MapGenerator {
 
         //self.gen_wfc(idx, None, "../rex_resources/wfc_15x15.xp", 15, 15, 5);
 
-        //self.maps[idx].add_borders(TileType::InvisibleWall);
+        self.maps[idx].add_borders(TileType::InvisibleWall);
         //self.maps[idx].add_borders(TileType::Wall);
-        //self.maps[idx].pretty_walls();
+        self.maps[idx].pretty_walls();
         //add_vegetation(&mut self.maps[idx]);
         println!("Map generated!");
     }

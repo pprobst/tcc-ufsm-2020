@@ -38,16 +38,6 @@ impl Map {
         }
     }
 
-    pub fn reload_tiles(&mut self) {
-        for y in 0..self.height - 1 {
-            for x in 0..self.width - 1 {
-                let idx = self.idx(x, y);
-                let ttype = self.tiles[idx].ttype;
-                self.paint_tile(idx, ttype);
-            }
-        }
-    }
-
     pub fn get_region(&self) -> CustomRegion {
         self.region.clone()
     }
@@ -232,6 +222,15 @@ impl Map {
             }
             _ => {
                 self.tiles[idx] = Tile::floor();
+            }
+        }
+    }
+
+    pub fn reload_colors(&mut self) {
+        for y in 0..self.height - 1 {
+            for x in 0..self.width - 1 {
+                let idx = self.idx(x, y);
+                self.tiles[idx].reload_color();
             }
         }
     }

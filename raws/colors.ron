@@ -8,7 +8,7 @@
             name: "elemental",
             colors: {
                 "Black":"#3c3b30",
-                "Shadow":"#532A4D",
+                "Shadow":"#181212",
                 "Blue":"#497f7d",
                 "BrightBlack":"#545444",
                 "BrightBlue":"#78d8d8",
@@ -31,7 +31,7 @@
             name: "ayu",
             colors: {
                 "Black":"#000000",
-                "Shadow":"#232A4D",
+                "Shadow":"#181B28",
                 "Blue":"#36a3d9",
                 "BrightBlack":"#323232",
                 "BrightBlue":"#68d4ff",

@@ -218,6 +218,53 @@ impl Tile {
         self.color.fg = color("Shadow", 1.0);
     }
 
+    pub fn reload_color(&mut self) {
+        match self.ttype {
+            TileType::Floor => {
+                self.color = ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0));
+            }
+            TileType::WoodenFloor => {
+                self.color = ColorPair::new(color("Black", 1.0), color("Background", 1.0));
+            }
+            TileType::ClosedDoor | TileType::OpenDoor => {
+                self.color = ColorPair::new(color("BrightRed", 1.0), color("Background", 1.0));
+            }
+            TileType::Tree => {
+                self.color = ColorPair::new(color("Green", 1.0), color("Background", 1.0));
+            }
+            TileType::Wall => {
+                self.color = ColorPair::new(color("White", 1.0), color("Background", 1.0));
+            }
+            TileType::ShallowWater => {
+                self.color = ColorPair::new(color("Cyan", 1.0), color("BrightBlue", 1.0));
+            }
+            TileType::DeepWater => {
+                self.color = ColorPair::new(color("Cyan", 1.0), color("Blue", 1.0));
+            }
+            TileType::Grass => {
+                self.color = ColorPair::new(color("BrightGreen", 1.0), color("Background", 1.0));
+            }
+            TileType::Grass2 => {
+                self.color = ColorPair::new(color("BrightYellow", 1.0), color("Background", 1.0));
+            }
+            TileType::TallGrass => {
+                self.color = ColorPair::new(color("Green", 1.0), color("Background", 1.0));
+            }
+            TileType::Flower => {
+                self.color = ColorPair::new(color("BrightMagenta", 1.0), color("Background", 1.0));
+            }
+            TileType::Computer => {
+                self.color = ColorPair::new(color("Magenta", 1.0), color("Background", 1.0));
+            }
+            TileType::FakeMob => {
+                self.color = ColorPair::new(color("Red", 1.0), color("Background", 1.0));
+            }
+            _ => {
+                self.color = ColorPair::new(color("Background", 1.0), color("Background", 1.0));
+            }
+        }
+    }
+
     pub fn change_glyph(&mut self, newglyph: char) {
         self.glyph = to_cp437(newglyph);
     }
