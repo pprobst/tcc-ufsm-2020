@@ -38,6 +38,22 @@ impl Map {
         }
     }
 
+    pub fn reload_tiles(&mut self) {
+        for y in 0..self.height - 1 {
+            for x in 0..self.width - 1 {
+                let idx = self.idx(x, y);
+                let ttype = self.tiles[idx].ttype;
+                if self.tiles[idx].ttype == TileType::Floor {
+                    println!("1: {:?}", self.tiles[idx].color);
+                }
+                self.paint_tile(idx, ttype);
+                if self.tiles[idx].ttype == TileType::Floor {
+                    println!("2: {:?}", self.tiles[idx].color);
+                }
+            }
+        }
+    }
+
     pub fn get_region(&self) -> CustomRegion {
         self.region.clone()
     }
@@ -246,7 +262,7 @@ impl Map {
     }
 
     pub fn is_foliage(&self, idx: usize) -> bool {
-     let ttype = self.tiles[idx].ttype;
+        let ttype = self.tiles[idx].ttype;
         match ttype {
             TileType::Grass => true,
             TileType::Grass2 => true,

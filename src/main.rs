@@ -10,9 +10,10 @@ mod killer;
 mod log;
 mod map_gen;
 mod player;
+mod raws;
 mod renderer;
 mod rexloader;
-mod raws;
+pub use raws::*;
 mod spawner;
 mod systems;
 mod ui;
@@ -50,6 +51,10 @@ fn main() -> BError {
         .build();
     */
 
+    // Load external files.
+    rexloader::load_dungeons();
+    raws::load_raws();
+
     let mut world = World::new();
 
     // Register the components (see components.rs).
@@ -85,9 +90,6 @@ fn main() -> BError {
 
     // Create game state.
     let mut game_state = State::new(world);
-
-    rexloader::load_dungeons();
-    raws::load_raws();
 
     // Insert map into the ECS and generate it.
     let (height, width) = (80, 60);

@@ -2,6 +2,7 @@ use super::{
     input::*,
     killer::remove_dead_entities,
     map_gen::*,
+    raws::*,
     renderer::render_all,
     systems::{
         ai::HostileAISystem, consumable::ConsumableSystem, damage::DamageSystem,
@@ -105,6 +106,10 @@ impl State {
         let mut curr_map = self.ecs.write_resource::<Map>();
         *curr_map = self.map_generator.get_map(idx);
     }
+
+    pub fn set_colorscheme(&mut self, colorscheme: &str) {
+        &RAWS.lock().unwrap().set_curr_colorscheme(colorscheme);
+    }
 }
 
 impl GameState for State {
@@ -117,6 +122,15 @@ impl GameState for State {
             Some(key) => {
                 if let VirtualKeyCode::F3 = key {
                     term.with_post_scanlines(false);
+                }
+                if let VirtualKeyCode::F5 = key {
+                    self.set_colorscheme("default");
+                }
+                if let VirtualKeyCode::F6 = key {
+                    self.set_colorscheme("test");
+                }
+                if let VirtualKeyCode::F7 = key {
+                    self.set_colorscheme("default");
                 }
             }
         }

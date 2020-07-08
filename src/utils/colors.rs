@@ -1,3 +1,6 @@
+use crate::raws::*;
+use bracket_lib::prelude::{RGB, RGBA};
+
 /*
  *
  * colors.rs
@@ -8,7 +11,15 @@
  *
  */
 
+//pub fn get_color(color: &str) -> String {
+pub fn color(color: &str, alpha: f32) -> RGBA {
+    RGB::from_hex(RAWS.lock().unwrap().get_curr_colorscheme().colors[color].to_string())
+        .unwrap()
+        .to_rgba(alpha)
+}
+
 pub const SHADOW: &str = "#2f2f4fff";
+//pub const SHADOW: &str = &RAWS.lock().unwrap().get_curr_colorscheme().colors["SHADOW"];
 pub const SHALLOW_BLUE: &str = "#005fafff";
 pub const DEEP_BLUE: &str = "#004d8bff";
 pub const WATER_BLUE: &str = "#0069be";

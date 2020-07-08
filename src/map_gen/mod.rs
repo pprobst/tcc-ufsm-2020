@@ -98,7 +98,8 @@ impl MapGenerator {
     pub fn forest_bsp_ruin(&mut self, idx: usize) {
         let region_top = &CustomRegion::new_rect(0, 0, self.maps[idx].width, 25);
         let region_middle = &CustomRegion::new_rect(0, 20, self.maps[idx].width, 15);
-        let region_bottom = &CustomRegion::new_rect(0, 30, self.maps[idx].width, self.maps[idx].height-30);
+        let region_bottom =
+            &CustomRegion::new_rect(0, 30, self.maps[idx].width, self.maps[idx].height - 30);
         self.gen_bsp(idx, Some(region_top));
         self.gen_forest(idx, Some(region_middle));
         self.gen_bsp_ruin(idx, Some(region_bottom));
@@ -110,14 +111,25 @@ impl MapGenerator {
         let region_middle = &CustomRegion::new_rect(28, 0, 30, 60);
         let region_right = &CustomRegion::new_rect(60, 0, 20, 60);
         let region_top_left = &CustomRegion::new_circ(0, 0, 10);
-        self.gen_wfc(idx, Some(region_left), "../rex_resources/wfc_20x20_5.xp", 20, 20, 10);
+        self.gen_wfc(
+            idx,
+            Some(region_left),
+            "../rex_resources/wfc_20x20_5.xp",
+            20,
+            20,
+            10,
+        );
         if self.rng.range(0, 2) < 1 {
             self.gen_digger(idx, Some(region_middle));
-        } else { self.gen_bsp(idx, Some(region_middle)); }
+        } else {
+            self.gen_bsp(idx, Some(region_middle));
+        }
 
         if self.rng.range(0, 2) < 1 {
             self.gen_cave(idx, Some(region_right));
-        } else { self.gen_bsp_ruin(idx, Some(region_right)) }
+        } else {
+            self.gen_bsp_ruin(idx, Some(region_right))
+        }
 
         self.gen_forest(idx, Some(region_top_left));
         let all_regions = get_all_regions(&self.maps[idx], &self.maps[idx].get_region());

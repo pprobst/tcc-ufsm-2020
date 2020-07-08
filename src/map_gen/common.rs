@@ -322,8 +322,8 @@ pub fn get_all_regions(map: &Map, inside: &CustomRegion) -> Vec<Region> {
 
     let y1 = if inside.y1 == 0 { 1 } else { inside.y1 };
     let x1 = if inside.x1 == 0 { 1 } else { inside.x1 };
-    for y in y1..inside.y2-1 {
-        for x in x1..inside.x2-1 {
+    for y in y1..inside.y2 - 1 {
+        for x in x1..inside.x2 - 1 {
             let idx = map.idx(x, y);
             if !marked_map[idx] && (map.is_walkable(idx) || map.is_door(idx)) {
                 let new_cave = get_region(idx, map);

@@ -1,3 +1,4 @@
+use crate::raws::*;
 use crate::utils::colors::*;
 use bracket_lib::prelude::{to_cp437, ColorPair, BLACK, RGB, RGBA};
 
@@ -57,7 +58,7 @@ impl Tile {
             ttype: TileType::Empty,
             block: false,
             glyph: to_cp437(' '),
-            color: ColorPair::new(RGB::named(BLACK), RGB::named(BLACK)),
+            color: ColorPair::new(color("BLACK", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -67,7 +68,7 @@ impl Tile {
             ttype: TileType::Wall,
             block: true,
             glyph: to_cp437('#'),
-            color: ColorPair::new(RGB::from_hex(WALL_GRAY).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("WALL_GRAY", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -78,7 +79,7 @@ impl Tile {
             ttype: TileType::InvisibleWall,
             block: true,
             glyph: to_cp437(' '),
-            color: ColorPair::new(RGB::named(BLACK), RGB::named(BLACK)),
+            color: ColorPair::new(color("BLACK", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -87,7 +88,7 @@ impl Tile {
         Self {
             ttype: TileType::Floor,
             glyph: to_cp437('.'),
-            color: ColorPair::new(RGB::from_hex(FLOOR_GRAY).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("FLOOR_GRAY", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -96,7 +97,7 @@ impl Tile {
         Self {
             ttype: TileType::Floor2,
             glyph: to_cp437('.'),
-            color: ColorPair::new(RGB::from_hex(FLOOR_GRAY).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("FLOOR_GRAY", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -105,7 +106,7 @@ impl Tile {
         Self {
             ttype: TileType::WoodenFloor,
             glyph: to_cp437('_'),
-            color: ColorPair::new(RGB::from_hex(FLOOR_WOOD).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("FLOOR_WOOD", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -115,7 +116,7 @@ impl Tile {
             ttype: TileType::ClosedDoor,
             glyph: to_cp437('+'),
             block: true,
-            color: ColorPair::new(RGB::from_hex(DOOR_ORANGE).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("DOOR_ORANGE", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -124,7 +125,7 @@ impl Tile {
         Self {
             ttype: TileType::OpenDoor,
             glyph: to_cp437('/'),
-            color: ColorPair::new(RGB::from_hex(DOOR_ORANGE).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("DOOR_ORANGE", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -133,7 +134,7 @@ impl Tile {
         Self {
             ttype: TileType::Grass,
             glyph: to_cp437(','),
-            color: ColorPair::new(RGB::from_hex(GRASS_GREEN).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("GRASS_GREEN", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -142,7 +143,7 @@ impl Tile {
         Self {
             ttype: TileType::Grass2,
             glyph: to_cp437('`'),
-            color: ColorPair::new(RGB::from_hex(GRASS_YELLOW).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("GRASS_YELLOW", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -151,10 +152,7 @@ impl Tile {
         Self {
             ttype: TileType::TallGrass,
             glyph: to_cp437('⌠'),
-            color: ColorPair::new(
-                RGB::from_hex(GRASS_GREEN_DARKER).unwrap(),
-                RGB::named(BLACK),
-            ),
+            color: ColorPair::new(color("GRASS_GREEN_DARKER", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -163,7 +161,7 @@ impl Tile {
         Self {
             ttype: TileType::Flower,
             glyph: to_cp437('¥'),
-            color: ColorPair::new(RGB::from_hex(FLOWER_MAGENTA).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("FLOWER_MAGENTA", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -173,7 +171,7 @@ impl Tile {
             ttype: TileType::Tree,
             block: true,
             glyph: to_cp437('♣'),
-            color: ColorPair::new(RGB::from_hex(TREE_GREEN).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("TREE_GREEN", 1.0), RGB::named(BLACK)),
             ..Default::default()
         }
     }
@@ -182,10 +180,7 @@ impl Tile {
         Self {
             ttype: TileType::DeepWater,
             glyph: to_cp437('~'),
-            color: ColorPair::new(
-                RGB::from_hex(WATER_BLUE).unwrap(),
-                RGBA::from_hex(DEEP_BLUE).unwrap(),
-            ),
+            color: ColorPair::new(color("WATER_BLUE", 1.0), color("DEEP_BLUE", 1.0)),
             ..Default::default()
         }
     }
@@ -194,10 +189,7 @@ impl Tile {
         Self {
             ttype: TileType::ShallowWater,
             glyph: to_cp437('~'),
-            color: ColorPair::new(
-                RGB::from_hex(WATER_BLUE).unwrap(),
-                RGBA::from_hex(SHALLOW_BLUE).unwrap(),
-            ),
+            color: ColorPair::new(color("WATER_BLUE", 1.0), color("SHALLOW_BLUE", 1.0)),
             ..Default::default()
         }
     }
@@ -207,10 +199,7 @@ impl Tile {
             ttype: TileType::Computer,
             block: true,
             glyph: to_cp437('Φ'),
-            color: ColorPair::new(
-                RGB::from_hex(COMPUTER).unwrap(),
-                RGB::named(BLACK),
-            ),
+            color: ColorPair::new(color("COMPUTER", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
@@ -220,16 +209,13 @@ impl Tile {
             ttype: TileType::FakeMob,
             block: true,
             glyph: to_cp437('g'),
-            color: ColorPair::new(
-                RGB::from_hex(BLOOD_RED).unwrap(),
-                RGB::named(BLACK),
-            ),
+            color: ColorPair::new(color("BLOOD_RED", 1.0), color("BLACK", 1.0)),
             ..Default::default()
         }
     }
 
     pub fn shadowed(&mut self) {
-        self.color.fg = RGBA::from_hex(SHADOW).unwrap();
+        self.color.fg = color("SHADOW", 1.0);
     }
 
     pub fn change_glyph(&mut self, newglyph: char) {
