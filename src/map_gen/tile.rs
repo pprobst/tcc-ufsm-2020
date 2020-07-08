@@ -58,7 +58,7 @@ impl Tile {
             ttype: TileType::Empty,
             block: false,
             glyph: to_cp437(' '),
-            color: ColorPair::new(color("BLACK", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("Background", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -68,7 +68,7 @@ impl Tile {
             ttype: TileType::Wall,
             block: true,
             glyph: to_cp437('#'),
-            color: ColorPair::new(color("WALL_GRAY", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("White", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -79,7 +79,7 @@ impl Tile {
             ttype: TileType::InvisibleWall,
             block: true,
             glyph: to_cp437(' '),
-            color: ColorPair::new(color("BLACK", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("Background", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -88,7 +88,7 @@ impl Tile {
         Self {
             ttype: TileType::Floor,
             glyph: to_cp437('.'),
-            color: ColorPair::new(color("FLOOR_GRAY", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -97,7 +97,7 @@ impl Tile {
         Self {
             ttype: TileType::Floor2,
             glyph: to_cp437('.'),
-            color: ColorPair::new(color("FLOOR_GRAY", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -106,7 +106,7 @@ impl Tile {
         Self {
             ttype: TileType::WoodenFloor,
             glyph: to_cp437('_'),
-            color: ColorPair::new(color("FLOOR_WOOD", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("Black", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -116,7 +116,7 @@ impl Tile {
             ttype: TileType::ClosedDoor,
             glyph: to_cp437('+'),
             block: true,
-            color: ColorPair::new(color("DOOR_ORANGE", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("BrightRed", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -125,7 +125,7 @@ impl Tile {
         Self {
             ttype: TileType::OpenDoor,
             glyph: to_cp437('/'),
-            color: ColorPair::new(color("DOOR_ORANGE", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("BrightRed", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -134,7 +134,7 @@ impl Tile {
         Self {
             ttype: TileType::Grass,
             glyph: to_cp437(','),
-            color: ColorPair::new(color("GRASS_GREEN", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("BrightGreen", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -143,7 +143,7 @@ impl Tile {
         Self {
             ttype: TileType::Grass2,
             glyph: to_cp437('`'),
-            color: ColorPair::new(color("GRASS_YELLOW", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("BrightYellow", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -152,7 +152,7 @@ impl Tile {
         Self {
             ttype: TileType::TallGrass,
             glyph: to_cp437('⌠'),
-            color: ColorPair::new(color("GRASS_GREEN_DARKER", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("Green", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -161,7 +161,7 @@ impl Tile {
         Self {
             ttype: TileType::Flower,
             glyph: to_cp437('¥'),
-            color: ColorPair::new(color("FLOWER_MAGENTA", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("BrightMagenta", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -171,7 +171,7 @@ impl Tile {
             ttype: TileType::Tree,
             block: true,
             glyph: to_cp437('♣'),
-            color: ColorPair::new(color("TREE_GREEN", 1.0), RGB::named(BLACK)),
+            color: ColorPair::new(color("Green", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -180,7 +180,7 @@ impl Tile {
         Self {
             ttype: TileType::DeepWater,
             glyph: to_cp437('~'),
-            color: ColorPair::new(color("WATER_BLUE", 1.0), color("DEEP_BLUE", 1.0)),
+            color: ColorPair::new(color("Cyan", 1.0), color("Blue", 1.0)),
             ..Default::default()
         }
     }
@@ -189,7 +189,7 @@ impl Tile {
         Self {
             ttype: TileType::ShallowWater,
             glyph: to_cp437('~'),
-            color: ColorPair::new(color("WATER_BLUE", 1.0), color("SHALLOW_BLUE", 1.0)),
+            color: ColorPair::new(color("Cyan", 1.0), color("BrightBlue", 1.0)),
             ..Default::default()
         }
     }
@@ -199,7 +199,7 @@ impl Tile {
             ttype: TileType::Computer,
             block: true,
             glyph: to_cp437('Φ'),
-            color: ColorPair::new(color("COMPUTER", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("Cyan", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -209,13 +209,13 @@ impl Tile {
             ttype: TileType::FakeMob,
             block: true,
             glyph: to_cp437('g'),
-            color: ColorPair::new(color("BLOOD_RED", 1.0), color("BLACK", 1.0)),
+            color: ColorPair::new(color("Red", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
 
     pub fn shadowed(&mut self) {
-        self.color.fg = color("SHADOW", 1.0);
+        self.color.fg = color("Shadow", 1.0);
     }
 
     pub fn change_glyph(&mut self, newglyph: char) {

@@ -35,6 +35,8 @@ impl RawMaster {
     }
 
     pub fn set_curr_colorscheme(&mut self, colorscheme: &str) {
+        println!("{:?}, {}", self.color_index, colorscheme);
+        println!("{:?}", self.color_index);
         self.curr_colorscheme = self.color_index[colorscheme];
     }
 

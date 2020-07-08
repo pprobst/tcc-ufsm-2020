@@ -43,13 +43,7 @@ impl Map {
             for x in 0..self.width - 1 {
                 let idx = self.idx(x, y);
                 let ttype = self.tiles[idx].ttype;
-                if self.tiles[idx].ttype == TileType::Floor {
-                    println!("1: {:?}", self.tiles[idx].color);
-                }
                 self.paint_tile(idx, ttype);
-                if self.tiles[idx].ttype == TileType::Floor {
-                    println!("2: {:?}", self.tiles[idx].color);
-                }
             }
         }
     }
