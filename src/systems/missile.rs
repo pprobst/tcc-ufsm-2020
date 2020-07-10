@@ -1,6 +1,6 @@
 use crate::components::{BaseStats, MissileAttack, Name, SufferDamage};
 use crate::log::Log;
-use bracket_lib::prelude::{RGB, WHITE};
+use crate::utils::colors::*;
 use specs::prelude::*;
 
 /*
@@ -27,6 +27,7 @@ impl<'a> System<'a> for MissileSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (entities, base_stats, mut missile_attack, mut do_damage, player, mut log, names) =
             data;
+        let white = color("BrightWhite", 1.0);
 
         for (entity, missile, attacker_stats, name) in
             (&entities, &missile_attack, &base_stats, &names).join()
@@ -44,7 +45,7 @@ impl<'a> System<'a> for MissileSystem {
                         "{} shoots {} for {} hp!",
                         &name.name, &victim_name.name, damage
                     ),
-                    RGB::named(WHITE),
+                    white,
                 );
                 SufferDamage::add_damage(&mut do_damage, missile.target, damage, entity == *player);
             }

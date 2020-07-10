@@ -35,8 +35,8 @@ pub fn show_container(
     let map = ecs.fetch::<Map>();
     let entities = ecs.entities();
 
-    let black = RGB::named(BLACK);
-    let gray = RGB::from_hex(UI_GRAY).unwrap();
+    let black = color("Background", 1.0);
+    let gray = color("BrightBlack", 1.0);
 
     let sel_pos = (&selected_pos).join().collect::<Vec<_>>()[0];
     let idx = map.idx(sel_pos.pos.x, sel_pos.pos.y);
@@ -80,6 +80,11 @@ pub fn show_container(
     let h = Y - Y_OFFSET - 9;
 
     draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
+    draw_batch.fill_region(
+        Rect::with_size(x1 + 1, y1 + 1, w - 2, h - 2),
+        ColorPair::new(black, black),
+        ' ' as u16,
+    );
 
     let container_name = &names
         .get(container_ent.unwrap())

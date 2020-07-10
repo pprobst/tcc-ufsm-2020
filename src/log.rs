@@ -1,4 +1,4 @@
-use bracket_lib::prelude::RGB;
+use bracket_lib::prelude::RGBA;
 
 /*
  *
@@ -10,7 +10,7 @@ use bracket_lib::prelude::RGB;
  */
 
 pub struct Log {
-    pub messages: Vec<(String, RGB)>,
+    pub messages: Vec<(String, RGBA)>,
 }
 
 impl Log {
@@ -19,7 +19,7 @@ impl Log {
     }
 
     /// Add the new message as a tuple, with the text and the color.
-    pub fn add<T: Into<String>>(&mut self, message: T, color: RGB) {
+    pub fn add<T: Into<String>>(&mut self, message: T, color: RGBA) {
         self.messages.push((message.into(), color));
     }
 

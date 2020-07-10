@@ -1,6 +1,6 @@
 use crate::components::{BaseStats, Consumable, ConsumeItem, InBackpack, InventoryCapacity, Name};
 use crate::log::Log;
-use bracket_lib::prelude::{RGB, WHITE};
+use crate::utils::colors::*;
 use specs::prelude::*;
 
 /*
@@ -38,6 +38,7 @@ impl<'a> System<'a> for ConsumableSystem {
         ) = data;
 
         let mut inventory_cap = capacity.get_mut(*player).unwrap();
+        let white = color("BrightWhite", 1.0);
 
         for c in to_consume.join() {
             let item = consumable.get(c.item).unwrap();
@@ -55,7 +56,7 @@ impl<'a> System<'a> for ConsumableSystem {
                         name.get(c.item).unwrap().name,
                         item.heal
                     ),
-                    RGB::named(WHITE),
+                    white,
                 );
                 inventory_cap.curr -= 1;
             }

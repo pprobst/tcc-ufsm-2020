@@ -1,6 +1,6 @@
 use crate::components::{Equipable, Equipment, InBackpack, InventoryCapacity, Name, TryEquip};
 use crate::log::Log;
-use bracket_lib::prelude::{RGB, WHITE};
+use crate::utils::colors::*;
 use specs::prelude::*;
 
 /*
@@ -38,6 +38,7 @@ impl<'a> System<'a> for EquipmentSystem {
         ) = data;
 
         let mut inventory_cap = capacity.get_mut(*player).unwrap();
+        let white = color("BrightWhite", 1.0);
 
         for e in try_equip.join() {
             let to_equip_slot = &equipable.get(e.equipment.equip).unwrap().slot;
@@ -50,7 +51,7 @@ impl<'a> System<'a> for EquipmentSystem {
                 if equipab.slot == *to_equip_slot && equip.user == to_equip_user {
                     to_unequip.push(equip.equip);
                     if equip.user == *player {
-                        log.add(format!("You unequip {}.", name.name), RGB::named(WHITE));
+                        log.add(format!("You unequip {}.", name.name), white);
                     }
                 }
             }
@@ -79,7 +80,7 @@ impl<'a> System<'a> for EquipmentSystem {
                 .expect("FAILED equipping item.");
 
             if to_equip_user == *player {
-                log.add(format!("You equip {}.", to_equip_name), RGB::named(WHITE));
+                log.add(format!("You equip {}.", to_equip_name), white);
             }
         }
 

@@ -106,7 +106,6 @@ fn main() -> BError {
 
     // Insert the Log into the ECS.
     let mut log = log::Log::new();
-    log.add("Test test test 1", RGB::named(WHITE));
     game_state.ecs.insert(log);
 
     bracket_lib::prelude::main_loop(term, game_state)

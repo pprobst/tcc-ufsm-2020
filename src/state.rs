@@ -193,7 +193,6 @@ impl GameState for State {
             }
         }
 
-
         {
             let mut write_state = self.ecs.write_resource::<RunState>();
             *write_state = curr_state;

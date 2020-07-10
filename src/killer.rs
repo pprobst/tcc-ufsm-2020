@@ -1,5 +1,5 @@
 use super::{log::Log, BaseStats, Name, Player};
-use bracket_lib::prelude::{RED, RGB, YELLOW};
+use crate::utils::colors::*;
 use specs::prelude::*;
 
 /*
@@ -29,13 +29,16 @@ impl<'a> Killer<'a> {
             let player = self.ecs.read_storage::<Player>();
             let mut log = self.ecs.fetch_mut::<Log>();
 
+            let red = color("BrightRed", 1.0);
+            let yellow = color("BrightYellow", 1.0);
+
             for (ent, stats, name) in (&entities, &stats, &names).join() {
                 if stats.health.hp <= 0 {
                     let p: Option<&Player> = player.get(ent);
                     if let Some(_p) = p {
-                        log.add("You died...", RGB::named(RED));
+                        log.add("You died...", red);
                     } else {
-                        log.add(format!("{} dies.", &name.name), RGB::named(YELLOW));
+                        log.add(format!("{} dies.", &name.name), yellow);
                         dead.push(ent);
                     }
                 }

@@ -1,6 +1,6 @@
 use crate::components::{CollectItem, Contained, InBackpack, InventoryCapacity, Name, Position};
 use crate::log::Log;
-use bracket_lib::prelude::{ORANGE, RGB, WHITE};
+use crate::utils::colors::*;
 use specs::prelude::*;
 
 /*
@@ -36,11 +36,15 @@ impl<'a> System<'a> for ItemCollectSystem {
             mut backpack,
             mut contained,
         ) = data;
+
+        let white = color("BrightWhite", 1.0);
+        let magenta = color("Magenta", 1.0);
+
         let mut inventory_cap = capacity.get_mut(*player).unwrap();
         for p in collect.join() {
             for c in p.collects.iter() {
                 if inventory_cap.curr == inventory_cap.max && c.1 == *player {
-                    log.add(format!("Your inventory is full!"), RGB::named(ORANGE));
+                    log.add(format!("Your inventory is full!"), magenta);
                     break;
                 }
                 backpack
@@ -49,7 +53,7 @@ impl<'a> System<'a> for ItemCollectSystem {
                 if c.1 == *player {
                     log.add(
                         format!("You pick up {}.", name.get(c.0).unwrap().name),
-                        RGB::named(WHITE),
+                        white,
                     );
                 }
                 pos.remove(c.0);

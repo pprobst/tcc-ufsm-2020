@@ -19,8 +19,8 @@ const MSG_HEIGHT_MAX: i32 = Y - 1;
 
 /// Renders the UI skeleton.
 pub fn boxes(draw_batch: &mut DrawBatch) {
-    let black = RGB::named(BLACK);
-    let gray = RGB::from_hex(UI_GRAY).unwrap();
+    let black = color("Background", 1.0);
+    let gray = color("BrightBlack", 1.0);
 
     draw_batch.draw_hollow_box(
         Rect::with_size(0, 0, X - 1, Y - 1),
@@ -58,11 +58,11 @@ pub fn boxes(draw_batch: &mut DrawBatch) {
 
 /// Renders the player's name and their possible stats.
 pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
-    let black = RGB::named(BLACK);
-    let white = RGB::named(WHITE);
-    let red = RGB::from_hex(BLOOD_RED).unwrap();
-    let cyan = RGB::from_hex(UI_CYAN).unwrap();
-    let med_red = RGB::from_hex(MED_RED).unwrap();
+    let black = color("Background", 1.0);
+    let white = color("White", 1.0);
+    let red = color("Red", 1.0);
+    let cyan = color("Cyan", 1.0);
+    let med_red = color("BrightRed", 1.0);
     let player = ecs.fetch::<Entity>();
     let names = ecs.read_storage::<Name>();
     let stats = ecs.read_storage::<BaseStats>();
@@ -146,9 +146,9 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
         }
     }
 
-    let black = RGB::named(BLACK);
-    let white = RGB::named(WHITE);
-    let gray = RGB::from_hex(UI_GRAY).unwrap();
+    let black = color("Background", 1.0);
+    let white = color("White", 1.0);
+    let gray = color("BrightBlack", 1.0);
 
     let y = 10;
     draw_batch.print_color(Point::new(0, y), "╞═ MELEE", ColorPair::new(gray, black));
@@ -239,16 +239,13 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
 pub fn game_log(ecs: &World, draw_batch: &mut DrawBatch) {
     let log = ecs.fetch::<Log>();
     let mut y = MSG_HEIGHT_MIN;
+    let bg = color("Background", 1.0);
 
     for &(ref msg, color) in log.messages.iter().rev() {
         //println!("{}", msg);
         //println!("{}, {}", y, Y-Y_OFFSET-2);
         if y < MSG_HEIGHT_MAX {
-            draw_batch.print_color(
-                Point::new(X_OFFSET + 1, y),
-                msg,
-                ColorPair::new(color, RGB::named(BLACK)),
-            );
+            draw_batch.print_color(Point::new(X_OFFSET + 1, y), msg, ColorPair::new(color, bg));
         }
         y += 1;
     }

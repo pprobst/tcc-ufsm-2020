@@ -227,8 +227,8 @@ impl Map {
     }
 
     pub fn reload_colors(&mut self) {
-        for y in 0..self.height - 1 {
-            for x in 0..self.width - 1 {
+        for y in 0..self.height {
+            for x in 0..self.width {
                 let idx = self.idx(x, y);
                 self.tiles[idx].reload_color();
             }

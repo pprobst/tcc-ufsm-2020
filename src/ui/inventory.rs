@@ -39,8 +39,8 @@ pub fn show_inventory(
     let inventory_cap = ecs.read_storage::<InventoryCapacity>();
     let entities = ecs.entities();
 
-    let black = RGB::named(BLACK);
-    let gray = RGB::from_hex(UI_GRAY).unwrap();
+    let black = color("Background", 1.0);
+    let gray = color("BrightBlack", 1.0);
 
     let x1 = X_OFFSET + 5;
     let y1 = 10;
@@ -48,6 +48,11 @@ pub fn show_inventory(
     let h = Y - Y_OFFSET - 25;
 
     draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
+    draw_batch.fill_region(
+        Rect::with_size(x1 + 1, y1 + 1, w - 2, h - 2),
+        ColorPair::new(black, black),
+        ' ' as u16,
+    );
 
     let mut items: HashMap<String, u32> = HashMap::new();
     let mut items_vec: Vec<String> = Vec::new();
@@ -140,9 +145,9 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
 
     let is_equip = equipable.get(item.2);
 
-    let black = RGB::named(BLACK);
-    let white = RGB::named(WHITE);
-    let gray = RGB::from_hex(UI_GRAY).unwrap();
+    let black = color("Background", 1.0);
+    let white = color("White", 1.0);
+    let gray = color("BrightBlack", 1.0);
 
     let x1 = X_OFFSET + 22;
     let y1 = 20;
@@ -150,6 +155,11 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
     let h = 5; // Number of lines + 1
 
     draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
+    draw_batch.fill_region(
+        Rect::with_size(x1 + 1, y1 + 1, w - 2, h - 2),
+        ColorPair::new(black, black),
+        ' ' as u16,
+    );
 
     draw_batch.print_color(
         Point::new(x1 + 1, y1 + 1),

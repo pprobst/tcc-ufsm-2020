@@ -1,5 +1,6 @@
 use crate::components::{DropItem, InBackpack, InventoryCapacity, Name, Position};
 use crate::log::Log;
+use crate::utils::colors::*;
 use bracket_lib::prelude::{RGB, WHITE};
 use specs::prelude::*;
 
@@ -26,6 +27,7 @@ impl<'a> System<'a> for ItemDropSystem {
 
     fn run(&mut self, data: Self::SystemData) {
         let (player, name, mut log, mut capacity, mut pos, mut drop, mut backpack) = data;
+        let white = color("BrightWhite", 1.0);
 
         let mut inventory_cap = capacity.get_mut(*player).unwrap();
         for d in drop.join() {
@@ -38,7 +40,7 @@ impl<'a> System<'a> for ItemDropSystem {
                 inventory_cap.curr -= 1;
                 log.add(
                     format!("You drop the {}", name.get(d.item).unwrap().name),
-                    RGB::named(WHITE),
+                    white,
                 );
             }
         }

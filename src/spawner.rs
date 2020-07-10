@@ -30,7 +30,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Position { x, y })
         .with(Renderable {
             glyph: to_cp437('@'),
-            color: ColorPair::new(RGB::named(WHITE), RGB::named(BLACK)),
+            color: ColorPair::new(color("BrightWhite", 1.0), color("Background", 1.0)),
             layer: 1,
         })
         .with(Player {})
@@ -57,7 +57,7 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Mob {})
         .with(Renderable {
             glyph: to_cp437('t'),
-            color: ColorPair::new(RGB::from_hex(BLOOD_RED).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("Red", 1.0), color("Background", 1.0)),
             layer: 1,
         })
         .with(Name {
@@ -82,7 +82,7 @@ pub fn test_consumable(builder: EntityBuilder) -> Entity {
     builder
         .with(Renderable {
             glyph: to_cp437('!'),
-            color: ColorPair::new(RGB::from_hex(MED_RED).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("BrightRed", 1.0), color("Background", 1.0)),
             layer: 0,
         })
         .with(Name {
@@ -97,7 +97,7 @@ pub fn test_sword(builder: EntityBuilder) -> Entity {
     builder
         .with(Renderable {
             glyph: to_cp437('/'),
-            color: ColorPair::new(RGB::from_hex(SWORD_GRAY).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("BrightCyan", 1.0), color("Background", 1.0)),
             layer: 0,
         })
         .with(Name {
@@ -123,7 +123,7 @@ pub fn test_container(builder: EntityBuilder) -> Entity {
     builder
         .with(Renderable {
             glyph: to_cp437('Æ'),
-            color: ColorPair::new(RGB::from_hex(CHEST_BROWN).unwrap(), RGB::named(BLACK)),
+            color: ColorPair::new(color("Magenta", 1.0), color("Background", 1.0)),
             layer: 1,
         })
         .with(Name {

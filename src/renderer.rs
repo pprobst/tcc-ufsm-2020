@@ -35,9 +35,10 @@ impl<'a> Renderer<'a> {
     pub fn render_all(&mut self, show_map: bool) {
         let (min_x, max_x, min_y, max_y, x_offset, y_offset) = self.screen_bounds();
         let mut draw_batch = DrawBatch::new();
+        let bg = color("Background", 1.0);
 
         draw_batch.target(0);
-        draw_batch.cls();
+        draw_batch.cls_color(bg);
         self.render_map(
             &mut draw_batch,
             show_map,
@@ -52,7 +53,7 @@ impl<'a> Renderer<'a> {
             self.render_entitites(&mut draw_batch, min_x, min_y, x_offset, y_offset);
 
             draw_batch.target(1);
-            draw_batch.cls();
+            draw_batch.cls_color(bg);
             self.render_ui(&mut draw_batch);
         }
 
