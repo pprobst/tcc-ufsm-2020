@@ -208,6 +208,9 @@ impl Map {
             '~' => {
                 self.tiles[idx] = Tile::shallow_water();
             }
+            '≈' => {
+                self.tiles[idx] = Tile::deep_water();
+            }
             '♣' => {
                 self.tiles[idx] = Tile::tree();
             }

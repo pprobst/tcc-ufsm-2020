@@ -185,10 +185,16 @@ impl GameState for State {
                     term.with_post_scanlines(false);
                 }
                 if let VirtualKeyCode::F5 = key {
-                    self.set_colorscheme("elemental");
+                    self.set_colorscheme("wryan");
                 }
                 if let VirtualKeyCode::F6 = key {
-                    self.set_colorscheme("ayu");
+                    self.set_colorscheme("elemental");
+                }
+                if let VirtualKeyCode::F7 = key {
+                    self.set_colorscheme("spacegray_80s");
+                }
+                if let VirtualKeyCode::F8 = key {
+                    self.set_colorscheme("tango_dark");
                 }
             }
         }

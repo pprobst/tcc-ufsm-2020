@@ -179,7 +179,7 @@ impl Tile {
     pub fn deep_water() -> Self {
         Self {
             ttype: TileType::DeepWater,
-            glyph: to_cp437('~'),
+            glyph: to_cp437('≈'),
             color: ColorPair::new(color("Cyan", 1.0), color("Blue", 1.0)),
             ..Default::default()
         }
@@ -224,7 +224,7 @@ impl Tile {
                 self.color = ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0));
             }
             TileType::WoodenFloor => {
-                self.color = ColorPair::new(color("Black", 1.0), color("Background", 1.0));
+                self.color = ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0));
             }
             TileType::ClosedDoor | TileType::OpenDoor => {
                 self.color = ColorPair::new(color("BrightRed", 1.0), color("Background", 1.0));
