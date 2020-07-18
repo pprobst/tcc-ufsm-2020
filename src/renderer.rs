@@ -23,6 +23,10 @@ pub fn render_all(ecs: &World, term: &mut BTerm, state: RunState, show_map: bool
     Renderer { ecs, term, state }.render_all(show_map)
 }
 
+pub fn reload_colors(ecs: &World, term: &mut BTerm, state: RunState) {
+    Renderer { ecs, term, state }.reload_colors()
+}
+
 impl<'a> Renderer<'a> {
     /*pub fn new(ecs: &'a World, term: &'a mut BTerm) -> Self {
         Self { ecs, term }
@@ -99,20 +103,20 @@ impl<'a> Renderer<'a> {
                 if i == points.len() - 1 {
                     draw_batch.set(
                         *pt,
-                        ColorPair::new(render.color.fg, RGB::from_hex(SELECTED_TARGET).unwrap()),
+                        ColorPair::new(render.color.fg, color("BrightBlack", 0.5)),
                         render.glyph,
                     );
                 } else if i != 0 {
                     if !covered {
                         draw_batch.set(
                             *pt,
-                            ColorPair::new(RGB::from_hex(BLOOD_RED).unwrap(), RGB::named(BLACK)),
+                            ColorPair::new(color("Green", 1.0), color("Background", 1.0)),
                             to_cp437('∙'),
                         );
                     } else {
                         draw_batch.set(
                             *pt,
-                            ColorPair::new(RGB::from_hex(WALL_GRAY).unwrap(), RGB::named(BLACK)),
+                            ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0)),
                             to_cp437('∙'),
                         );
                     }
@@ -248,6 +252,20 @@ impl<'a> Renderer<'a> {
                 }
             }
             _ => {}
+        }
+    }
+
+    pub fn reload_colors(&mut self) {
+        let mut map = self.ecs.fetch_mut::<Map>();
+        map.reload_tile_colors();
+
+        let positions = self.ecs.read_storage::<Position>();
+        let renderables = self.ecs.write_storage::<Renderable>();
+        let entities = self.ecs.entities();
+
+        for (pos, render, ent) in (&positions, &renderables, &entities).join() {
+            //println!("{:?}", render.color.fg);
+            // TODO: reload entity colors
         }
     }
 }

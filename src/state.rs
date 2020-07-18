@@ -3,7 +3,7 @@ use super::{
     killer::remove_dead_entities,
     map_gen::*,
     raws::*,
-    renderer::render_all,
+    renderer::{render_all, reload_colors},
     systems::{
         ai::HostileAISystem, consumable::ConsumableSystem, damage::DamageSystem,
         equipment::EquipmentSystem, fov::FOVSystem, item_collect::ItemCollectSystem,
@@ -107,10 +107,9 @@ impl State {
         *curr_map = self.map_generator.get_map(idx);
     }
 
-    pub fn set_colorscheme(&mut self, colorscheme: &str) {
+    pub fn set_colorscheme(&mut self, colorscheme: &str, term: &mut BTerm, runstate: RunState)  {
         &RAWS.lock().unwrap().set_curr_colorscheme(colorscheme);
-        let mut map = self.ecs.fetch_mut::<Map>();
-        map.reload_colors();
+        reload_colors(&self.ecs, term, runstate);
     }
 }
 
@@ -185,16 +184,16 @@ impl GameState for State {
                     term.with_post_scanlines(false);
                 }
                 if let VirtualKeyCode::F5 = key {
-                    self.set_colorscheme("wryan");
+                    self.set_colorscheme("wryan", term, curr_state);
                 }
                 if let VirtualKeyCode::F6 = key {
-                    self.set_colorscheme("elemental");
+                    self.set_colorscheme("elemental", term, curr_state);
                 }
                 if let VirtualKeyCode::F7 = key {
-                    self.set_colorscheme("spacegray_80s");
+                    self.set_colorscheme("spacegray_80s", term, curr_state);
                 }
                 if let VirtualKeyCode::F8 = key {
-                    self.set_colorscheme("tango_dark");
+                    self.set_colorscheme("tango_dark", term, curr_state);
                 }
             }
         }
