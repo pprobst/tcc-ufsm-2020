@@ -105,8 +105,7 @@ fn main() -> BError {
     game_state.ecs.insert(RunState::Start);
 
     // Insert the Log into the ECS.
-    let mut log = log::Log::new();
-    game_state.ecs.insert(log);
+    game_state.ecs.insert(log::Log::new());
 
     bracket_lib::prelude::main_loop(term, game_state)
 }

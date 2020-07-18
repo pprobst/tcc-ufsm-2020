@@ -18,7 +18,6 @@ lazy_static! {
 
 #[derive(Deserialize, Debug)]
 pub struct Raws {
-    //pub spawn_table: Vec<SpawnTableEntry>,
     pub items: Vec<Item>,
     pub colorschemes: Vec<Colorscheme>,
 }
@@ -36,13 +35,10 @@ pub fn load_raws() {
     ]
     .concat();
 
-    //println!("{:?}", full_string);
-
     let decoder: Raws = ron::de::from_str(&full_string).expect("Unable to parse RON");
 
     RAWS.lock().unwrap().load(decoder);
-
-    println!("{:?}", *RAWS);
+    //println!("{:?}", *RAWS);
 }
 
 fn get_raw_string(path: String) -> &'static str {

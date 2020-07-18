@@ -5,9 +5,8 @@ use bracket_lib::prelude::{RGB, RGBA};
  *
  * colors.rs
  * ---------
- * Just a file to store my colors in case I don't want to use bracket's RGB::named colors.
- *
- * In the future, this will be substituted by using a JSON/RON of colors.
+ * Just gets the requested color and its transparency (alpha channel) from the current colorscheme.
+ * Color values are defined as hex values in ../../raws/colors.ron for different colorschemes.
  *
  */
 
@@ -19,7 +18,6 @@ pub fn color(color: &str, alpha: f32) -> RGBA {
 }
 
 pub const SHADOW: &str = "#2f2f4fff";
-//pub const SHADOW: &str = &RAWS.lock().unwrap().get_curr_colorscheme().colors["SHADOW"];
 pub const SHALLOW_BLUE: &str = "#005fafff";
 pub const DEEP_BLUE: &str = "#004d8bff";
 pub const WATER_BLUE: &str = "#0069be";

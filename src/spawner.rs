@@ -1,7 +1,7 @@
 use super::{
     map_gen::Map, utils::colors::*, BaseStats, Blocker, Consumable, Contained, Container,
     EquipSlot, Equipable, Fov, Health, InventoryCapacity, Item, MeleeWeapon, Mob, Name, Player,
-    Position, Renderable,
+    Position, Renderable, raws::*
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator, BLACK, RGB, WHITE};
 use specs::prelude::*;
@@ -163,7 +163,7 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
     ecs.insert(player);
 
     test_consumable(entity_with_position(ecs, pt.x + 1, pt.y + 1));
-    test_consumable(entity_with_position(ecs, pt.x + 2, pt.y + 1));
+    //spawn_item("Med-Kit", pt.x+2, pt.y+1, ecs.create_entity(), &RAWS.lock().unwrap());
     test_container(entity_with_position(ecs, pt.x + 3, pt.y + 1));
     test_sword(entity_with_position(ecs, pt.x + 2, pt.y + 2));
 

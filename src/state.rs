@@ -3,7 +3,7 @@ use super::{
     killer::remove_dead_entities,
     map_gen::*,
     raws::*,
-    renderer::{render_all, reload_colors},
+    renderer::{reload_colors, render_all},
     systems::{
         ai::HostileAISystem, consumable::ConsumableSystem, damage::DamageSystem,
         equipment::EquipmentSystem, fov::FOVSystem, item_collect::ItemCollectSystem,
@@ -107,7 +107,7 @@ impl State {
         *curr_map = self.map_generator.get_map(idx);
     }
 
-    pub fn set_colorscheme(&mut self, colorscheme: &str, term: &mut BTerm, runstate: RunState)  {
+    pub fn set_colorscheme(&mut self, colorscheme: &str, term: &mut BTerm, runstate: RunState) {
         &RAWS.lock().unwrap().set_curr_colorscheme(colorscheme);
         reload_colors(&self.ecs, term, runstate);
     }
