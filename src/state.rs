@@ -108,7 +108,7 @@ impl State {
     }
 
     pub fn set_colorscheme(&mut self, colorscheme: &str, term: &mut BTerm, runstate: RunState) {
-        &RAWS.lock().unwrap().set_curr_colorscheme(colorscheme);
+        &COLORS.lock().unwrap().set_curr_colorscheme(colorscheme);
         reload_colors(&self.ecs, term, runstate);
     }
 }

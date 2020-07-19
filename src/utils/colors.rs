@@ -12,7 +12,7 @@ use bracket_lib::prelude::{RGB, RGBA};
 
 //pub fn get_color(color: &str) -> String {
 pub fn color(color: &str, alpha: f32) -> RGBA {
-    RGB::from_hex(RAWS.lock().unwrap().get_curr_colorscheme().colors[color].to_string())
+    RGB::from_hex(COLORS.lock().unwrap().get_curr_colorscheme().colors[color].to_string())
         .unwrap()
         .to_rgba(alpha)
 }

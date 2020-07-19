@@ -5,8 +5,8 @@
             name: "Med-Kit",
             renderable: (
                 glyph: '!',
-                fg: "MED_RED",
-                bg: "BLACK",
+                fg: "Red",
+                bg: "Background",
                 layer: 0,
             ),
             consumable: (
