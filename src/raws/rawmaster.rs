@@ -1,4 +1,4 @@
-use super::Raws;
+use super::{item_structs, Raws};
 use crate::components::{Consumable, Item, Name, Position, Renderable};
 use crate::utils::colors::color;
 use bracket_lib::prelude::{to_cp437, ColorPair};
@@ -25,6 +25,13 @@ impl RawMaster {
         for (i, item) in self.raws.items.iter().enumerate() {
             self.item_index.insert(item.name.clone(), i);
         }
+    }
+
+    pub fn get_renderable(&self, name: &str) -> &Option<item_structs::Renderable> {
+        if self.item_index.contains_key(name) {
+            return &self.raws.items[self.item_index[name]].renderable;
+        }
+        &None
     }
 }
 

@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, ui::*, utils::colors::*, Position, Renderable, RunState, Target, WINDOW_HEIGHT,
-    WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
+    map_gen::Map, raws::*, ui::*, utils::colors::*, Name, Position, Renderable, RunState, Target,
+    WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -259,13 +259,17 @@ impl<'a> Renderer<'a> {
         let mut map = self.ecs.fetch_mut::<Map>();
         map.reload_tile_colors();
 
-        let positions = self.ecs.read_storage::<Position>();
-        let renderables = self.ecs.write_storage::<Renderable>();
+        let mut renderables = self.ecs.write_storage::<Renderable>();
         let entities = self.ecs.entities();
+        let names = self.ecs.read_storage::<Name>();
 
-        for (pos, render, ent) in (&positions, &renderables, &entities).join() {
-            //println!("{:?}", render.color.fg);
-            // TODO: reload entity colors
+        for (render, _ent, name) in (&mut renderables, &entities, &names).join() {
+            let raws = &RAWS.lock().unwrap();
+            let ent_name = &name.name;
+            if let Some(renderable) = raws.get_renderable(ent_name) {
+                render.color =
+                    ColorPair::new(color(&renderable.fg, 1.0), color(&renderable.bg, 1.0));
+            }
         }
     }
 }
