@@ -11,12 +11,12 @@ use item_structs::*;
 mod color_structs;
 pub use color_structs::*;
 
-embedded_resource!(RAW_ITEMS, "../../raws/items.ron");
 embedded_resource!(RAW_COLORS, "../../raws/colors.ron");
+embedded_resource!(RAW, "../../raws/raws.ron");
 
 lazy_static! {
-    pub static ref RAWS: Mutex<RawMaster> = Mutex::new(RawMaster::empty());
     pub static ref COLORS: Mutex<RawColors> = Mutex::new(RawColors::empty());
+    pub static ref RAWS: Mutex<RawMaster> = Mutex::new(RawMaster::empty());
 }
 
 #[derive(Deserialize, Debug)]
@@ -31,10 +31,10 @@ pub struct Colors {
 
 pub fn load_raws() {
     link_resource!(RAW_COLORS, "../../raws/colors.ron");
-    link_resource!(RAW_ITEMS, "../../raws/items.ron");
+    link_resource!(RAW, "../../raws/raws.ron");
 
     let raw_string_colors = get_raw_string("../../raws/colors.ron".to_string());
-    let raw_string_items = get_raw_string("../../raws/items.ron".to_string());
+    let raw_string_items = get_raw_string("../../raws/raws.ron".to_string());
 
     /*
     let full_string = [
