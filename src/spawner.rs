@@ -3,7 +3,7 @@ use super::{
     EquipSlot, Equipable, Fov, Health, InventoryCapacity, Item, MeleeWeapon, Mob, Name, Player,
     Position, Renderable,
 };
-use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator, BLACK, RGB, WHITE};
+use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
 
 /*
@@ -162,7 +162,6 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
     let player = player(ecs, pt.x, pt.y);
     ecs.insert(player);
 
-    test_consumable(entity_with_position(ecs, pt.x + 1, pt.y + 1));
     spawn_item(
         "Med-Kit",
         pt.x + 2,
@@ -170,8 +169,16 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
         ecs.create_entity(),
         &RAWS.lock().unwrap(),
     );
+
+    spawn_item(
+        "Tantou",
+        pt.x + 1,
+        pt.y + 1,
+        ecs.create_entity(),
+        &RAWS.lock().unwrap(),
+    );
+
     test_container(entity_with_position(ecs, pt.x + 3, pt.y + 1));
-    test_sword(entity_with_position(ecs, pt.x + 2, pt.y + 2));
 
     populate_containers(ecs);
 
@@ -182,7 +189,13 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
         let y = rng.roll_dice(1, map.height - 2);
         let idx = map.idx(x, y);
         if !map.tiles[idx].block {
-            test_mob(ecs, x, y);
+            spawn_mob(
+                "Man-ape",
+                x,
+                y,
+                ecs.create_entity(),
+                &RAWS.lock().unwrap(),
+            );
         }
     }
 }

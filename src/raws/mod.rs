@@ -6,10 +6,14 @@ mod rawcolors;
 pub use rawcolors::*;
 mod rawmaster;
 pub use rawmaster::*;
-mod item_structs;
-use item_structs::*;
+mod common_structs;
+pub use common_structs::*;
 mod color_structs;
 pub use color_structs::*;
+mod item_structs;
+use item_structs::*;
+mod mob_structs;
+pub use mob_structs::*;
 
 embedded_resource!(RAW_COLORS, "../../raws/colors.ron");
 embedded_resource!(RAW, "../../raws/raws.ron");
@@ -22,6 +26,7 @@ lazy_static! {
 #[derive(Deserialize, Debug)]
 pub struct Raws {
     pub items: Vec<Item>,
+    pub mobs: Vec<Mob>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -34,7 +39,7 @@ pub fn load_raws() {
     link_resource!(RAW, "../../raws/raws.ron");
 
     let raw_string_colors = get_raw_string("../../raws/colors.ron".to_string());
-    let raw_string_items = get_raw_string("../../raws/raws.ron".to_string());
+    let raw_string_etc = get_raw_string("../../raws/raws.ron".to_string());
 
     /*
     let full_string = [
@@ -48,7 +53,7 @@ pub fn load_raws() {
         ron::de::from_str(&raw_string_colors).expect("Unable to parse RON.");
     COLORS.lock().unwrap().load(decoder_colors);
 
-    let decoder: Raws = ron::de::from_str(&raw_string_items).expect("Unable to parse RON.");
+    let decoder: Raws = ron::de::from_str(&raw_string_etc).expect("Unable to parse RON.");
     RAWS.lock().unwrap().load(decoder);
 }
 

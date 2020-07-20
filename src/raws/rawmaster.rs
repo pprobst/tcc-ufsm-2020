@@ -1,5 +1,6 @@
-use super::{item_structs, Raws};
-use crate::components::{Consumable, Item, Name, Position, Renderable};
+use super::{common_structs, Raws};
+use crate::components::{Consumable, Mob, Fov, BaseStats, Blocker, Health, Equipable, EquipSlot, 
+    MeleeWeapon, Item, Name, Position, Renderable};
 use crate::utils::colors::color;
 use bracket_lib::prelude::{to_cp437, ColorPair};
 use specs::prelude::*;
@@ -9,13 +10,15 @@ use std::collections::HashMap;
 pub struct RawMaster {
     pub raws: Raws,
     item_index: HashMap<String, usize>,
+    mob_index: HashMap<String, usize>,
 }
 
 impl RawMaster {
     pub fn empty() -> Self {
         RawMaster {
-            raws: Raws { items: Vec::new() },
+            raws: Raws { items: Vec::new(), mobs: Vec::new() },
             item_index: HashMap::new(),
+            mob_index: HashMap::new(),
         }
     }
 
@@ -25,13 +28,30 @@ impl RawMaster {
         for (i, item) in self.raws.items.iter().enumerate() {
             self.item_index.insert(item.name.clone(), i);
         }
+
+        for (i, mob) in self.raws.mobs.iter().enumerate() {
+            self.mob_index.insert(mob.name.clone(), i);
+        }
     }
 
-    pub fn get_renderable(&self, name: &str) -> &Option<item_structs::Renderable> {
+    pub fn get_renderable(&self, name: &str) -> &Option<common_structs::Renderable> {
         if self.item_index.contains_key(name) {
             return &self.raws.items[self.item_index[name]].renderable;
         }
+
+        if self.mob_index.contains_key(name) {
+            return &self.raws.mobs[self.mob_index[name]].renderable;
+        }
+
         &None
+    }
+}
+
+fn set_renderable(render: &common_structs::Renderable) -> Renderable {
+    Renderable {
+        glyph: to_cp437(render.glyph),
+        color: ColorPair::new(color(&render.fg, 1.0), color(&render.bg, 1.0)),
+        layer: render.layer as u8,
     }
 }
 
@@ -53,11 +73,7 @@ pub fn spawn_item(
         ent = ent.with(Item {});
 
         if let Some(renderable) = &item.renderable {
-            ent = ent.with(Renderable {
-                glyph: to_cp437(renderable.glyph),
-                color: ColorPair::new(color(&renderable.fg, 1.0), color(&renderable.bg, 1.0)),
-                layer: renderable.layer as u8,
-            });
+            ent = ent.with(set_renderable(renderable));
         }
 
         if let Some(consumable) = &item.consumable {
@@ -66,12 +82,58 @@ pub fn spawn_item(
                 match effname {
                     "heal" => {
                         ent = ent.with(Consumable {
-                            heal: effect.1.parse::<i32>().unwrap(),
+                            heal: *effect.1,
                         });
                     }
                     _ => return None,
                 }
             }
+        }
+
+        if let Some(equip) = &item.equipable {
+            match equip.slot.as_str() {
+                "weapon1" => { ent = ent.with(Equipable { slot: EquipSlot::Weapon1 }) },
+                _ => return None,
+            } 
+        }
+
+        if let Some(melee) = &item.melee {
+            ent = ent.with(MeleeWeapon { base_damage: melee.damage })
+        }
+
+        Some(ent.build());
+    }
+
+    None
+}
+
+pub fn spawn_mob(
+    name: &str,
+    x: i32,
+    y: i32,
+    entity: EntityBuilder,
+    raws: &RawMaster,
+) -> Option<Entity> {
+    if raws.mob_index.contains_key(name) {
+        let mob = &raws.raws.mobs[raws.mob_index[name]];
+        let mut ent = entity;
+
+        ent = ent.with(Mob {});
+        ent = ent.with(Name {
+            name: mob.name.clone(),
+        });
+        ent = ent.with(Position { x, y });
+        ent = ent.with(Fov { range: mob.fov_range, dirty: true, visible_pos: Vec::new() });
+        if mob.blocker { ent = ent.with(Blocker {}); }
+        ent = ent.with(BaseStats {
+            health: Health { max_hp: mob.stats.max_hp, hp: mob.stats.hp },
+            defense: mob.stats.defense,
+            attack: mob.stats.attack,
+            god: false,
+        });
+
+        if let Some(renderable) = &mob.renderable {
+            ent = ent.with(set_renderable(renderable));
         }
 
         Some(ent.build());

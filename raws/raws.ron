@@ -5,14 +5,48 @@
             name: "Med-Kit",
             renderable: (
                 glyph: '!',
-                fg: "Red",
+                fg: "BrightRed",
                 bg: "Background",
                 layer: 0,
             ),
             consumable: (
                 effects: { 
-                    "heal": "5", 
+                    "heal": 5,
                 },
+            ),
+        ),
+        (
+            name: "Tantou",
+            renderable: (
+                glyph: '/',
+                fg: "BrightCyan",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "weapon1",
+            ),
+            melee: (
+                damage: 5,
+            ),
+        ),
+    ],
+    mobs: [
+        (
+            name: "Man-ape",
+            renderable: (
+                glyph: 'm',
+                fg: "Red",
+                bg: "Background",
+                layer: 1,
+            ),
+            fov_range: 20,
+            blocker: true,
+            stats: (
+                hp: 7,
+                max_hp: 7,
+                attack: 5,
+                defense: 3,
             ),
         ),
     ],

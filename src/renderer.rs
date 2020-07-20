@@ -1,6 +1,6 @@
 use super::{
     map_gen::Map, raws::*, ui::*, utils::colors::*, Name, Position, Renderable, RunState, Target,
-    WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
+    WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET, Player,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -262,13 +262,18 @@ impl<'a> Renderer<'a> {
         let mut renderables = self.ecs.write_storage::<Renderable>();
         let entities = self.ecs.entities();
         let names = self.ecs.read_storage::<Name>();
+        let player = self.ecs.fetch::<Entity>();
 
-        for (render, _ent, name) in (&mut renderables, &entities, &names).join() {
-            let raws = &RAWS.lock().unwrap();
-            let ent_name = &name.name;
-            if let Some(renderable) = raws.get_renderable(ent_name) {
-                render.color =
-                    ColorPair::new(color(&renderable.fg, 1.0), color(&renderable.bg, 1.0));
+        for (render, ent, name) in (&mut renderables, &entities, &names).join() {
+            if ent == *player {
+               render.color = ColorPair::new(color("BrightWhite", 1.0), color("Background", 1.0));
+            } else {
+                let raws = &RAWS.lock().unwrap();
+                let ent_name = &name.name;
+                if let Some(renderable) = raws.get_renderable(ent_name) {
+                    render.color =
+                        ColorPair::new(color(&renderable.fg, 1.0), color(&renderable.bg, 1.0));
+                }
             }
         }
     }

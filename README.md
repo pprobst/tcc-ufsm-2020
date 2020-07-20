@@ -61,7 +61,7 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
 - [x] Baús de tesouro;
 - [x] Seleção de regiões no mapa para aplicar algoritmos de geração;
 - [x] Usar [RON](https://github.com/ron-rs/ron) (e não JSON) para estruturar os raws;
-- [ ] Sistema de serialização/desserialização usando RON +
+- [x] Sistema de serialização/desserialização básico usando RON +
   serde para mobs, itens e cores.
 
 Naturalmente, à medida que vou desenvolvendo posso ter de 

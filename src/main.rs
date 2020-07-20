@@ -13,7 +13,7 @@ mod player;
 mod raws;
 mod renderer;
 mod rexloader;
-pub use raws::*;
+pub use raws::load_raws;
 mod spawner;
 mod systems;
 mod ui;

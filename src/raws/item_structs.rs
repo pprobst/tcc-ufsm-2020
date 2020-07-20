@@ -1,3 +1,4 @@
+use super::Renderable;
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -6,17 +7,21 @@ pub struct Item {
     pub name: String,
     pub renderable: Option<Renderable>,
     pub consumable: Option<Consumable>,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct Renderable {
-    pub glyph: char,
-    pub fg: String,
-    pub bg: String,
-    pub layer: i32,
+    pub equipable: Option<Equipable>,
+    pub melee: Option<Melee>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Consumable {
-    pub effects: HashMap<String, String>,
+    pub effects: HashMap<String, i32>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Melee {
+    pub damage: i32,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Equipable {
+    pub slot: String,
 }
