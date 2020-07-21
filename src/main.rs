@@ -63,6 +63,7 @@ fn main() -> BError {
     world.register::<Player>();
     world.register::<Mob>();
     world.register::<Name>();
+    world.register::<Description>();
     world.register::<InventoryCapacity>();
     world.register::<Fov>();
     world.register::<Blocker>();

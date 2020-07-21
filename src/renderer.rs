@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, raws::*, ui::*, utils::colors::*, Name, Position, Renderable, RunState, Target,
-    WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET, Player,
+    map_gen::Map, raws::*, ui::*, utils::colors::*, Name, Player, Position, Renderable, RunState,
+    Target, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -58,7 +58,7 @@ impl<'a> Renderer<'a> {
 
             draw_batch.target(1);
             draw_batch.cls_color(bg);
-            self.render_ui(&mut draw_batch);
+            self.render_ui(&mut draw_batch, min_x, min_y);
         }
 
         draw_batch.submit(0).expect("Batch error");
@@ -218,11 +218,22 @@ impl<'a> Renderer<'a> {
         }
     }
 
-    fn render_ui(&mut self, draw_batch: &mut DrawBatch) {
+    fn render_ui(&mut self, draw_batch: &mut DrawBatch, min_x: i32, min_y: i32) {
         hud::boxes(draw_batch);
         hud::name_stats(self.ecs, draw_batch);
         hud::show_equipped(self.ecs, draw_batch);
         hud::game_log(self.ecs, draw_batch);
+        let mouse_pos = self.term.mouse_pos();
+
+        if mouse_pos.0 > X_OFFSET
+            && mouse_pos.0 < WINDOW_WIDTH - 1
+            && mouse_pos.1 < WINDOW_HEIGHT - Y_OFFSET
+            && mouse_pos.1 > 0
+        {
+            draw_batch.set_bg(Point::new(mouse_pos.0, mouse_pos.1), color("Magenta", 0.4));
+            tooltips::show_tooltip(self.ecs, self.term, draw_batch, min_x, min_y);
+        }
+
         let mut write_state = self.ecs.write_resource::<RunState>();
         match self.state {
             RunState::Inventory => {
@@ -266,7 +277,7 @@ impl<'a> Renderer<'a> {
 
         for (render, ent, name) in (&mut renderables, &entities, &names).join() {
             if ent == *player {
-               render.color = ColorPair::new(color("BrightWhite", 1.0), color("Background", 1.0));
+                render.color = ColorPair::new(color("BrightWhite", 1.0), color("Background", 1.0));
             } else {
                 let raws = &RAWS.lock().unwrap();
                 let ent_name = &name.name;

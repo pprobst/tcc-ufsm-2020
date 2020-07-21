@@ -3,6 +3,7 @@
     items: [
         (
             name: "Med-Kit",
+            descr: "A small package containing\ngeneral items for\nemergency first aid:\nbandages, medicinal herbs\nand assorted chemicals.",
             renderable: (
                 glyph: '!',
                 fg: "BrightRed",
@@ -17,6 +18,7 @@
         ),
         (
             name: "Tantou",
+            descr: "A guardless short sword.",
             renderable: (
                 glyph: '/',
                 fg: "BrightCyan",
@@ -34,6 +36,7 @@
     mobs: [
         (
             name: "Man-ape",
+            descr: "Millenia living in the\nshadows of strange dark\nplaces took a toll on\nits body. Primal instincts\ngovern its actions yet\nagain; it may no longer be\ncalled a human, but a feral,\npale and ruby-eyed creature.",
             renderable: (
                 glyph: 'm',
                 fg: "Red",

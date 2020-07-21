@@ -5,6 +5,7 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug)]
 pub struct Mob {
     pub name: String,
+    pub descr: String,
     pub renderable: Option<Renderable>,
     pub fov_range: i32,
     pub blocker: bool,

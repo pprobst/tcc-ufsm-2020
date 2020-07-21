@@ -74,6 +74,11 @@ pub struct Name {
     pub name: String,
 }
 
+#[derive(Component, Debug)]
+pub struct Description {
+    pub descr: String,
+}
+
 #[derive(Component)]
 pub struct InventoryCapacity {
     pub max: u8,

@@ -289,6 +289,10 @@ impl Map {
         }
     }
 
+    pub fn is_visible(&self, idx: usize) -> bool {
+        self.tiles[idx].visible
+    }
+
     /// Returns a map index from a given x, y coordinate.
     pub fn idx(&self, x: i32, y: i32) -> usize {
         (y as usize * self.width as usize) + x as usize

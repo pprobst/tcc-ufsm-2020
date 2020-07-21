@@ -1,7 +1,7 @@
 use super::{
     map_gen::Map, raws::*, utils::colors::*, BaseStats, Blocker, Consumable, Contained, Container,
-    EquipSlot, Equipable, Fov, Health, InventoryCapacity, Item, MeleeWeapon, Mob, Name, Player,
-    Position, Renderable,
+    Description, EquipSlot, Equipable, Fov, Health, InventoryCapacity, Item, MeleeWeapon, Mob,
+    Name, Player, Position, Renderable,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -36,6 +36,9 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .with(Player {})
         .with(Name {
             name: "Severian".to_string(),
+        })
+        .with(Description {
+            descr: "It is you, wanderer.".to_string(),
         })
         .with(Fov {
             range: 20,
@@ -189,13 +192,7 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
         let y = rng.roll_dice(1, map.height - 2);
         let idx = map.idx(x, y);
         if !map.tiles[idx].block {
-            spawn_mob(
-                "Man-ape",
-                x,
-                y,
-                ecs.create_entity(),
-                &RAWS.lock().unwrap(),
-            );
+            spawn_mob("Man-ape", x, y, ecs.create_entity(), &RAWS.lock().unwrap());
         }
     }
 }

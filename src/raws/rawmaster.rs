@@ -1,6 +1,8 @@
 use super::{common_structs, Raws};
-use crate::components::{Consumable, Mob, Fov, BaseStats, Blocker, Health, Equipable, EquipSlot, 
-    MeleeWeapon, Item, Name, Position, Renderable};
+use crate::components::{
+    BaseStats, Blocker, Consumable, Description, EquipSlot, Equipable, Fov, Health, Item,
+    MeleeWeapon, Mob, Name, Position, Renderable,
+};
 use crate::utils::colors::color;
 use bracket_lib::prelude::{to_cp437, ColorPair};
 use specs::prelude::*;
@@ -16,7 +18,10 @@ pub struct RawMaster {
 impl RawMaster {
     pub fn empty() -> Self {
         RawMaster {
-            raws: Raws { items: Vec::new(), mobs: Vec::new() },
+            raws: Raws {
+                items: Vec::new(),
+                mobs: Vec::new(),
+            },
             item_index: HashMap::new(),
             mob_index: HashMap::new(),
         }
@@ -69,6 +74,9 @@ pub fn spawn_item(
         ent = ent.with(Name {
             name: item.name.clone(),
         });
+        ent = ent.with(Description {
+            descr: item.descr.clone(),
+        });
         ent = ent.with(Position { x, y });
         ent = ent.with(Item {});
 
@@ -81,9 +89,7 @@ pub fn spawn_item(
                 let effname = effect.0.as_str();
                 match effname {
                     "heal" => {
-                        ent = ent.with(Consumable {
-                            heal: *effect.1,
-                        });
+                        ent = ent.with(Consumable { heal: *effect.1 });
                     }
                     _ => return None,
                 }
@@ -92,13 +98,19 @@ pub fn spawn_item(
 
         if let Some(equip) = &item.equipable {
             match equip.slot.as_str() {
-                "weapon1" => { ent = ent.with(Equipable { slot: EquipSlot::Weapon1 }) },
+                "weapon1" => {
+                    ent = ent.with(Equipable {
+                        slot: EquipSlot::Weapon1,
+                    })
+                }
                 _ => return None,
-            } 
+            }
         }
 
         if let Some(melee) = &item.melee {
-            ent = ent.with(MeleeWeapon { base_damage: melee.damage })
+            ent = ent.with(MeleeWeapon {
+                base_damage: melee.damage,
+            })
         }
 
         Some(ent.build());
@@ -122,11 +134,23 @@ pub fn spawn_mob(
         ent = ent.with(Name {
             name: mob.name.clone(),
         });
+        ent = ent.with(Description {
+            descr: mob.descr.clone(),
+        });
         ent = ent.with(Position { x, y });
-        ent = ent.with(Fov { range: mob.fov_range, dirty: true, visible_pos: Vec::new() });
-        if mob.blocker { ent = ent.with(Blocker {}); }
+        ent = ent.with(Fov {
+            range: mob.fov_range,
+            dirty: true,
+            visible_pos: Vec::new(),
+        });
+        if mob.blocker {
+            ent = ent.with(Blocker {});
+        }
         ent = ent.with(BaseStats {
-            health: Health { max_hp: mob.stats.max_hp, hp: mob.stats.hp },
+            health: Health {
+                max_hp: mob.stats.max_hp,
+                hp: mob.stats.hp,
+            },
             defense: mob.stats.defense,
             attack: mob.stats.attack,
             god: false,
