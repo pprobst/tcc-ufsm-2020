@@ -1,7 +1,7 @@
 use super::{
     map_gen::Map, raws::*, utils::colors::*, BaseStats, Blocker, Consumable, Contained, Container,
-    Description, EquipSlot, Equipable, Fov, Health, InventoryCapacity, Item, MeleeWeapon, Mob,
-    Name, Player, Position, Renderable,
+    Description, EquipSlot, Equipable, Fov, Health, InventoryCapacity, Item, MeleeWeapon,
+    MeleeWeaponClass, Mob, Name, Player, Position, Renderable,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -110,7 +110,10 @@ pub fn test_sword(builder: EntityBuilder) -> Entity {
         .with(Equipable {
             slot: EquipSlot::Weapon1,
         })
-        .with(MeleeWeapon { base_damage: 5 })
+        .with(MeleeWeapon {
+            base_damage: 5,
+            class: MeleeWeaponClass::Sword,
+        })
         .build()
 }
 

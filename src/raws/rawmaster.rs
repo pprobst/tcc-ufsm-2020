@@ -1,7 +1,7 @@
 use super::{common_structs, Raws};
 use crate::components::{
     BaseStats, Blocker, Consumable, Description, EquipSlot, Equipable, Fov, Health, Item,
-    MeleeWeapon, Mob, Name, Position, Renderable,
+    MeleeWeapon, MeleeWeaponClass, Mob, Name, Position, Renderable,
 };
 use crate::utils::colors::color;
 use bracket_lib::prelude::{to_cp437, ColorPair};
@@ -108,9 +108,15 @@ pub fn spawn_item(
         }
 
         if let Some(melee) = &item.melee {
-            ent = ent.with(MeleeWeapon {
-                base_damage: melee.damage,
-            })
+            match melee.class.as_str() {
+                "dagger" => {
+                    ent = ent.with(MeleeWeapon {
+                        base_damage: melee.damage,
+                        class: MeleeWeaponClass::Dagger,
+                    })
+                }
+                _ => return None,
+            }
         }
 
         Some(ent.build());

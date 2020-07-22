@@ -193,6 +193,10 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> 
 /// Switches between the two readied weapons.
 pub fn switch_weapon(_ecs: &mut World) {}
 
+// TODO
+/// Reload ranged weapon.
+pub fn reload_weapon(_ecs: &mut World) {}
+
 enum PossibleContexts {
     Nothing,
     Door,

@@ -20,6 +20,7 @@ pub struct Consumable {
 #[derive(Deserialize, Debug)]
 pub struct Melee {
     pub damage: i32,
+    pub class: String,
 }
 
 #[derive(Deserialize, Debug)]

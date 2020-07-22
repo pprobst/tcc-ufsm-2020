@@ -1,5 +1,5 @@
-use super::{X_OFFSET, Y_OFFSET};
-use crate::components::{Description, Name, Position};
+use super::{WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
+use crate::components::{BaseStats, Description, MeleeWeapon, Name, Position};
 use crate::map_gen::Map;
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
@@ -48,7 +48,7 @@ impl Tooltip {
         self.lines.len() as i32 + 2
     }
 
-    fn render(&self, draw_batch: &mut DrawBatch, x: i32, y: i32) {
+    fn render(&self, x: i32, y: i32, draw_batch: &mut DrawBatch) {
         let white = color("White", 1.0);
         let gray = color("BrightBlack", 1.0);
         let black = color("Background", 1.0);
@@ -80,21 +80,31 @@ pub fn show_tooltip(
     min_y: i32,
 ) {
     let map = ecs.fetch::<Map>();
-    let mut mouse_pos = term.mouse_pos();
+    let mouse_real_pos = term.mouse_pos();
+    let mut mouse_pos = mouse_real_pos;
     mouse_pos.0 += min_x - X_OFFSET;
     mouse_pos.1 += min_y + Y_OFFSET;
 
     let names = ecs.read_storage::<Name>();
     let descriptions = ecs.read_storage::<Description>();
     let positions = ecs.read_storage::<Position>();
+    let stats = ecs.read_storage::<BaseStats>();
+    let melee = ecs.read_storage::<MeleeWeapon>();
+    let entities = ecs.entities();
 
     let mut tooltips: Vec<Tooltip> = Vec::new();
-    for (name, descr, pos) in (&names, &descriptions, &positions).join() {
+    for (ent, name, descr, pos) in (&entities, &names, &descriptions, &positions).join() {
         let idx = map.idx(pos.x, pos.y);
         if mouse_pos.0 == pos.x && mouse_pos.1 == pos.y && map.is_visible(idx) {
             let mut ttip = Tooltip::new();
             ttip.add(name.name.to_string());
             ttip.add(descr.descr.to_string());
+            if let Some(s) = stats.get(ent) {
+                ttip.add(format!("\nHP: {}", s.health.hp));
+            }
+            if let Some(m) = melee.get(ent) {
+                ttip.add(format!("\nDMG: {}\n{:?}", m.base_damage, m.class));
+            }
             tooltips.push(ttip);
         }
     }
@@ -103,8 +113,14 @@ pub fn show_tooltip(
     }
 
     for tooltip in tooltips.iter() {
-        let x = term.mouse_pos().0 + 1;
-        let y = term.mouse_pos().1 + 1;
-        tooltip.render(draw_batch, x, y);
+        let mut x = mouse_real_pos.0 + 1;
+        let mut y = mouse_real_pos.1 + 1;
+        if x + tooltip.width() >= WINDOW_WIDTH {
+            x = x - tooltip.width();
+        }
+        if y + tooltip.height() >= WINDOW_HEIGHT - Y_OFFSET {
+            y = y - tooltip.height() - 1;
+        }
+        tooltip.render(x, y, draw_batch);
     }
 }

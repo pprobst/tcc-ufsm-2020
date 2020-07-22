@@ -147,11 +147,20 @@ pub struct MissileAttack {
     pub target: Entity,
 }
 
+#[derive(Debug)]
+pub enum MeleeWeaponClass {
+    Dagger,
+    Sword,
+    Axe,
+}
+
 #[derive(Component)]
 pub struct MeleeWeapon {
     pub base_damage: i32, // special effect?
+    pub class: MeleeWeaponClass,
 }
 
+#[derive(Debug)]
 pub enum AmmoType {
     Arrow,
     _32,
@@ -159,10 +168,25 @@ pub enum AmmoType {
 }
 
 #[derive(Component)]
+pub struct Ammunition {
+    pub max_ammo: i32,
+    pub ammo: i32,
+    pub ammo_type: AmmoType,
+}
+
+#[derive(Debug)]
+pub enum MissileWeaponClass {
+    Pistol, // incldues Revolvers
+    Rifle,
+    Heavy,
+    Grenade,
+}
+
+#[derive(Component)]
 pub struct MissileWeapon {
     pub base_damage: i32,
     pub range: i32, // Influence on misses
-    pub ammo_type: AmmoType,
+    pub ammo: Ammunition,
     pub charges: i32, // special effect?
 }
 
