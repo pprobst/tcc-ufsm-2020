@@ -1,5 +1,5 @@
 use super::{WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{BaseStats, Description, MeleeWeapon, Name, Position};
+use crate::components::{BaseStats, Description, MeleeWeapon, Armor, Name, Position};
 use crate::map_gen::Map;
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
@@ -90,6 +90,7 @@ pub fn show_tooltip(
     let positions = ecs.read_storage::<Position>();
     let stats = ecs.read_storage::<BaseStats>();
     let melee = ecs.read_storage::<MeleeWeapon>();
+    let armor = ecs.read_storage::<Armor>();
     let entities = ecs.entities();
 
     let mut tooltips: Vec<Tooltip> = Vec::new();
@@ -103,7 +104,10 @@ pub fn show_tooltip(
                 ttip.add(format!("\nHP: {}", s.health.hp));
             }
             if let Some(m) = melee.get(ent) {
-                ttip.add(format!("\nDMG: {}\n{:?}", m.base_damage, m.class));
+                ttip.add(format!("\n{:?}\n\nDMG: {}", m.class, m.base_damage));
+            }
+            if let Some(a) = armor.get(ent) {
+                ttip.add(format!("\nDEF: {}", a.defense));
             }
             tooltips.push(ttip);
         }

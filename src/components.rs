@@ -225,6 +225,11 @@ pub struct TryEquip {
 }
 
 #[derive(Component, Debug)]
+pub struct Armor {
+    pub defense: i32,
+}
+
+#[derive(Component, Debug)]
 pub struct Item {}
 
 #[derive(Component)]

@@ -1,10 +1,10 @@
 use super::{common_structs, Raws};
 use crate::components::{
     BaseStats, Blocker, Consumable, Description, EquipSlot, Equipable, Fov, Health, Item,
-    MeleeWeapon, MeleeWeaponClass, Mob, Name, Position, Renderable,
+    MeleeWeapon, MeleeWeaponClass, Mob, Name, Position, Renderable, Armor,
 };
 use crate::utils::colors::color;
-use bracket_lib::prelude::{to_cp437, ColorPair};
+use bracket_lib::prelude::{to_cp437, ColorPair, RandomNumberGenerator};
 use specs::prelude::*;
 use std::collections::HashMap;
 
@@ -60,10 +60,46 @@ fn set_renderable(render: &common_structs::Renderable) -> Renderable {
     }
 }
 
+pub fn get_random_possible_equips(name: &str, raws: &RawMaster, rng: &mut RandomNumberGenerator) -> Option<Vec<String>> {
+    if raws.mob_index.contains_key(name) {
+        let mut equips: Vec<String> = Vec::new();
+        let mob = &raws.raws.mobs[raws.mob_index[name]];
+        if let Some(eq) = &mob.equips {
+           if let Some(wpn) = &eq.weapons {
+               equips.push(rng.random_slice_entry(wpn).unwrap().to_string());
+           } 
+           if let Some(head) = &eq.head {
+               equips.push(rng.random_slice_entry(head).unwrap().to_string());
+           } 
+           if let Some(torso) = &eq.torso {
+               equips.push(rng.random_slice_entry(torso).unwrap().to_string());
+           } 
+           if let Some(hds) = &eq.hands {
+               equips.push(rng.random_slice_entry(hds).unwrap().to_string());
+           } 
+           if let Some(lgs) = &eq.legs {
+               equips.push(rng.random_slice_entry(lgs).unwrap().to_string());
+           } 
+           if let Some(feet) = &eq.feet {
+               equips.push(rng.random_slice_entry(feet).unwrap().to_string());
+           } 
+           if let Some(bck) = &eq.back {
+               equips.push(rng.random_slice_entry(bck).unwrap().to_string());
+           } 
+           if let Some(flt) = &eq.floating {
+               equips.push(rng.random_slice_entry(flt).unwrap().to_string());
+           } 
+        }
+
+        return Some(equips);
+    }
+
+    None
+}
+
 pub fn spawn_item(
     name: &str,
-    x: i32,
-    y: i32,
+    pos: Position,
     entity: EntityBuilder,
     raws: &RawMaster,
 ) -> Option<Entity> {
@@ -77,7 +113,7 @@ pub fn spawn_item(
         ent = ent.with(Description {
             descr: item.descr.clone(),
         });
-        ent = ent.with(Position { x, y });
+        ent = ent.with(Position { x: pos.x, y: pos.y });
         ent = ent.with(Item {});
 
         if let Some(renderable) = &item.renderable {
@@ -103,6 +139,16 @@ pub fn spawn_item(
                         slot: EquipSlot::Weapon1,
                     })
                 }
+                "torso" => {
+                    ent = ent.with(Equipable {
+                        slot: EquipSlot::Torso,
+                    })
+                }
+                "legs" => {
+                    ent = ent.with(Equipable {
+                        slot: EquipSlot::Legs,
+                    })
+                }
                 _ => return None,
             }
         }
@@ -115,11 +161,24 @@ pub fn spawn_item(
                         class: MeleeWeaponClass::Dagger,
                     })
                 }
+                "axe" => {
+                    ent = ent.with(MeleeWeapon {
+                        base_damage: melee.damage,
+                        class: MeleeWeaponClass::Axe,
+                    })
+                }
+
                 _ => return None,
             }
         }
 
-        Some(ent.build());
+        if let Some(armor) = &item.armor {
+            ent = ent.with(Armor {
+                defense: armor.defense,
+            })
+        }
+
+        return Some(ent.build());
     }
 
     None
@@ -127,8 +186,7 @@ pub fn spawn_item(
 
 pub fn spawn_mob(
     name: &str,
-    x: i32,
-    y: i32,
+    pos: Position,
     entity: EntityBuilder,
     raws: &RawMaster,
 ) -> Option<Entity> {
@@ -143,7 +201,7 @@ pub fn spawn_mob(
         ent = ent.with(Description {
             descr: mob.descr.clone(),
         });
-        ent = ent.with(Position { x, y });
+        ent = ent.with(Position { x: pos.x, y: pos.y });
         ent = ent.with(Fov {
             range: mob.fov_range,
             dirty: true,
@@ -164,6 +222,10 @@ pub fn spawn_mob(
 
         if let Some(renderable) = &mob.renderable {
             ent = ent.with(set_renderable(renderable));
+        }
+
+        if let Some(equips) = &mob.equips {
+
         }
 
         Some(ent.build());

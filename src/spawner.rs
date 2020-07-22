@@ -1,7 +1,7 @@
 use super::{
     map_gen::Map, raws::*, utils::colors::*, BaseStats, Blocker, Consumable, Contained, Container,
     Description, EquipSlot, Equipable, Fov, Health, InventoryCapacity, Item, MeleeWeapon,
-    MeleeWeaponClass, Mob, Name, Player, Position, Renderable,
+    MeleeWeaponClass, Mob, Name, Player, Position, Renderable, Equipment,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -151,6 +151,17 @@ fn get_all_containers(ecs: &World) -> Vec<Entity> {
         .collect()
 }
 
+fn get_all_named_mobs(ecs: &World) -> Vec<(Entity, String)> {
+    let entities = ecs.entities();
+    let mobs = ecs.read_storage::<Mob>();
+    let names = ecs.read_storage::<Name>();
+
+    (&mobs, &entities, &names)
+        .join()
+        .map(|(_c, e, n)| (e, n.name.clone()))
+        .collect()
+}
+
 pub fn populate_containers(ecs: &mut World) {
     let containers = get_all_containers(ecs);
 
@@ -158,6 +169,32 @@ pub fn populate_containers(ecs: &mut World) {
         test_sword_container(ecs, c);
         test_consumable_container(ecs, c);
         test_consumable_container(ecs, c);
+    }
+}
+
+fn equip_mobs(ecs: &mut World, rng: &mut RandomNumberGenerator) {
+    let mobs = get_all_named_mobs(ecs);
+
+    let raws = &RAWS.lock().unwrap();
+
+    for mob in mobs {
+        if let Some(equips) = get_random_possible_equips(&mob.1, raws, rng) {
+            for equip in equips.iter() {
+                if equip != "None" {
+                    if let Some(e) = spawn_item(equip.as_str(), Position::new(0, 0), ecs.create_entity(), raws) {
+                        let mut equipments = ecs.write_storage::<Equipment>();
+                        equipments
+                            .insert(
+                                e,
+                                Equipment {
+                                    user: mob.0,
+                                    equip: e,
+                                },
+                            ).expect("FAILED equipping item.");
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -170,16 +207,21 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
 
     spawn_item(
         "Med-Kit",
-        pt.x + 2,
-        pt.y + 1,
+        Position::new(pt.x + 2, pt.y + 1),
         ecs.create_entity(),
         &RAWS.lock().unwrap(),
     );
 
     spawn_item(
         "Tantou",
-        pt.x + 1,
-        pt.y + 1,
+        Position::new(pt.x + 1, pt.y + 1),
+        ecs.create_entity(),
+        &RAWS.lock().unwrap(),
+    );
+
+    spawn_item(
+        "Old Leather Armor",
+        Position::new(pt.x + 1, pt.y + 2),
         ecs.create_entity(),
         &RAWS.lock().unwrap(),
     );
@@ -195,7 +237,8 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
         let y = rng.roll_dice(1, map.height - 2);
         let idx = map.idx(x, y);
         if !map.tiles[idx].block {
-            spawn_mob("Man-ape", x, y, ecs.create_entity(), &RAWS.lock().unwrap());
+            spawn_mob("Man-ape", Position::new(x, y), ecs.create_entity(), &RAWS.lock().unwrap());
         }
     }
+    equip_mobs(ecs, &mut rng);
 }

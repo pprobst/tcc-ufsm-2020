@@ -33,6 +33,56 @@
                 class: "dagger"
             ),
         ),
+        (
+            name: "Flint Axe",
+            descr: "A crude & handleless axe\nmade of flint.",
+            renderable: (
+                glyph: 'F',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "weapon1",
+            ),
+            melee: (
+                damage: 3,
+                class: "axe"
+            ),
+        ),
+ 
+        (
+            name: "Old Leather Armor",
+            descr: "A careful leather crafts-\nmanship is hidden between\nlayers of prolonged use.",
+            renderable: (
+                glyph: 'L',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "torso",
+            ),
+            armor: (
+                defense: 3,
+            ),
+        ),
+        (
+            name: "Cargo Pants",
+            descr: "A highly practical pair of pants.\nPreferred by tinkerers and\nadventurers alike.",
+            renderable: (
+                glyph: 'P',
+                fg: "Green",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "legs",
+            ),
+            armor: (
+                defense: 1,
+            ),
+        ),
     ],
     mobs: [
         (
@@ -49,8 +99,11 @@
             stats: (
                 hp: 7,
                 max_hp: 7,
-                attack: 5,
+                attack: 2,
                 defense: 3,
+            ),
+            equips: (
+                weapons: ["None", "Flint Axe"],
             ),
         ),
     ],

@@ -10,6 +10,7 @@ pub struct Item {
     pub consumable: Option<Consumable>,
     pub equipable: Option<Equipable>,
     pub melee: Option<Melee>,
+    pub armor: Option<Armor>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -21,6 +22,11 @@ pub struct Consumable {
 pub struct Melee {
     pub damage: i32,
     pub class: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Armor {
+    pub defense: i32,
 }
 
 #[derive(Deserialize, Debug)]

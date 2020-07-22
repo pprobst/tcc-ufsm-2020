@@ -77,6 +77,7 @@ pub fn targeting_input(gs: &mut State, term: &mut BTerm) -> RunState {
             VirtualKeyCode::K | VirtualKeyCode::Numpad8 | VirtualKeyCode::Up => {
                 return choose_target(&mut gs.ecs, true)
             }
+
             VirtualKeyCode::J | VirtualKeyCode::Numpad2 | VirtualKeyCode::Down => {
                 return choose_target(&mut gs.ecs, false)
             }
