@@ -4,6 +4,7 @@
         (
             name: "Med-Kit",
             descr: "A small package containing\ngeneral items for\nemergency first aid:\nbandages, medicinal herbs\nand assorted chemicals.",
+            tier: 3,
             renderable: (
                 glyph: '!',
                 fg: "BrightRed",
@@ -19,6 +20,7 @@
         (
             name: "Tantou",
             descr: "A guardless short sword.",
+            tier: 1,
             renderable: (
                 glyph: '/',
                 fg: "BrightCyan",
@@ -36,6 +38,7 @@
         (
             name: "Flint Axe",
             descr: "A crude & handleless axe\nmade of flint.",
+            tier: 1,
             renderable: (
                 glyph: 'F',
                 fg: "Magenta",
@@ -50,10 +53,10 @@
                 class: "axe"
             ),
         ),
- 
         (
             name: "Old Leather Armor",
             descr: "A careful leather crafts-\nmanship is hidden between\nlayers of prolonged use.",
+            tier: 1,
             renderable: (
                 glyph: 'L',
                 fg: "Magenta",
@@ -70,6 +73,7 @@
         (
             name: "Cargo Pants",
             descr: "A highly practical pair of pants.\nPreferred by tinkerers and\nadventurers alike.",
+            tier: 1,
             renderable: (
                 glyph: 'P',
                 fg: "Green",

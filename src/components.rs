@@ -230,7 +230,9 @@ pub struct Armor {
 }
 
 #[derive(Component, Debug)]
-pub struct Item {}
+pub struct Item {
+    pub tier: u8,
+}
 
 #[derive(Component)]
 pub struct Consumable {

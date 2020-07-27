@@ -1,7 +1,7 @@
 use super::{common_structs, Raws};
 use crate::components::{
-    BaseStats, Blocker, Consumable, Description, EquipSlot, Equipable, Fov, Health, Item,
-    MeleeWeapon, MeleeWeaponClass, Mob, Name, Position, Renderable, Armor,
+    Armor, BaseStats, Blocker, Consumable, Description, EquipSlot, Equipable, Fov, Health, Item,
+    MeleeWeapon, MeleeWeaponClass, Mob, Name, Position, Renderable,
 };
 use crate::utils::colors::color;
 use bracket_lib::prelude::{to_cp437, ColorPair, RandomNumberGenerator};
@@ -60,35 +60,39 @@ fn set_renderable(render: &common_structs::Renderable) -> Renderable {
     }
 }
 
-pub fn get_random_possible_equips(name: &str, raws: &RawMaster, rng: &mut RandomNumberGenerator) -> Option<Vec<String>> {
+pub fn get_random_possible_equips(
+    name: &str,
+    raws: &RawMaster,
+    rng: &mut RandomNumberGenerator,
+) -> Option<Vec<String>> {
     if raws.mob_index.contains_key(name) {
         let mut equips: Vec<String> = Vec::new();
         let mob = &raws.raws.mobs[raws.mob_index[name]];
         if let Some(eq) = &mob.equips {
-           if let Some(wpn) = &eq.weapons {
-               equips.push(rng.random_slice_entry(wpn).unwrap().to_string());
-           } 
-           if let Some(head) = &eq.head {
-               equips.push(rng.random_slice_entry(head).unwrap().to_string());
-           } 
-           if let Some(torso) = &eq.torso {
-               equips.push(rng.random_slice_entry(torso).unwrap().to_string());
-           } 
-           if let Some(hds) = &eq.hands {
-               equips.push(rng.random_slice_entry(hds).unwrap().to_string());
-           } 
-           if let Some(lgs) = &eq.legs {
-               equips.push(rng.random_slice_entry(lgs).unwrap().to_string());
-           } 
-           if let Some(feet) = &eq.feet {
-               equips.push(rng.random_slice_entry(feet).unwrap().to_string());
-           } 
-           if let Some(bck) = &eq.back {
-               equips.push(rng.random_slice_entry(bck).unwrap().to_string());
-           } 
-           if let Some(flt) = &eq.floating {
-               equips.push(rng.random_slice_entry(flt).unwrap().to_string());
-           } 
+            if let Some(wpn) = &eq.weapons {
+                equips.push(rng.random_slice_entry(wpn).unwrap().to_string());
+            }
+            if let Some(head) = &eq.head {
+                equips.push(rng.random_slice_entry(head).unwrap().to_string());
+            }
+            if let Some(torso) = &eq.torso {
+                equips.push(rng.random_slice_entry(torso).unwrap().to_string());
+            }
+            if let Some(hds) = &eq.hands {
+                equips.push(rng.random_slice_entry(hds).unwrap().to_string());
+            }
+            if let Some(lgs) = &eq.legs {
+                equips.push(rng.random_slice_entry(lgs).unwrap().to_string());
+            }
+            if let Some(feet) = &eq.feet {
+                equips.push(rng.random_slice_entry(feet).unwrap().to_string());
+            }
+            if let Some(bck) = &eq.back {
+                equips.push(rng.random_slice_entry(bck).unwrap().to_string());
+            }
+            if let Some(flt) = &eq.floating {
+                equips.push(rng.random_slice_entry(flt).unwrap().to_string());
+            }
         }
 
         return Some(equips);
@@ -114,7 +118,7 @@ pub fn spawn_item(
             descr: item.descr.clone(),
         });
         ent = ent.with(Position { x: pos.x, y: pos.y });
-        ent = ent.with(Item {});
+        ent = ent.with(Item { tier: item.tier });
 
         if let Some(renderable) = &item.renderable {
             ent = ent.with(set_renderable(renderable));
@@ -222,10 +226,6 @@ pub fn spawn_mob(
 
         if let Some(renderable) = &mob.renderable {
             ent = ent.with(set_renderable(renderable));
-        }
-
-        if let Some(equips) = &mob.equips {
-
         }
 
         Some(ent.build());

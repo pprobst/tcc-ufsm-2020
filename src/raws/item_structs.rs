@@ -6,6 +6,7 @@ use std::collections::HashMap;
 pub struct Item {
     pub name: String,
     pub descr: String,
+    pub tier: u8,
     pub renderable: Option<Renderable>,
     pub consumable: Option<Consumable>,
     pub equipable: Option<Equipable>,

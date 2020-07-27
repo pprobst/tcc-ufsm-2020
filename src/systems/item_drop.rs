@@ -1,7 +1,6 @@
 use crate::components::{DropItem, InBackpack, InventoryCapacity, Name, Position};
 use crate::log::Log;
 use crate::utils::colors::*;
-use bracket_lib::prelude::{RGB, WHITE};
 use specs::prelude::*;
 
 /*

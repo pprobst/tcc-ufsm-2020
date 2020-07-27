@@ -1,7 +1,7 @@
 use super::{
     map_gen::Map, raws::*, utils::colors::*, BaseStats, Blocker, Consumable, Contained, Container,
-    Description, EquipSlot, Equipable, Fov, Health, InventoryCapacity, Item, MeleeWeapon,
-    MeleeWeaponClass, Mob, Name, Player, Position, Renderable, Equipment,
+    Description, EquipSlot, Equipable, Equipment, Fov, Health, InventoryCapacity, Item,
+    MeleeWeapon, MeleeWeaponClass, Mob, Name, Player, Position, Renderable,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -55,6 +55,7 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .build()
 }
 
+/*
 pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
     entity_with_position(ecs, x, y)
         .with(Mob {})
@@ -80,6 +81,7 @@ pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
         })
         .build()
 }
+*/
 
 pub fn test_consumable(builder: EntityBuilder) -> Entity {
     builder
@@ -91,7 +93,7 @@ pub fn test_consumable(builder: EntityBuilder) -> Entity {
         .with(Name {
             name: "Test Consumable".to_string(),
         })
-        .with(Item {})
+        .with(Item { tier: 3 })
         .with(Consumable { heal: 5 })
         .build()
 }
@@ -106,7 +108,7 @@ pub fn test_sword(builder: EntityBuilder) -> Entity {
         .with(Name {
             name: "Terminus Est".to_string(),
         })
-        .with(Item {})
+        .with(Item { tier: 1 })
         .with(Equipable {
             slot: EquipSlot::Weapon1,
         })
@@ -181,7 +183,12 @@ fn equip_mobs(ecs: &mut World, rng: &mut RandomNumberGenerator) {
         if let Some(equips) = get_random_possible_equips(&mob.1, raws, rng) {
             for equip in equips.iter() {
                 if equip != "None" {
-                    if let Some(e) = spawn_item(equip.as_str(), Position::new(0, 0), ecs.create_entity(), raws) {
+                    if let Some(e) = spawn_item(
+                        equip.as_str(),
+                        Position::new(0, 0),
+                        ecs.create_entity(),
+                        raws,
+                    ) {
                         let mut equipments = ecs.write_storage::<Equipment>();
                         equipments
                             .insert(
@@ -190,7 +197,8 @@ fn equip_mobs(ecs: &mut World, rng: &mut RandomNumberGenerator) {
                                     user: mob.0,
                                     equip: e,
                                 },
-                            ).expect("FAILED equipping item.");
+                            )
+                            .expect("FAILED equipping item.");
                     }
                 }
             }
@@ -237,7 +245,12 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
         let y = rng.roll_dice(1, map.height - 2);
         let idx = map.idx(x, y);
         if !map.tiles[idx].block {
-            spawn_mob("Man-ape", Position::new(x, y), ecs.create_entity(), &RAWS.lock().unwrap());
+            spawn_mob(
+                "Man-ape",
+                Position::new(x, y),
+                ecs.create_entity(),
+                &RAWS.lock().unwrap(),
+            );
         }
     }
     equip_mobs(ecs, &mut rng);

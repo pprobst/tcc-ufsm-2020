@@ -35,7 +35,6 @@ pub enum RunState {
     Inventory,
     ItemUse,
     AccessContainer,
-    Look,
     Mapgen,
 }
 
@@ -162,9 +161,6 @@ impl GameState for State {
             RunState::AccessContainer => {
                 self.run_collect_system();
                 curr_state = RunState::AccessContainer;
-            }
-            RunState::Look => {
-                curr_state = RunState::Look;
             }
             RunState::Mapgen => match term.key {
                 None => {}
