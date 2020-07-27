@@ -1,7 +1,7 @@
 use super::{common_structs, Raws};
 use crate::components::{
-    Armor, BaseStats, Blocker, Consumable, Description, EquipSlot, Equipable, Fov, Health, Item,
-    MeleeWeapon, MeleeWeaponClass, Mob, Name, Position, Renderable,
+    Armor, BaseStats, Blocker, Consumable, Container, Description, EquipSlot, Equipable, Fov,
+    Health, Item, MeleeWeapon, MeleeWeaponClass, Mob, Name, Position, Renderable,
 };
 use crate::utils::colors::color;
 use bracket_lib::prelude::{to_cp437, ColorPair, RandomNumberGenerator};
@@ -12,6 +12,7 @@ use std::collections::HashMap;
 pub struct RawMaster {
     pub raws: Raws,
     item_index: HashMap<String, usize>,
+    container_index: HashMap<String, usize>,
     mob_index: HashMap<String, usize>,
 }
 
@@ -20,9 +21,11 @@ impl RawMaster {
         RawMaster {
             raws: Raws {
                 items: Vec::new(),
+                containers: Vec::new(),
                 mobs: Vec::new(),
             },
             item_index: HashMap::new(),
+            container_index: HashMap::new(),
             mob_index: HashMap::new(),
         }
     }
@@ -33,7 +36,9 @@ impl RawMaster {
         for (i, item) in self.raws.items.iter().enumerate() {
             self.item_index.insert(item.name.clone(), i);
         }
-
+        for (i, container) in self.raws.containers.iter().enumerate() {
+            self.container_index.insert(container.name.clone(), i);
+        }
         for (i, mob) in self.raws.mobs.iter().enumerate() {
             self.mob_index.insert(mob.name.clone(), i);
         }
@@ -101,9 +106,50 @@ pub fn get_random_possible_equips(
     None
 }
 
-pub fn spawn_item(
+pub fn get_items_tier(tier: u8, raws: &RawMaster) -> Vec<String> {
+    let items = &raws.raws.items;
+    items.iter()
+        .filter(|x| x.tier == tier)
+        .map(|x| x.name.clone())
+        .collect::<Vec<String>>()
+}
+
+pub fn spawn_container(
     name: &str,
     pos: Position,
+    entity: EntityBuilder,
+    raws: &RawMaster,
+) -> Option<Entity> {
+    if raws.container_index.contains_key(name) {
+        let container = &raws.raws.containers[raws.container_index[name]];
+        let mut ent = entity;
+
+        ent = ent.with(Name {
+            name: container.name.clone(),
+        });
+        ent = ent.with(Description {
+            descr: container.descr.clone(),
+        });
+        ent = ent.with(Position { x: pos.x, y: pos.y });
+        ent = ent.with(Blocker {});
+        ent = ent.with(Container {
+            tiers: container.tiers.clone(),
+            max_items: container.max_items,
+        });
+
+        if let Some(renderable) = &container.renderable {
+            ent = ent.with(set_renderable(renderable));
+        }
+
+        return Some(ent.build());
+    }
+
+    None
+}
+
+pub fn spawn_item(
+    name: &str,
+    position: Option<Position>,
     entity: EntityBuilder,
     raws: &RawMaster,
 ) -> Option<Entity> {
@@ -117,13 +163,14 @@ pub fn spawn_item(
         ent = ent.with(Description {
             descr: item.descr.clone(),
         });
-        ent = ent.with(Position { x: pos.x, y: pos.y });
         ent = ent.with(Item { tier: item.tier });
 
+        if let Some(pos) = position {
+            ent = ent.with(Position { x: pos.x, y: pos.y });
+        }
         if let Some(renderable) = &item.renderable {
             ent = ent.with(set_renderable(renderable));
         }
-
         if let Some(consumable) = &item.consumable {
             for effect in consumable.effects.iter() {
                 let effname = effect.0.as_str();
@@ -135,7 +182,6 @@ pub fn spawn_item(
                 }
             }
         }
-
         if let Some(equip) = &item.equipable {
             match equip.slot.as_str() {
                 "weapon1" => {
@@ -156,7 +202,6 @@ pub fn spawn_item(
                 _ => return None,
             }
         }
-
         if let Some(melee) = &item.melee {
             match melee.class.as_str() {
                 "dagger" => {
@@ -175,7 +220,6 @@ pub fn spawn_item(
                 _ => return None,
             }
         }
-
         if let Some(armor) = &item.armor {
             ent = ent.with(Armor {
                 defense: armor.defense,

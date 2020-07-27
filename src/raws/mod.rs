@@ -14,6 +14,8 @@ mod item_structs;
 use item_structs::*;
 mod mob_structs;
 pub use mob_structs::*;
+mod container_structs;
+pub use container_structs::*;
 
 embedded_resource!(RAW_COLORS, "../../raws/colors.ron");
 embedded_resource!(RAW, "../../raws/raws.ron");
@@ -27,6 +29,7 @@ lazy_static! {
 pub struct Raws {
     pub items: Vec<Item>,
     pub mobs: Vec<Mob>,
+    pub containers: Vec<Container>,
 }
 
 #[derive(Deserialize, Debug)]

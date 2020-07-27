@@ -1,5 +1,5 @@
 use super::{
-    map_gen::Map, raws::*, utils::colors::*, BaseStats, Blocker, Consumable, Contained, Container,
+    map_gen::Map, raws::*, utils::colors::*, BaseStats, Consumable, Contained, Container,
     Description, EquipSlot, Equipable, Equipment, Fov, Health, InventoryCapacity, Item,
     MeleeWeapon, MeleeWeaponClass, Mob, Name, Player, Position, Renderable,
 };
@@ -127,29 +127,14 @@ pub fn test_consumable_container(ecs: &mut World, container: Entity) -> Entity {
     test_consumable(entity_in_container(ecs, container))
 }
 
-pub fn test_container(builder: EntityBuilder) -> Entity {
-    builder
-        .with(Renderable {
-            glyph: to_cp437('Æ'),
-            color: ColorPair::new(color("Magenta", 1.0), color("Background", 1.0)),
-            layer: 1,
-        })
-        .with(Name {
-            name: "Chest".to_string(),
-        })
-        .with(Blocker {})
-        .with(Container {})
-        .build()
-}
-
-fn get_all_containers(ecs: &World) -> Vec<Entity> {
+fn get_all_tiered_containers(ecs: &World) -> Vec<(Entity, Vec<u8>)> {
     let entities = ecs.entities();
     let pos = ecs.read_storage::<Position>();
     let containers = ecs.read_storage::<Container>();
 
-    (&containers, &pos, &entities)
+    (&pos, &entities, &containers)
         .join()
-        .map(|(_c, _p, e)| e)
+        .map(|(_p, e, c)| (e, c.tiers.clone()))
         .collect()
 }
 
@@ -164,20 +149,27 @@ fn get_all_named_mobs(ecs: &World) -> Vec<(Entity, String)> {
         .collect()
 }
 
-pub fn populate_containers(ecs: &mut World) {
-    let containers = get_all_containers(ecs);
+pub fn populate_containers(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator) {
+    let containers = get_all_tiered_containers(ecs);
 
     for c in containers {
-        test_sword_container(ecs, c);
-        test_consumable_container(ecs, c);
-        test_consumable_container(ecs, c);
+        for tier in c.1 {
+            let items = get_items_tier(tier, raws);
+            if rng.range(0, 4) < 3 { 
+                let random_item = rng.random_slice_entry(&items).unwrap().to_string();
+                spawn_item(
+                    &random_item,
+                    None,
+                    entity_in_container(ecs, c.0),
+                    raws
+                );
+            }
+        }
     }
 }
 
-fn equip_mobs(ecs: &mut World, rng: &mut RandomNumberGenerator) {
+fn equip_mobs(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator) {
     let mobs = get_all_named_mobs(ecs);
-
-    let raws = &RAWS.lock().unwrap();
 
     for mob in mobs {
         if let Some(equips) = get_random_possible_equips(&mob.1, raws, rng) {
@@ -185,7 +177,7 @@ fn equip_mobs(ecs: &mut World, rng: &mut RandomNumberGenerator) {
                 if equip != "None" {
                     if let Some(e) = spawn_item(
                         equip.as_str(),
-                        Position::new(0, 0),
+                        None,
                         ecs.create_entity(),
                         raws,
                     ) {
@@ -212,33 +204,40 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
     ecs.insert(Point::new(pt.x, pt.y));
     let player = player(ecs, pt.x, pt.y);
     ecs.insert(player);
+    let raws = &RAWS.lock().unwrap();
 
     spawn_item(
         "Med-Kit",
-        Position::new(pt.x + 2, pt.y + 1),
+        Some(Position::new(pt.x + 2, pt.y + 1)),
         ecs.create_entity(),
-        &RAWS.lock().unwrap(),
+        raws
     );
 
     spawn_item(
         "Tantou",
-        Position::new(pt.x + 1, pt.y + 1),
+        Some(Position::new(pt.x + 1, pt.y + 1)),
         ecs.create_entity(),
-        &RAWS.lock().unwrap(),
+        raws
     );
 
     spawn_item(
         "Old Leather Armor",
-        Position::new(pt.x + 1, pt.y + 2),
+        Some(Position::new(pt.x + 1, pt.y + 2)),
         ecs.create_entity(),
-        &RAWS.lock().unwrap(),
+        raws
     );
 
-    test_container(entity_with_position(ecs, pt.x + 3, pt.y + 1));
+    spawn_container(
+        "Chest",
+        Position::new(pt.x + 3, pt.y + 1),
+        ecs.create_entity(),
+        raws
+    );
 
-    populate_containers(ecs);
 
     let mut rng = RandomNumberGenerator::new();
+
+    populate_containers(ecs, raws, &mut rng);
 
     for _i in 0..15 {
         let x = rng.roll_dice(1, map.width - 2);
@@ -249,9 +248,9 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
                 "Man-ape",
                 Position::new(x, y),
                 ecs.create_entity(),
-                &RAWS.lock().unwrap(),
+                raws,
             );
         }
     }
-    equip_mobs(ecs, &mut rng);
+    equip_mobs(ecs, raws, &mut rng);
 }

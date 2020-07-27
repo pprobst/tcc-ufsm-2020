@@ -291,7 +291,10 @@ pub struct SelectedPosition {
 }
 
 #[derive(Component, Debug)]
-pub struct Container {} // Chests and other types of containers.
+pub struct Container {
+    pub tiers: Vec<u8>,
+    pub max_items: u8,
+}
 
 #[derive(Component)]
 pub struct Contained {

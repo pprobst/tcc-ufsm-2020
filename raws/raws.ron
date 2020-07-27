@@ -20,7 +20,7 @@
         (
             name: "Tantou",
             descr: "A guardless short sword.",
-            tier: 1,
+            tier: 2,
             renderable: (
                 glyph: '/',
                 fg: "BrightCyan",
@@ -88,6 +88,23 @@
             ),
         ),
     ],
+
+    containers: [
+        (
+            name: "Chest",
+            descr: "A plain wood chest.",
+            blocker: true,
+            renderable: (
+                glyph: 'Æ',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 1,
+            ),
+            max_items: 5,
+            tiers: [1, 2], // Quality class of items it can hold. 0 -> Any!
+        ),
+    ],
+
     mobs: [
         (
             name: "Man-ape",
