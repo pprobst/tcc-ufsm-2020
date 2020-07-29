@@ -88,6 +88,7 @@ fn main() -> BError {
     world.register::<InBackpack>();
     world.register::<SelectedItem>();
     world.register::<SelectedPosition>();
+    world.register::<Remains>();
     world.register::<Container>();
     world.register::<Contained>();
 

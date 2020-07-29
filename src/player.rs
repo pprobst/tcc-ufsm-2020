@@ -169,7 +169,6 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> 
                     let mut covered = false;
                     if hittable {
                         let points = line2d_vector(ppos, mobpos);
-                        //let points = line2d_bresenham(ppos, mobpos);
                         for pt in points.iter().take(points.len() - 1) {
                             let i = map.idx(pt.x, pt.y);
                             // if there's a blocker in the aim line, you can't hit the entity.
@@ -218,7 +217,9 @@ pub fn context_action(ecs: &mut World) -> RunState {
                 fov.dirty = true;
             }
         }
-        PossibleContexts::Container => return RunState::AccessContainer,
+        PossibleContexts::Container => {
+            return RunState::AccessContainer;
+        }
         _ => return RunState::Waiting,
     }
 

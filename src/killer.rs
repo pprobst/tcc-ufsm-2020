@@ -1,4 +1,4 @@
-use super::{log::Log, BaseStats, Name, Player, InBackpack, Position, spawner::spawn_remains};
+use super::{log::Log, spawner::spawn_remains, BaseStats, InBackpack, Name, Player, Position};
 use crate::utils::colors::*;
 use specs::prelude::*;
 
@@ -60,11 +60,11 @@ impl<'a> Killer<'a> {
             let backpack = self.ecs.read_storage::<InBackpack>();
             let entities = self.ecs.entities();
 
-            items = (&backpack, &entities).join()
+            items = (&backpack, &entities)
+                .join()
                 .filter(|item| item.0.owner == ent)
                 .map(|item| item.1)
                 .collect::<Vec<_>>();
-
         }
         spawn_remains(self.ecs, items, ent_name, ent_pos);
     }

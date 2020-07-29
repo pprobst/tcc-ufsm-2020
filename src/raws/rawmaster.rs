@@ -110,7 +110,8 @@ pub fn get_random_possible_equips(
 
 pub fn get_items_tier(tier: u8, raws: &RawMaster) -> Vec<String> {
     let items = &raws.raws.items;
-    items.iter()
+    items
+        .iter()
         .filter(|x| x.tier == tier)
         .map(|x| x.name.clone())
         .collect::<Vec<String>>()

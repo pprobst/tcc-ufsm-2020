@@ -291,6 +291,9 @@ pub struct SelectedPosition {
 }
 
 #[derive(Component, Debug)]
+pub struct Remains {} // The remains of a dead mob.
+
+#[derive(Component, Debug)]
 pub struct Container {
     pub tiers: Vec<u8>,
     pub max_items: u8,

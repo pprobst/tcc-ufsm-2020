@@ -1,7 +1,7 @@
 use super::{
-    map_gen::Map, raws::*, utils::colors::*, BaseStats, Contained, Container,
-    Description, Equipment, Fov, Health, InventoryCapacity, 
-    Mob, Name, Player, Position, Renderable, InBackpack,
+    map_gen::Map, raws::*, utils::colors::*, BaseStats, Contained, Container, Description,
+    Equipment, Fov, Health, InBackpack, InventoryCapacity, Mob, Name, Player, Position, Remains,
+    Renderable,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -83,14 +83,9 @@ fn populate_containers(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumber
     for c in containers {
         for tier in c.1 {
             let items = get_items_tier(tier, raws);
-            if rng.range(0, 4) < 3 { 
+            if rng.range(0, 4) < 3 {
                 let random_item = rng.random_slice_entry(&items).unwrap().to_string();
-                spawn_item(
-                    &random_item,
-                    None,
-                    entity_in_container(ecs, c.0),
-                    raws
-                );
+                spawn_item(&random_item, None, entity_in_container(ecs, c.0), raws);
             }
         }
     }
@@ -103,12 +98,7 @@ fn equip_mobs(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator
         if let Some(equips) = get_random_possible_equips(&mob.1, raws, rng) {
             for equip in equips.iter() {
                 if equip != "None" {
-                    if let Some(e) = spawn_item(
-                        equip.as_str(),
-                        None,
-                        ecs.create_entity(),
-                        raws,
-                    ) {
+                    if let Some(e) = spawn_item(equip.as_str(), None, ecs.create_entity(), raws) {
                         let mut equipments = ecs.write_storage::<Equipment>();
                         equipments
                             .insert(
@@ -124,7 +114,9 @@ fn equip_mobs(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator
                         // generic --  this is not the case for the player. Mobs don't really
                         // have to think about inventory management, after all.
                         let mut backpack = ecs.write_storage::<InBackpack>();
-                        backpack.insert(e, InBackpack { owner: mob.0 }).expect("FAILED to insert item in backpack.");
+                        backpack
+                            .insert(e, InBackpack { owner: mob.0 })
+                            .expect("FAILED to insert item in backpack.");
                     }
                 }
             }
@@ -139,7 +131,11 @@ pub fn spawn_remains(ecs: &mut World, items: Vec<Entity>, ent_name: String, pos:
             color: ColorPair::new(color("Red", 0.5), color("Background", 1.0)),
             layer: 0,
         })
-        .with(Container { tiers: vec![0], max_items: 15 })
+        .with(Remains {})
+        .with(Container {
+            tiers: vec![0],
+            max_items: 15,
+        })
         .with(Name {
             name: format!("Remains of {}", ent_name),
         })
@@ -147,7 +143,9 @@ pub fn spawn_remains(ecs: &mut World, items: Vec<Entity>, ent_name: String, pos:
 
     let mut contain = ecs.write_storage::<Contained>();
     for item in items {
-        contain.insert(item, Contained { container: remains }).expect("FAILED to insert item in remains.");
+        contain
+            .insert(item, Contained { container: remains })
+            .expect("FAILED to insert item in remains.");
     }
 }
 
@@ -163,30 +161,29 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
         "Med-Kit",
         Some(Position::new(pt.x + 2, pt.y + 1)),
         ecs.create_entity(),
-        raws
+        raws,
     );
 
     spawn_item(
         "Tantou",
         Some(Position::new(pt.x + 1, pt.y + 1)),
         ecs.create_entity(),
-        raws
+        raws,
     );
 
     spawn_item(
         "Old Leather Armor",
         Some(Position::new(pt.x + 1, pt.y + 2)),
         ecs.create_entity(),
-        raws
+        raws,
     );
 
     spawn_container(
         "Chest",
         Position::new(pt.x + 3, pt.y + 1),
         ecs.create_entity(),
-        raws
+        raws,
     );
-
 
     let mut rng = RandomNumberGenerator::new();
 
@@ -197,12 +194,7 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
         let y = rng.roll_dice(1, map.height - 2);
         let idx = map.idx(x, y);
         if !map.tiles[idx].block {
-            spawn_mob(
-                "Man-ape",
-                Position::new(x, y),
-                ecs.create_entity(),
-                raws,
-            );
+            spawn_mob("Man-ape", Position::new(x, y), ecs.create_entity(), raws);
         }
     }
 
