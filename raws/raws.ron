@@ -54,6 +54,23 @@
             ),
         ),
         (
+            name: "Filthy Rags",
+            descr: "Stained pieces of fabric\nwith an indescribable odor\nthat can barely be\nconsidered clothing.",
+            tier: 1,
+            renderable: (
+                glyph: 'U',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "torso",
+            ),
+            armor: (
+                defense: 1,
+            ),
+        ),
+        (
             name: "Old Leather Armor",
             descr: "A careful leather crafts-\nmanship is hidden between\nlayers of prolonged use.",
             tier: 1,
@@ -125,6 +142,7 @@
             ),
             equips: (
                 weapons: ["None", "Flint Axe"],
+                torso: ["None", "Filthy Rags"],
             ),
         ),
     ],

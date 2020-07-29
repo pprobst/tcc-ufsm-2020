@@ -75,13 +75,15 @@ pub fn get_random_possible_equips(
         let mob = &raws.raws.mobs[raws.mob_index[name]];
         if let Some(eq) = &mob.equips {
             if let Some(wpn) = &eq.weapons {
-                equips.push(rng.random_slice_entry(wpn).unwrap().to_string());
+                //equips.push(rng.random_slice_entry(wpn).unwrap().to_string());
+                equips.push(wpn[1].to_string());
             }
             if let Some(head) = &eq.head {
                 equips.push(rng.random_slice_entry(head).unwrap().to_string());
             }
             if let Some(torso) = &eq.torso {
-                equips.push(rng.random_slice_entry(torso).unwrap().to_string());
+                //equips.push(rng.random_slice_entry(torso).unwrap().to_string());
+                equips.push(torso[1].to_string());
             }
             if let Some(hds) = &eq.hands {
                 equips.push(rng.random_slice_entry(hds).unwrap().to_string());

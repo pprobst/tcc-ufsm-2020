@@ -1,7 +1,7 @@
 use super::{
-    map_gen::Map, raws::*, utils::colors::*, BaseStats, Consumable, Contained, Container,
-    Description, EquipSlot, Equipable, Equipment, Fov, Health, InventoryCapacity, Item,
-    MeleeWeapon, MeleeWeaponClass, Mob, Name, Player, Position, Renderable,
+    map_gen::Map, raws::*, utils::colors::*, BaseStats, Contained, Container,
+    Description, Equipment, Fov, Health, InventoryCapacity, 
+    Mob, Name, Player, Position, Renderable, InBackpack,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -15,6 +15,7 @@ use specs::prelude::*;
  */
 
 // Some of this stuff is based on https://github.com/tylervipond/apprentice/blob/master/src/spawner.rs
+
 fn entity_in_container(ecs: &mut World, container: Entity) -> EntityBuilder {
     ecs.create_entity().with(Contained {
         container: container,
@@ -25,9 +26,8 @@ fn entity_with_position(ecs: &mut World, x: i32, y: i32) -> EntityBuilder {
     ecs.create_entity().with(Position { x, y })
 }
 
-pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
+fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
     entity_with_position(ecs, x, y)
-        .with(Position { x, y })
         .with(Renderable {
             glyph: to_cp437('@'),
             color: ColorPair::new(color("BrightWhite", 1.0), color("Background", 1.0)),
@@ -55,78 +55,6 @@ pub fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         .build()
 }
 
-/*
-pub fn test_mob(ecs: &mut World, x: i32, y: i32) -> Entity {
-    entity_with_position(ecs, x, y)
-        .with(Mob {})
-        .with(Renderable {
-            glyph: to_cp437('t'),
-            color: ColorPair::new(color("Red", 1.0), color("Background", 1.0)),
-            layer: 1,
-        })
-        .with(Name {
-            name: "Test Mob".to_string(),
-        })
-        .with(Fov {
-            range: 20,
-            visible_pos: Vec::new(),
-            dirty: true,
-        })
-        .with(Blocker {})
-        .with(BaseStats {
-            health: Health { max_hp: 7, hp: 7 },
-            defense: 3,
-            attack: 5,
-            god: false,
-        })
-        .build()
-}
-*/
-
-pub fn test_consumable(builder: EntityBuilder) -> Entity {
-    builder
-        .with(Renderable {
-            glyph: to_cp437('!'),
-            color: ColorPair::new(color("BrightRed", 1.0), color("Background", 1.0)),
-            layer: 0,
-        })
-        .with(Name {
-            name: "Test Consumable".to_string(),
-        })
-        .with(Item { tier: 3 })
-        .with(Consumable { heal: 5 })
-        .build()
-}
-
-pub fn test_sword(builder: EntityBuilder) -> Entity {
-    builder
-        .with(Renderable {
-            glyph: to_cp437('/'),
-            color: ColorPair::new(color("BrightCyan", 1.0), color("Background", 1.0)),
-            layer: 0,
-        })
-        .with(Name {
-            name: "Terminus Est".to_string(),
-        })
-        .with(Item { tier: 1 })
-        .with(Equipable {
-            slot: EquipSlot::Weapon1,
-        })
-        .with(MeleeWeapon {
-            base_damage: 5,
-            class: MeleeWeaponClass::Sword,
-        })
-        .build()
-}
-
-pub fn test_sword_container(ecs: &mut World, container: Entity) -> Entity {
-    test_sword(entity_in_container(ecs, container))
-}
-
-pub fn test_consumable_container(ecs: &mut World, container: Entity) -> Entity {
-    test_consumable(entity_in_container(ecs, container))
-}
-
 fn get_all_tiered_containers(ecs: &World) -> Vec<(Entity, Vec<u8>)> {
     let entities = ecs.entities();
     let pos = ecs.read_storage::<Position>();
@@ -149,7 +77,7 @@ fn get_all_named_mobs(ecs: &World) -> Vec<(Entity, String)> {
         .collect()
 }
 
-pub fn populate_containers(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator) {
+fn populate_containers(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator) {
     let containers = get_all_tiered_containers(ecs);
 
     for c in containers {
@@ -190,11 +118,36 @@ fn equip_mobs(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator
                                     equip: e,
                                 },
                             )
-                            .expect("FAILED equipping item.");
+                            .expect("FAILED to equip item.");
+                        // For simplicity's sake, mobs will have a clone of the item they're
+                        // equipping in their inventory, so as to make their remains' drop more
+                        // generic --  this is not the case for the player. Mobs don't really
+                        // have to think about inventory management, after all.
+                        let mut backpack = ecs.write_storage::<InBackpack>();
+                        backpack.insert(e, InBackpack { owner: mob.0 }).expect("FAILED to insert item in backpack.");
                     }
                 }
             }
         }
+    }
+}
+
+pub fn spawn_remains(ecs: &mut World, items: Vec<Entity>, ent_name: String, pos: Position) {
+    let remains = entity_with_position(ecs, pos.x, pos.y)
+        .with(Renderable {
+            glyph: to_cp437('▓'),
+            color: ColorPair::new(color("Red", 0.5), color("Background", 1.0)),
+            layer: 0,
+        })
+        .with(Container { tiers: vec![0], max_items: 15 })
+        .with(Name {
+            name: format!("Remains of {}", ent_name),
+        })
+        .build();
+
+    let mut contain = ecs.write_storage::<Contained>();
+    for item in items {
+        contain.insert(item, Contained { container: remains }).expect("FAILED to insert item in remains.");
     }
 }
 
@@ -252,5 +205,6 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
             );
         }
     }
+
     equip_mobs(ecs, raws, &mut rng);
 }

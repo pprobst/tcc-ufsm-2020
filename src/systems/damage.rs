@@ -34,6 +34,7 @@ impl<'a> System<'a> for DamageSystem {
                     victim_stats.health.hp -= dmg.0;
                 }
             }
+            // Victim is dead, so clear blocker.
             if victim_stats.health.hp <= 0 {
                 map.clear_blocker(pos.x, pos.y);
             }
