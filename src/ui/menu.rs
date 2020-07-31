@@ -55,7 +55,7 @@ pub fn main_menu(
 ) -> MenuResult {
     draw_batch.print_color_centered(
         11,
-        "Unnamed RL",
+        "TCC UFSM 2020",
         ColorPair::new(color("Green", 1.0), color("Background", 1.0)),
     );
 
