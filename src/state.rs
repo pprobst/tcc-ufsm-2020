@@ -10,6 +10,8 @@ use super::{
         item_drop::ItemDropSystem, mapping::MappingSystem, melee::MeleeSystem,
         missile::MissileSystem,
     },
+    ui::menu::MenuSelection,
+    SHOW_MAP,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -21,8 +23,6 @@ use specs::prelude::*;
  * Controls the running systems, game states and other main functions at every tick.
  *
  */
-
-const SHOW_MAP: bool = true;
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -36,12 +36,14 @@ pub enum RunState {
     ItemUse,
     AccessContainer,
     Mapgen,
+    Menu { menu_selection: MenuSelection },
 }
 
 pub struct State {
     pub ecs: World,
     pub runstate: RunState,
     pub show_map: bool,
+    pub in_menu: bool,
     pub map_generator: MapGenerator,
 }
 
@@ -51,6 +53,7 @@ impl State {
             ecs: world,
             runstate: RunState::Start,
             show_map: SHOW_MAP,
+            in_menu: true,
             map_generator: MapGenerator::new(),
         }
     }
@@ -115,8 +118,6 @@ impl State {
 
 impl GameState for State {
     fn tick(&mut self, term: &mut BTerm) {
-        //term.cls();
-
         let mut curr_state;
         // We need scope because we'll do mutable borrow later.
         {
@@ -126,7 +127,9 @@ impl GameState for State {
 
         // State machine.
         match curr_state {
+            RunState::Menu { .. } => {}
             RunState::Start => {
+                self.in_menu = false;
                 if self.show_map {
                     curr_state = RunState::Mapgen;
                 } else {
@@ -163,7 +166,9 @@ impl GameState for State {
                 curr_state = RunState::AccessContainer;
             }
             RunState::Mapgen => match term.key {
-                None => {}
+                None => {
+                    //self.run_systems();
+                }
                 Some(key) => {
                     if let VirtualKeyCode::Space = key {
                         self.generate_new_map(80, 60);
@@ -204,6 +209,6 @@ impl GameState for State {
         }
 
         remove_dead_entities(&mut self.ecs);
-        render_all(&self.ecs, term, curr_state, self.show_map);
+        render_all(&self.ecs, term, curr_state, self.show_map, self.in_menu);
     }
 }

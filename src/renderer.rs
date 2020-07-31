@@ -19,8 +19,8 @@ pub struct Renderer<'a> {
     pub state: RunState,
 }
 
-pub fn render_all(ecs: &World, term: &mut BTerm, state: RunState, show_map: bool) {
-    Renderer { ecs, term, state }.render_all(show_map)
+pub fn render_all(ecs: &World, term: &mut BTerm, state: RunState, show_map: bool, in_menu: bool) {
+    Renderer { ecs, term, state }.render_all(show_map, in_menu)
 }
 
 pub fn reload_colors(ecs: &World, term: &mut BTerm, state: RunState) {
@@ -36,33 +36,39 @@ impl<'a> Renderer<'a> {
     /// * Map;
     /// * Entities;
     /// * UI.
-    pub fn render_all(&mut self, show_map: bool) {
+    pub fn render_all(&mut self, show_map: bool, in_menu: bool) {
         let (min_x, max_x, min_y, max_y, x_offset, y_offset) = self.screen_bounds();
         let mut draw_batch = DrawBatch::new();
         let bg = color("Background", 1.0);
 
-        draw_batch.target(0);
-        draw_batch.cls_color(bg);
-        self.render_map(
-            &mut draw_batch,
-            show_map,
-            min_x,
-            max_x,
-            min_y,
-            max_y,
-            x_offset,
-            y_offset,
-        );
         if !show_map {
-            self.render_entitites(&mut draw_batch, min_x, min_y, x_offset, y_offset);
-
-            draw_batch.target(1);
-            draw_batch.cls_color(bg);
+            self.clear_draw_batch(&mut draw_batch, bg, 1);
             self.render_ui(&mut draw_batch, min_x, min_y);
         }
 
-        draw_batch.submit(0).expect("Batch error");
-        render_draw_buffer(self.term).expect("Render error");
+        self.clear_draw_batch(&mut draw_batch, bg, 0);
+
+        if !in_menu {
+            self.render_map(
+                &mut draw_batch,
+                show_map,
+                min_x,
+                max_x,
+                min_y,
+                max_y,
+                x_offset,
+                y_offset,
+            );
+            self.render_entitites(&mut draw_batch, min_x, min_y, x_offset, y_offset);
+        }
+
+        draw_batch.submit(0).expect("Batch error.");
+        render_draw_buffer(self.term).expect("Render error.");
+    }
+
+    fn clear_draw_batch(&self, draw_batch: &mut DrawBatch, bg: RGBA, num: usize) {
+        draw_batch.target(num);
+        draw_batch.cls_color(bg);
     }
 
     fn screen_bounds(&mut self) -> (i32, i32, i32, i32, i32, i32) {
@@ -162,7 +168,7 @@ impl<'a> Renderer<'a> {
                             tile.glyph,
                         );
                     }
-                } //else { draw_batch.set(Point::new(x as i32 + x_offset, y as i32 + y_offset), ColorPair::new(RGB::from_hex(WALL_GRAY).unwrap(), RGB::named(BLACK)), to_cp437('#')); }
+                }
             }
         }
     }
@@ -219,50 +225,81 @@ impl<'a> Renderer<'a> {
     }
 
     fn render_ui(&mut self, draw_batch: &mut DrawBatch, min_x: i32, min_y: i32) {
-        hud::boxes(draw_batch);
-        hud::name_stats(self.ecs, draw_batch);
-        hud::show_equipped(self.ecs, draw_batch);
-        hud::game_log(self.ecs, draw_batch);
-        let mouse_pos = self.term.mouse_pos();
-
-        if mouse_pos.0 > X_OFFSET
-            && mouse_pos.0 < WINDOW_WIDTH - 1
-            && mouse_pos.1 < WINDOW_HEIGHT - Y_OFFSET
-            && mouse_pos.1 > 0
-        {
-            draw_batch.set_bg(Point::new(mouse_pos.0, mouse_pos.1), color("Magenta", 0.4));
-            tooltips::show_tooltip(self.ecs, self.term, draw_batch, min_x, min_y);
-        }
-
         let mut write_state = self.ecs.write_resource::<RunState>();
+
         match self.state {
-            RunState::Inventory => {
-                let inventory_result = inventory::show_inventory(self.ecs, self.term, draw_batch);
-                if inventory_result == inventory::InventoryResult::Cancel {
-                    *write_state = RunState::Running;
-                } else if inventory_result == inventory::InventoryResult::Select {
-                    *write_state = RunState::ItemUse;
+            RunState::Menu {
+                menu_selection: selection,
+            } => {
+                let res = menu::main_menu(selection, false, self.term, draw_batch);
+                match res {
+                    menu::MenuResult::NoSelection { selected } => {
+                        *write_state = RunState::Menu {
+                            menu_selection: selected,
+                        }
+                    }
+                    menu::MenuResult::Selected { selected } => match selected {
+                        menu::MenuSelection::NewGame => {
+                            *write_state = RunState::Start;
+                        }
+                        menu::MenuSelection::LoadGame => {
+                            *write_state = RunState::Start;
+                        }
+                        menu::MenuSelection::Quit => {
+                            ::std::process::exit(0);
+                        }
+                    },
                 }
             }
-            RunState::ItemUse => {
-                let inventory_result = inventory::show_use_menu(self.ecs, self.term, draw_batch);
-                if inventory_result == inventory::InventoryResult::Cancel {
-                    *write_state = RunState::Running;
-                } else if inventory_result == inventory::InventoryResult::DropItem
-                    || inventory_result == inventory::InventoryResult::UseItem
+            _ => {
+                hud::boxes(draw_batch);
+                hud::name_stats(self.ecs, draw_batch);
+                hud::show_equipped(self.ecs, draw_batch);
+                hud::game_log(self.ecs, draw_batch);
+                let mouse_pos = self.term.mouse_pos();
+
+                if mouse_pos.0 > X_OFFSET
+                    && mouse_pos.0 < WINDOW_WIDTH - 1
+                    && mouse_pos.1 < WINDOW_HEIGHT - Y_OFFSET
+                    && mouse_pos.1 > 0
                 {
-                    *write_state = RunState::MobTurn;
+                    draw_batch.set_bg(Point::new(mouse_pos.0, mouse_pos.1), color("Magenta", 0.4));
+                    tooltips::show_tooltip(self.ecs, self.term, draw_batch, min_x, min_y);
+                }
+
+                match self.state {
+                    RunState::Inventory => {
+                        let inventory_result =
+                            inventory::show_inventory(self.ecs, self.term, draw_batch);
+                        if inventory_result == inventory::InventoryResult::Cancel {
+                            *write_state = RunState::Running;
+                        } else if inventory_result == inventory::InventoryResult::Select {
+                            *write_state = RunState::ItemUse;
+                        }
+                    }
+                    RunState::ItemUse => {
+                        let inventory_result =
+                            inventory::show_use_menu(self.ecs, self.term, draw_batch);
+                        if inventory_result == inventory::InventoryResult::Cancel {
+                            *write_state = RunState::Running;
+                        } else if inventory_result == inventory::InventoryResult::DropItem
+                            || inventory_result == inventory::InventoryResult::UseItem
+                        {
+                            *write_state = RunState::MobTurn;
+                        }
+                    }
+                    RunState::AccessContainer => {
+                        let container_result =
+                            container::show_container(self.ecs, self.term, draw_batch);
+                        if container_result == container::ContainerResult::Cancel {
+                            *write_state = RunState::MobTurn;
+                        } else if container_result == container::ContainerResult::Select {
+                            *write_state = RunState::AccessContainer;
+                        }
+                    }
+                    _ => {}
                 }
             }
-            RunState::AccessContainer => {
-                let container_result = container::show_container(self.ecs, self.term, draw_batch);
-                if container_result == container::ContainerResult::Cancel {
-                    *write_state = RunState::MobTurn;
-                } else if container_result == container::ContainerResult::Select {
-                    *write_state = RunState::AccessContainer;
-                }
-            }
-            _ => {}
         }
     }
 

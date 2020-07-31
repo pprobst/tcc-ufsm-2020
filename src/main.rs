@@ -29,12 +29,10 @@ pub const WINDOW_HEIGHT: i32 = 60;
 //pub const WINDOW_HEIGHT: i32 = 80+Y_OFFSET;
 pub const TILE_WIDTH: i32 = 16;
 pub const TILE_HEIGHT: i32 = 16;
-
-//embedded_resource!(TILE_FONT, "../resources/vga8x16.png");
+pub const SHOW_MAP: bool = false;
 
 fn main() -> BError {
-    //link_resource!(TILE_FONT, "resources/terminal_12x12");
-    let term = BTermBuilder::new()
+    let mut term = BTermBuilder::new()
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
@@ -45,11 +43,8 @@ fn main() -> BError {
         .with_fullscreen(true)
         .with_fps_cap(60.0)
         .build()?;
-    /*
-    let term = BTermBuilder::simple80x50()
-        .with_title("TCC")
-        .build();
-    */
+
+    term.post_screenburn = false;
 
     // Load external files.
     rexloader::load_dungeons();
@@ -105,8 +100,15 @@ fn main() -> BError {
     // Spawn entities on the map.
     spawner::spawn_map(&mut game_state.ecs, &map);
 
-    // Insert initial state (Start) on the ECS.
-    game_state.ecs.insert(RunState::Start);
+    // Insert initial state into the ECS.
+    //game_state.ecs.insert(RunState::Start);
+    if !SHOW_MAP {
+        game_state.ecs.insert(RunState::Menu {
+            menu_selection: ui::menu::MenuSelection::NewGame,
+        });
+    } else {
+        game_state.ecs.insert(RunState::Start);
+    }
 
     // Insert the Log into the ECS.
     game_state.ecs.insert(log::Log::new());
