@@ -16,6 +16,7 @@ use bracket_lib::prelude::*;
 pub enum MenuSelection {
     NewGame,
     LoadGame,
+    Help,
     Quit,
 }
 
@@ -24,6 +25,7 @@ impl MenuSelection {
         String::from(match self {
             MenuSelection::NewGame => "New Journey",
             MenuSelection::LoadGame => "Continue",
+            MenuSelection::Help => "Help",
             MenuSelection::Quit => "Abandon",
         })
     }
@@ -53,9 +55,24 @@ pub fn main_menu(
     term: &mut BTerm,
     draw_batch: &mut DrawBatch,
 ) -> MenuResult {
+
+    draw_batch.draw_hollow_box(
+        Rect::with_size(0, 0, WINDOW_WIDTH - 1, WINDOW_HEIGHT - 1),
+        ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0)),
+    );
+
     draw_batch.print_color_centered(
-        11,
-        "TCC UFSM 2020",
+        WINDOW_HEIGHT - 3,
+        "IN DEVELOPMENT - 2020",
+        ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0)),
+    );
+
+
+    let mut y: i32 = 10;
+    // Title
+    draw_batch.print_color_centered(
+        10,
+        "CONE-SUR",
         ColorPair::new(color("Green", 1.0), color("Background", 1.0)),
     );
 
@@ -63,47 +80,50 @@ pub fn main_menu(
         vec![
             MenuSelection::LoadGame,
             MenuSelection::NewGame,
+            MenuSelection::Help,
             MenuSelection::Quit,
         ]
     } else {
-        vec![MenuSelection::NewGame, MenuSelection::Quit]
+        vec![MenuSelection::NewGame, MenuSelection::Help, MenuSelection::Quit]
     };
 
+    y += 15;
     for (i, entry) in entries.iter().enumerate() {
-        entry.print(14 + i as i32, selection, draw_batch);
+        entry.print(y + i as i32, selection, draw_batch);
+        y += 1;
     }
 
     match term.key {
         None => {
-            return MenuResult::NoSelection {
+            MenuResult::NoSelection {
                 selected: selection,
             }
         }
         Some(key) => match key {
             VirtualKeyCode::Escape => {
-                return MenuResult::NoSelection {
+                MenuResult::NoSelection {
                     selected: MenuSelection::Quit,
                 }
             }
             VirtualKeyCode::Up | VirtualKeyCode::K => {
                 let idx = entries.iter().position(|&x| x == selection).unwrap();
-                return MenuResult::NoSelection {
+                MenuResult::NoSelection {
                     selected: entries[(idx + entries.len() - 1) % entries.len()],
-                };
+                }
             }
             VirtualKeyCode::Down | VirtualKeyCode::J => {
                 let idx = entries.iter().position(|&x| x == selection).unwrap();
-                return MenuResult::NoSelection {
+                MenuResult::NoSelection {
                     selected: entries[(idx + 1) % entries.len()],
-                };
+                }
             }
             VirtualKeyCode::Return => {
-                return MenuResult::Selected {
+                MenuResult::Selected {
                     selected: selection,
                 }
             }
             _ => {
-                return MenuResult::NoSelection {
+                MenuResult::NoSelection {
                     selected: selection,
                 }
             }

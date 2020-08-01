@@ -32,7 +32,7 @@ pub const TILE_HEIGHT: i32 = 16;
 pub const SHOW_MAP: bool = false;
 
 fn main() -> BError {
-    let mut term = BTermBuilder::new()
+    let term = BTermBuilder::new()
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
@@ -43,8 +43,6 @@ fn main() -> BError {
         .with_fullscreen(true)
         .with_fps_cap(60.0)
         .build()?;
-
-    term.post_screenburn = false;
 
     // Load external files.
     rexloader::load_dungeons();

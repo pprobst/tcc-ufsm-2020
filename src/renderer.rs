@@ -243,6 +243,11 @@ impl<'a> Renderer<'a> {
                             *write_state = RunState::Start;
                         }
                         menu::MenuSelection::LoadGame => {
+                            // TODO
+                            *write_state = RunState::Start;
+                        }
+                        menu::MenuSelection::Help => {
+                            // TODO
                             *write_state = RunState::Start;
                         }
                         menu::MenuSelection::Quit => {
