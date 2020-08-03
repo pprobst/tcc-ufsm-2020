@@ -1,6 +1,90 @@
+use super::{WINDOW_HEIGHT, WINDOW_WIDTH};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use std::collections::HashMap;
+
+pub struct Popup {
+    lines: Vec<String>,
+}
+
+impl Popup {
+    pub fn new() -> Popup {
+        Popup { lines: Vec::new() }
+    }
+
+    pub fn add(&mut self, line: String) {
+        if self.lines.len() == 1 {
+            self.lines
+                .push(format!("{}", "-".repeat(self.lines[0].len())));
+        }
+        let lines = line.lines();
+        for l in lines {
+            self.lines.push(l.to_string());
+        }
+    }
+
+    pub fn width(&self) -> i32 {
+        let mut max = 0;
+        for s in self.lines.iter() {
+            if s.len() > max {
+                max = s.len();
+            }
+        }
+        max as i32 + 2
+    }
+
+    pub fn height(&self) -> i32 {
+        self.lines.len() as i32 + 2
+    }
+
+    pub fn render_tooltip(&self, x: i32, y: i32, draw_batch: &mut DrawBatch) {
+        let white = color("White", 1.0);
+        let gray = color("BrightBlack", 1.0);
+        let black = color("Background", 1.0);
+        draw_batch.draw_box(
+            Rect::with_size(x, y, self.width() - 1, self.height() - 1),
+            ColorPair::new(gray, black),
+        );
+        draw_batch.fill_region(
+            Rect::with_size(x + 1, y + 1, self.width() - 3, self.height() - 3),
+            ColorPair::new(black, black),
+            ' ' as u16,
+        );
+        for (i, s) in self.lines.iter().enumerate() {
+            let fg = if i < 2 { white } else { gray };
+            draw_batch.print_color(
+                Point::new(x + 1, y + i as i32 + 1),
+                &s,
+                ColorPair::new(fg, black),
+            );
+        }
+    }
+
+    pub fn render_popup(&self, draw_batch: &mut DrawBatch) {
+        let white = color("White", 1.0);
+        let gray = color("BrightBlack", 1.0);
+        let black = color("Background", 1.0);
+        let x = (WINDOW_WIDTH - 1 - self.width()).abs();
+        let y = 1;
+        draw_batch.draw_box(
+            Rect::with_size(x, y, self.width() - 1, self.height() - 1),
+            ColorPair::new(gray, black),
+        );
+        draw_batch.fill_region(
+            Rect::with_size(x + 1, y + 1, self.width() - 3, self.height() - 3),
+            ColorPair::new(black, black),
+            ' ' as u16,
+        );
+        for (i, s) in self.lines.iter().enumerate() {
+            let fg = if i < 2 { white } else { gray };
+            draw_batch.print_color(
+                Point::new(x + 1, y + i as i32 + 1),
+                &s,
+                ColorPair::new(fg, black),
+            );
+        }
+    }
+}
 
 pub fn draw_list_items(
     items: &HashMap<String, u32>,

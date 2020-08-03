@@ -55,7 +55,6 @@ pub fn main_menu(
     term: &mut BTerm,
     draw_batch: &mut DrawBatch,
 ) -> MenuResult {
-
     draw_batch.draw_hollow_box(
         Rect::with_size(0, 0, WINDOW_WIDTH - 1, WINDOW_HEIGHT - 1),
         ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0)),
@@ -66,7 +65,6 @@ pub fn main_menu(
         "IN DEVELOPMENT - 2020",
         ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0)),
     );
-
 
     let mut y: i32 = 10;
     // Title
@@ -84,7 +82,11 @@ pub fn main_menu(
             MenuSelection::Quit,
         ]
     } else {
-        vec![MenuSelection::NewGame, MenuSelection::Help, MenuSelection::Quit]
+        vec![
+            MenuSelection::NewGame,
+            MenuSelection::Help,
+            MenuSelection::Quit,
+        ]
     };
 
     y += 15;
@@ -94,17 +96,13 @@ pub fn main_menu(
     }
 
     match term.key {
-        None => {
-            MenuResult::NoSelection {
-                selected: selection,
-            }
-        }
+        None => MenuResult::NoSelection {
+            selected: selection,
+        },
         Some(key) => match key {
-            VirtualKeyCode::Escape => {
-                MenuResult::NoSelection {
-                    selected: MenuSelection::Quit,
-                }
-            }
+            VirtualKeyCode::Escape => MenuResult::NoSelection {
+                selected: MenuSelection::Quit,
+            },
             VirtualKeyCode::Up | VirtualKeyCode::K => {
                 let idx = entries.iter().position(|&x| x == selection).unwrap();
                 MenuResult::NoSelection {
@@ -117,16 +115,12 @@ pub fn main_menu(
                     selected: entries[(idx + 1) % entries.len()],
                 }
             }
-            VirtualKeyCode::Return => {
-                MenuResult::Selected {
-                    selected: selection,
-                }
-            }
-            _ => {
-                MenuResult::NoSelection {
-                    selected: selection,
-                }
-            }
+            VirtualKeyCode::Return => MenuResult::Selected {
+                selected: selection,
+            },
+            _ => MenuResult::NoSelection {
+                selected: selection,
+            },
         },
     }
 }

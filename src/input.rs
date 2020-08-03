@@ -1,4 +1,5 @@
 use super::{
+    map_gen::Map,
     player::*,
     state::{RunState, State},
     utils::directions::*,
@@ -92,4 +93,55 @@ pub fn targeting_input(gs: &mut State, term: &mut BTerm) -> RunState {
         },
     }
     RunState::PlayerTurn
+}
+
+/// Valid inputs while in Targeting mode.
+pub fn action_dir_input(gs: &mut State, term: &mut BTerm) -> RunState {
+    let ppos = **(&gs.ecs.fetch::<Point>());
+    let mut map = gs.ecs.fetch_mut::<Map>();
+    match term.key {
+        None => return RunState::ChooseActionDir,
+        Some(key) => match key {
+            VirtualKeyCode::Period | VirtualKeyCode::Numpad5 => {
+                return check_near(&gs.ecs, ppos, &mut map);
+            }
+            // Move East (E).
+            VirtualKeyCode::L | VirtualKeyCode::Numpad6 | VirtualKeyCode::Right => {
+                return check_near(&gs.ecs, ppos + EAST, &mut map);
+            }
+            // Move West (W).
+            VirtualKeyCode::H | VirtualKeyCode::Numpad4 | VirtualKeyCode::Left => {
+                return check_near(&gs.ecs, ppos + WEST, &mut map);
+            }
+            // Move North (N).
+            VirtualKeyCode::K | VirtualKeyCode::Numpad8 | VirtualKeyCode::Up => {
+                return check_near(&gs.ecs, ppos + NORTH, &mut map);
+            }
+            // Move South (S).
+            VirtualKeyCode::J | VirtualKeyCode::Numpad2 | VirtualKeyCode::Down => {
+                return check_near(&gs.ecs, ppos + SOUTH, &mut map);
+            }
+            // Move Northeast (NE).
+            VirtualKeyCode::U | VirtualKeyCode::Numpad9 => {
+                return check_near(&gs.ecs, ppos + NORTHEAST, &mut map);
+            }
+            // Move Northwest (NW).
+            VirtualKeyCode::Y | VirtualKeyCode::Numpad7 => {
+                return check_near(&gs.ecs, ppos + NORTHWEST, &mut map);
+            }
+            // Move Southeast (SE).
+            VirtualKeyCode::N | VirtualKeyCode::Numpad3 => {
+                return check_near(&gs.ecs, ppos + SOUTHEAST, &mut map);
+            }
+            // Move Southwest (SW).
+            VirtualKeyCode::B | VirtualKeyCode::Numpad1 => {
+                return check_near(&gs.ecs, ppos + SOUTHWEST, &mut map);
+            }
+
+            // Cancel targeting mode.
+            VirtualKeyCode::Escape => return RunState::Waiting,
+
+            _ => return RunState::ChooseActionDir,
+        },
+    }
 }

@@ -32,6 +32,7 @@ pub enum RunState {
     PlayerTurn,
     MobTurn,
     Targeting,
+    ChooseActionDir,
     Inventory,
     ItemUse,
     AccessContainer,
@@ -153,6 +154,9 @@ impl GameState for State {
             }
             RunState::Targeting => {
                 curr_state = targeting_input(self, term);
+            }
+            RunState::ChooseActionDir => {
+                curr_state = action_dir_input(self, term);
             }
             RunState::Inventory => {
                 curr_state = RunState::Inventory;

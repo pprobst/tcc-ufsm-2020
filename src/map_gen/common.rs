@@ -282,6 +282,35 @@ pub fn count_neighbor_tile(map: &Map, curr_pt: Point, tt: TileType, moore: bool)
     counter
 }
 
+pub fn count_neighbor_tile_entity(
+    map: &Map,
+    curr_pt: Point,
+    tt: Vec<TileType>,
+    moore: bool,
+) -> (u8, usize) {
+    let mut counter = 0;
+
+    if map.entities[map.idx_pt(curr_pt)] != None {
+        counter += 1;
+    }
+
+    let mut dir = 8;
+    for i in 0..8 {
+        if !moore && i >= 4 {
+            break;
+        }
+        let pt = curr_pt + dir_idx(i);
+        if map.in_map_bounds(pt) {
+            let idx = map.idx_pt(pt);
+            if tt.contains(&map.tiles[idx].ttype) || map.entities[idx] != None {
+                counter += 1;
+                dir = i;
+            }
+        }
+    }
+    (counter, dir)
+}
+
 #[allow(dead_code)]
 pub fn add_vegetation(map: &mut Map, region: &CustomRegion, trees: bool) {
     let mut rng = RandomNumberGenerator::new();

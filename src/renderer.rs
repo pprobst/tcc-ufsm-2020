@@ -273,6 +273,9 @@ impl<'a> Renderer<'a> {
                 }
 
                 match self.state {
+                    RunState::ChooseActionDir => {
+                        popup::show_context_dir(draw_batch);
+                    }
                     RunState::Inventory => {
                         let inventory_result =
                             inventory::show_inventory(self.ecs, self.term, draw_batch);
