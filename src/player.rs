@@ -213,7 +213,9 @@ pub fn context_action(ecs: &mut World) -> RunState {
     let possible_count_dir = count_neighbor_tile_entity(&map, ppos, tile_list, true);
 
     // One tile/entity.
-    if possible_count_dir.0 == 1 {
+    if possible_count_dir.0 == 0 {
+        return RunState::Waiting;
+    } else if possible_count_dir.0 == 1 {
         if possible_count_dir.1 >= 8 {
             return check_near(&ecs, ppos, &mut map);
         } else {
