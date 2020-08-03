@@ -114,7 +114,7 @@ impl MapGenerator {
         self.gen_wfc(
             idx,
             Some(region_left),
-            "../rex_resources/wfc_20x20_5.xp",
+            "resources/wfc_20x20_5.xp",
             20,
             20,
             10,

@@ -1,0 +1,149 @@
+#![enable(implicit_some)]
+(
+    items: [
+        (
+            name: "Med-Kit",
+            descr: "A small package containing\ngeneral items for\nemergency first aid:\nbandages, medicinal herbs\nand assorted chemicals.",
+            tier: 3,
+            renderable: (
+                glyph: '!',
+                fg: "BrightRed",
+                bg: "Background",
+                layer: 0,
+            ),
+            consumable: (
+                effects: { 
+                    "heal": 5,
+                },
+            ),
+        ),
+        (
+            name: "Tantou",
+            descr: "A guardless short sword.",
+            tier: 2,
+            renderable: (
+                glyph: '/',
+                fg: "BrightCyan",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "weapon1",
+            ),
+            melee: (
+                damage: 5,
+                class: "dagger"
+            ),
+        ),
+        (
+            name: "Flint Axe",
+            descr: "A crude & handleless axe\nmade of flint.",
+            tier: 1,
+            renderable: (
+                glyph: 'F',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "weapon1",
+            ),
+            melee: (
+                damage: 3,
+                class: "axe"
+            ),
+        ),
+        (
+            name: "Filthy Rags",
+            descr: "Stained pieces of fabric\nwith an indescribable odor\nthat can barely be\nconsidered clothing.",
+            tier: 1,
+            renderable: (
+                glyph: 'U',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "torso",
+            ),
+            armor: (
+                defense: 1,
+            ),
+        ),
+        (
+            name: "Old Leather Armor",
+            descr: "A careful leather crafts-\nmanship is hidden between\nlayers of prolonged use.",
+            tier: 1,
+            renderable: (
+                glyph: 'L',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "torso",
+            ),
+            armor: (
+                defense: 3,
+            ),
+        ),
+        (
+            name: "Cargo Pants",
+            descr: "A highly practical pair of pants.\nPreferred by tinkerers and\nadventurers alike.",
+            tier: 1,
+            renderable: (
+                glyph: 'P',
+                fg: "Green",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "legs",
+            ),
+            armor: (
+                defense: 1,
+            ),
+        ),
+    ],
+
+    containers: [
+        (
+            name: "Chest",
+            descr: "A plain wood chest.",
+            blocker: true,
+            renderable: (
+                glyph: 'Æ',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 1,
+            ),
+            max_items: 5,
+            tiers: [1, 2], // Quality class of items it can hold. 0 -> Any!
+        ),
+    ],
+
+    mobs: [
+        (
+            name: "Man-ape",
+            descr: "Millenia living in the\nshadows of strange dark\nplaces took a toll on its\nbody. Primal instincts\ngovern its actions yet\nagain; it may no longer\nbe called a human, but\na feral, pale and\nruby-eyed creature.",
+            renderable: (
+                glyph: 'm',
+                fg: "Red",
+                bg: "Background",
+                layer: 1,
+            ),
+            fov_range: 20,
+            blocker: true,
+            stats: (
+                hp: 7,
+                max_hp: 7,
+                attack: 2,
+                defense: 3,
+            ),
+            equips: (
+                weapons: ["None", "Flint Axe"],
+                torso: ["None", "Filthy Rags"],
+            ),
+        ),
+    ],
+)

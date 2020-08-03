@@ -31,7 +31,13 @@ pub const TILE_WIDTH: i32 = 16;
 pub const TILE_HEIGHT: i32 = 16;
 pub const SHOW_MAP: bool = false;
 
+embedded_resource!(FONT01, "../resources/fonts/Sapphos-square-16x16.png");
+embedded_resource!(FONT02, "../resources/fonts/Anikki-square-16x16.png");
+
 fn main() -> BError {
+    link_resource!(FONT01, "resources/Sapphos-square-16x16.png");
+    link_resource!(FONT02, "resources/Anikki-square-16x16.png");
+
     let term = BTermBuilder::new()
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")

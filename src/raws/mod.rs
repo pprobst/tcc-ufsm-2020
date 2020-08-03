@@ -17,8 +17,8 @@ pub use mob_structs::*;
 mod container_structs;
 pub use container_structs::*;
 
-embedded_resource!(RAW_COLORS, "../../raws/colors.ron");
-embedded_resource!(RAW, "../../raws/raws.ron");
+embedded_resource!(RAW_COLORS, "../../resources/raws/colors.ron");
+embedded_resource!(RAW, "../../resources/raws/raws.ron");
 
 lazy_static! {
     pub static ref COLORS: Mutex<RawColors> = Mutex::new(RawColors::empty());
@@ -38,11 +38,11 @@ pub struct Colors {
 }
 
 pub fn load_raws() {
-    link_resource!(RAW_COLORS, "../../raws/colors.ron");
-    link_resource!(RAW, "../../raws/raws.ron");
+    link_resource!(RAW_COLORS, "resources/colors.ron");
+    link_resource!(RAW, "resources/raws.ron");
 
-    let raw_string_colors = get_raw_string("../../raws/colors.ron".to_string());
-    let raw_string_etc = get_raw_string("../../raws/raws.ron".to_string());
+    let raw_string_colors = get_raw_string("resources/colors.ron".to_string());
+    let raw_string_etc = get_raw_string("resources/raws.ron".to_string());
 
     /*
     let full_string = [
