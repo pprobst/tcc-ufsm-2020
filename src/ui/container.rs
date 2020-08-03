@@ -1,5 +1,5 @@
 use super::{common::draw_list_items, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{CollectItem, Contained, Name, SelectedPosition};
+use crate::components::{CollectItem, Contained, Name, Position, SelectedPosition};
 use crate::map_gen::Map;
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
@@ -31,7 +31,7 @@ pub fn show_container(
     draw_batch: &mut DrawBatch,
 ) -> ContainerResult {
     let names = ecs.read_storage::<Name>();
-    let selected_pos = ecs.read_storage::<SelectedPosition>();
+    let mut selected_pos = ecs.write_storage::<SelectedPosition>();
     let map = ecs.fetch::<Map>();
     let entities = ecs.entities();
 
@@ -43,6 +43,7 @@ pub fn show_container(
     let container_ent = map.entities[idx];
 
     if container_ent == None {
+        selected_pos.clear();
         return ContainerResult::Cancel;
     }
 
@@ -91,6 +92,7 @@ pub fn show_container(
         .unwrap()
         .name
         .to_uppercase();
+
     draw_batch.print_color(
         Point::new(w - ((container_name.len() as i32 + 2) / 2), y1),
         format!("·{}·", container_name),
@@ -102,7 +104,10 @@ pub fn show_container(
     match term.key {
         None => ContainerResult::Idle,
         Some(key) => match key {
-            VirtualKeyCode::Escape => ContainerResult::Cancel,
+            VirtualKeyCode::Escape => {
+                selected_pos.clear();
+                return ContainerResult::Cancel;
+            }
             _ => {
                 let select = letter_to_option(key);
                 if select >= 0 && select < items.len() as i32 {

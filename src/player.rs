@@ -252,16 +252,10 @@ pub fn check_near(ecs: &World, pt: Point, map: &mut Map) -> RunState {
     match tile {
         TileType::ClosedDoor => {
             try_door(TileType::ClosedDoor, map, idx);
-            //if map.entities[idx] != None {
-            //    continue;
-            //}
             context = PossibleContexts::Door;
         }
         TileType::OpenDoor => {
             try_door(TileType::OpenDoor, map, idx);
-            //if map.entities[idx] != None {
-            //    continue;
-            //}
             context = PossibleContexts::Door;
         }
         _ => {}

@@ -66,6 +66,7 @@ impl<'a> Killer<'a> {
                 .map(|item| item.1)
                 .collect::<Vec<_>>();
         }
+
         if items.len() > 0 {
             spawn_remains(self.ecs, items, ent_name, ent_pos);
         }
