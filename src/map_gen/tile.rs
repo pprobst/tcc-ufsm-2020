@@ -17,14 +17,17 @@ pub enum TileType {
     Floor,
     Floor2,
     WoodenFloor,
+    Path1,
     ClosedDoor,
     OpenDoor,
     Grass,
     Grass2,
+    Grass3,
+    Grass4,
     TallGrass,
     Flower,
     Tree,
-    //Mushroom,
+    Mushroom,
     ShallowWater,
     DeepWater,
     Computer,
@@ -110,6 +113,15 @@ impl Tile {
         }
     }
 
+    pub fn path1() -> Self {
+        Self {
+            ttype: TileType::Path1,
+            glyph: to_cp437('░'),
+            color: ColorPair::new(color("BrightMagenta", 1.0), color("Background", 1.0)),
+            ..Default::default()
+        }
+    }
+
     pub fn closed_door() -> Self {
         Self {
             ttype: TileType::ClosedDoor,
@@ -142,7 +154,25 @@ impl Tile {
         Self {
             ttype: TileType::Grass2,
             glyph: to_cp437('`'),
-            color: ColorPair::new(color("BrightYellow", 1.0), color("Background", 1.0)),
+            color: ColorPair::new(color("Yellow", 1.0), color("Background", 1.0)),
+            ..Default::default()
+        }
+    }
+
+    pub fn grass3() -> Self {
+        Self {
+            ttype: TileType::Grass3,
+            glyph: to_cp437('╨'),
+            color: ColorPair::new(color("BrightGreen", 1.0), color("Background", 1.0)),
+            ..Default::default()
+        }
+    }
+
+    pub fn grass4() -> Self {
+        Self {
+            ttype: TileType::Grass4,
+            glyph: to_cp437('╙'),
+            color: ColorPair::new(color("Yellow", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -193,6 +223,15 @@ impl Tile {
         }
     }
 
+    pub fn mushroom() -> Self {
+        Self {
+            ttype: TileType::Mushroom,
+            glyph: to_cp437('♠'),
+            color: ColorPair::new(color("BrightRed", 1.0), color("Background", 1.0)),
+            ..Default::default()
+        }
+    }
+
     pub fn computer() -> Self {
         Self {
             ttype: TileType::Computer,
@@ -225,6 +264,9 @@ impl Tile {
             TileType::WoodenFloor => {
                 self.color = ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0));
             }
+            TileType::Path1 => {
+                self.color = ColorPair::new(color("BrightMagenta", 1.0), color("Background", 1.0));
+            }
             TileType::ClosedDoor | TileType::OpenDoor => {
                 self.color = ColorPair::new(color("BrightRed", 1.0), color("Background", 1.0));
             }
@@ -244,13 +286,22 @@ impl Tile {
                 self.color = ColorPair::new(color("BrightGreen", 1.0), color("Background", 1.0));
             }
             TileType::Grass2 => {
-                self.color = ColorPair::new(color("BrightYellow", 1.0), color("Background", 1.0));
+                self.color = ColorPair::new(color("Yellow", 1.0), color("Background", 1.0));
+            }
+            TileType::Grass3 => {
+                self.color = ColorPair::new(color("BrightGreen", 1.0), color("Background", 1.0));
+            }
+             TileType::Grass4 => {
+                self.color = ColorPair::new(color("Yellow", 1.0), color("Background", 1.0));
             }
             TileType::TallGrass => {
                 self.color = ColorPair::new(color("Green", 1.0), color("Background", 1.0));
             }
             TileType::Flower => {
                 self.color = ColorPair::new(color("BrightMagenta", 1.0), color("Background", 1.0));
+            }
+            TileType::Mushroom => {
+                self.color = ColorPair::new(color("BrightRed", 1.0), color("Background", 1.0));
             }
             TileType::Computer => {
                 self.color = ColorPair::new(color("Magenta", 1.0), color("Background", 1.0));

@@ -59,7 +59,7 @@ impl MapGenerator {
 
     pub fn gen_map(&mut self, idx: usize) {
         //let region = &CustomRegion::new_circ(25, 10, 20);
-        let region = &CustomRegion::new_rect(10, 10, 60, 30);
+        //let region = &CustomRegion::new_rect(10, 10, 60, 30);
 
         //self.gen_bsp(idx, Some(region));
         //self.gen_bsp(idx, None);
@@ -74,8 +74,8 @@ impl MapGenerator {
         //self.gen_tight_cave(idx, None);
         //self.gen_cave(idx, None);
 
-        //self.forest_bsp_ruin(idx);
-        self.wfc_01(idx);
+        self.forest_bsp_ruin(idx);
+        //self.wfc_01(idx);
         /*
         let room = self.rooms.as_ref().unwrap()[0];
         let region = &CustomRegion::new_rect(room.x1, room.y1, room.width(), room.height());

@@ -131,6 +131,9 @@ impl Map {
             TileType::Floor => {
                 self.tiles[idx] = Tile::floor();
             }
+            TileType::Floor2 => {
+                self.tiles[idx] = Tile::floor2();
+            }
             TileType::WoodenFloor => {
                 self.tiles[idx] = Tile::woodenfloor();
             }
@@ -161,11 +164,20 @@ impl Map {
             TileType::Grass2 => {
                 self.tiles[idx] = Tile::grass2();
             }
+            TileType::Grass3 => {
+                self.tiles[idx] = Tile::grass3();
+            }
+            TileType::Grass4 => {
+                self.tiles[idx] = Tile::grass4();
+            }
             TileType::TallGrass => {
                 self.tiles[idx] = Tile::tallgrass();
             }
             TileType::Flower => {
                 self.tiles[idx] = Tile::flower();
+            }
+            TileType::Mushroom => {
+                self.tiles[idx] = Tile::mushroom();
             }
             TileType::Computer => {
                 self.tiles[idx] = Tile::computer();
@@ -214,8 +226,14 @@ impl Map {
             '♣' => {
                 self.tiles[idx] = Tile::tree();
             }
+            '♠' => {
+                self.tiles[idx] = Tile::mushroom();
+            }
             '⌠' => {
                 self.tiles[idx] = Tile::tallgrass();
+            }
+            '░' => {
+                self.tiles[idx] = Tile::path1();
             }
             ',' => {
                 self.tiles[idx] = Tile::grass();
@@ -253,6 +271,7 @@ impl Map {
             TileType::Floor => true,
             TileType::Floor2 => true,
             TileType::WoodenFloor => true,
+            TileType::Path1 => true,
             _ => false,
         }
     }
@@ -262,8 +281,11 @@ impl Map {
         match ttype {
             TileType::Grass => true,
             TileType::Grass2 => true,
+            TileType::Grass3 => true,
+            TileType::Grass4 => true,
             TileType::Flower => true,
             TileType::TallGrass => true,
+            TileType::Mushroom => true,
             _ => false,
         }
     }
