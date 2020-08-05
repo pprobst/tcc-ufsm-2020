@@ -74,7 +74,8 @@ impl MapGenerator {
         //self.gen_tight_cave(idx, None);
         //self.gen_cave(idx, None);
 
-        self.forest_bsp_ruin(idx);
+        self.gen_prefab_map(idx, "resources/level01_80x60.xp");
+        //self.forest_bsp_ruin(idx);
         //self.wfc_01(idx);
         /*
         let room = self.rooms.as_ref().unwrap()[0];
@@ -351,6 +352,11 @@ impl MapGenerator {
         if self.rng.range(0, 2) < 1 {
             add_vegetation(&mut self.maps[idx], reg, false);
         }
+    }
+
+    pub fn gen_prefab_map(&mut self, idx: usize, template: &'static str) {
+        let mut map = PrefabMap::new(template);
+        map.generate(&mut self.maps[idx]);
     }
 
     pub fn get_map(&self, idx: usize) -> Map {

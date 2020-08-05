@@ -214,7 +214,7 @@ impl Map {
             'g' => {
                 self.tiles[idx] = Tile::fakemob();
             }
-            'C' => {
+            'Φ'  => {
                 self.tiles[idx] = Tile::computer();
             }
             '~' => {
@@ -435,7 +435,6 @@ impl BaseMap for Map {
         if let Some(idx) = self.valid_exit(location, Point::new(0, 1)) {
             exits.push((idx, 1.0))
         }
-
         if let Some(idx) = self.valid_exit(location, Point::new(-1, -1)) {
             exits.push((idx, 1.4))
         }

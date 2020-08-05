@@ -1,5 +1,5 @@
 use super::{Map, Tile};
-use bracket_lib::prelude::XpFile;
+use bracket_lib::prelude::{XpFile, to_char};
 
 /*
  *
@@ -28,9 +28,11 @@ impl PrefabMap {
             for y in 0..layer.height {
                 for x in 0..layer.width {
                     let cell = layer.get(x, y).unwrap();
+                    //println!("{}", (cell.ch as u8));
                     //if map.in_map_bounds_xy(x as i32, y as i32) {
                     let idx = map.idx(x as i32, y as i32);
-                    map.paint_tile_char(idx, (cell.ch as u8) as char);
+                    //map.paint_tile_char(idx, (cell.ch as u8) as char);
+                    map.paint_tile_char(idx, to_char(cell.ch as u8));
                 }
             }
         }

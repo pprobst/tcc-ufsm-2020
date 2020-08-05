@@ -13,6 +13,7 @@ use bracket_lib::prelude::{embedded_resource, link_resource, EMBED};
  *
  */
 
+embedded_resource!(LEVEL01, "../resources/rex/level01_80x60.xp");
 embedded_resource!(DUNGEON01, "../resources/rex/dungeon80x60.xp");
 embedded_resource!(DUNGEON02, "../resources/rex/dungeon02_80x60.xp");
 embedded_resource!(DUNGEON03, "../resources/rex/dungeon03_60x60.xp");
@@ -28,6 +29,7 @@ embedded_resource!(WFC09, "../resources/rex/wfc_15x15.xp");
 embedded_resource!(WFC10, "../resources/rex/wfc_6x6_internal.xp");
 
 pub fn load_dungeons() {
+    link_resource!(LEVEL01, "resources/level01_80x60.xp");
     link_resource!(DUNGEON01, "resources/dungeon80x60.xp");
     link_resource!(DUNGEON02, "resources/dungeon02_80x60.xp");
     link_resource!(DUNGEON03, "resources/dungeon03_60x60.xp");
