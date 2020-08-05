@@ -291,7 +291,7 @@ impl Tile {
             TileType::Grass3 => {
                 self.color = ColorPair::new(color("BrightGreen", 1.0), color("Background", 1.0));
             }
-             TileType::Grass4 => {
+            TileType::Grass4 => {
                 self.color = ColorPair::new(color("Yellow", 1.0), color("Background", 1.0));
             }
             TileType::TallGrass => {

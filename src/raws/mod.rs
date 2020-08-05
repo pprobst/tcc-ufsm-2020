@@ -16,6 +16,8 @@ mod mob_structs;
 pub use mob_structs::*;
 mod container_structs;
 pub use container_structs::*;
+mod furniture_structs;
+pub use furniture_structs::*;
 
 embedded_resource!(RAW_COLORS, "../../resources/raws/colors.ron");
 embedded_resource!(RAW, "../../resources/raws/raws.ron");
@@ -30,6 +32,7 @@ pub struct Raws {
     pub items: Vec<Item>,
     pub mobs: Vec<Mob>,
     pub containers: Vec<Container>,
+    pub furnitures: Vec<Furniture>,
 }
 
 #[derive(Deserialize, Debug)]

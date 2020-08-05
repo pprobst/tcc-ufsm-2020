@@ -13,6 +13,7 @@ pub struct RawMaster {
     pub raws: Raws,
     item_index: HashMap<String, usize>,
     container_index: HashMap<String, usize>,
+    furniture_index: HashMap<String, usize>,
     mob_index: HashMap<String, usize>,
 }
 
@@ -22,10 +23,12 @@ impl RawMaster {
             raws: Raws {
                 items: Vec::new(),
                 containers: Vec::new(),
+                furnitures: Vec::new(),
                 mobs: Vec::new(),
             },
             item_index: HashMap::new(),
             container_index: HashMap::new(),
+            furniture_index: HashMap::new(),
             mob_index: HashMap::new(),
         }
     }
@@ -38,6 +41,9 @@ impl RawMaster {
         }
         for (i, container) in self.raws.containers.iter().enumerate() {
             self.container_index.insert(container.name.clone(), i);
+        }
+        for (i, furniture) in self.raws.furnitures.iter().enumerate() {
+            self.furniture_index.insert(furniture.name.clone(), i);
         }
         for (i, mob) in self.raws.mobs.iter().enumerate() {
             self.mob_index.insert(mob.name.clone(), i);
@@ -230,6 +236,36 @@ pub fn spawn_item(
         return Some(ent.build());
     }
 
+    None
+}
+
+pub fn spawn_furniture(
+    name: &str,
+    pos: Position,
+    entity: EntityBuilder,
+    raws: &RawMaster,
+) -> Option<Entity> {
+    if raws.furniture_index.contains_key(name) {
+        let furniture = &raws.raws.furnitures[raws.furniture_index[name]];
+        let mut ent = entity;
+        ent = ent.with(Name {
+            name: furniture.name.clone(),
+        });
+        ent = ent.with(Description {
+            descr: furniture.descr.clone(),
+        });
+        ent = ent.with(Position { x: pos.x, y: pos.y });
+
+        if let Some(_blocker) = &furniture.blocker {
+            ent = ent.with(Blocker {});
+        }
+
+        if let Some(renderable) = &furniture.renderable {
+            ent = ent.with(set_renderable(renderable));
+        }
+
+        Some(ent.build());
+    }
     None
 }
 

@@ -1,4 +1,4 @@
-use super::{WINDOW_HEIGHT, WINDOW_WIDTH};
+use super::{WINDOW_WIDTH};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use std::collections::HashMap;

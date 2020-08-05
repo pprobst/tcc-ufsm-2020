@@ -1,5 +1,6 @@
 #![enable(implicit_some)]
 (
+    /* Items and equipment. */
     items: [
         (
             name: "Med-Kit",
@@ -106,6 +107,7 @@
         ),
     ],
 
+    /* Stuff that holds other stuff. */
     containers: [
         (
             name: "Chest",
@@ -122,6 +124,22 @@
         ),
     ],
 
+    /* General things that you may encounter in a map. Mostly aesthetic.*/
+    furnitures: [
+        (
+            name: "Bonfire",
+            descr: "The heat of a bonfire heals\none's soul, while fending\noff the cautious wildlife.",
+            blocker: false,
+            renderable: (
+                glyph: '▲',
+                fg: "BrightRed",
+                bg: "Background",
+                layer: 0,
+            ),
+        )
+    ],
+
+    /* NPCs and such. */
     mobs: [
         (
             name: "Man-ape",

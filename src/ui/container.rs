@@ -1,5 +1,5 @@
 use super::{common::draw_list_items, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{CollectItem, Contained, Name, Position, SelectedPosition};
+use crate::components::{CollectItem, Contained, Name, SelectedPosition};
 use crate::map_gen::Map;
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
