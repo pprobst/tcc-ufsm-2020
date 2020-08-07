@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, raws::*, ui::*, utils::colors::*, Name, Position, Renderable, RunState,
-    Target, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
+    map_gen::Map, raws::*, ui::*, utils::colors::*, Name, Position, Renderable, RunState, Target,
+    WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;

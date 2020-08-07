@@ -65,9 +65,35 @@ impl Renderable {
 #[derive(Component)]
 pub struct Player {}
 
+#[derive(Debug)]
+pub enum MobType {
+    Gen,        // A "true" human. May be genetically/cybernetically modified or not.
+    Savage,     // Various savages that will probably try to eat you. Can be human, but not Gen.
+    Wildlife,   // Kitties, doggos, etc.
+    Cacogen,    // Otherwordly species. Have a physical form.
+    Threadling, // Beings that navigate between the various threads of existence. Have a physical form or not.
+}
+
+impl std::str::FromStr for MobType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Gen" => Ok(MobType::Gen),
+            "Savage" => Ok(MobType::Savage),
+            "Wildlife" => Ok(MobType::Wildlife),
+            "Cacogen" => Ok(MobType::Cacogen),
+            "Threadling" => Ok(MobType::Threadling),
+            _ => Err(format!("'{}' is not a valid value for MobType.", s)),
+        }
+    }
+}
+
 #[derive(Component)]
 // Enemies & NPCs.
-pub struct Mob {}
+pub struct Mob {
+    pub mob_type: MobType,
+}
 
 #[derive(Component, Debug)]
 pub struct Name {

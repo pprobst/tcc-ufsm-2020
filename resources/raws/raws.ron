@@ -144,6 +144,9 @@
         (
             name: "Man-ape",
             descr: "Millenia living in the\nshadows of strange dark\nplaces took a toll on its\nbody. Primal instincts\ngovern its actions yet\nagain; it may no longer\nbe called a human, but\na feral, pale and\nruby-eyed creature.",
+            mob_type: "Savage",
+            // faction: "man-apes",
+            // default_ai: "hostile",
             renderable: (
                 glyph: 'm',
                 fg: "Red",
@@ -163,5 +166,27 @@
                 torso: ["None", "Filthy Rags"],
             ),
         ),
+        (
+            name: "Guarah",
+            descr: "A long-legged auburn wolf.\nA majestical creature, dotted with\na careful wit that exceeds\nits Canidae siblings.",
+            mob_type: "Wildlife",
+            // faction: "man-apes",
+            // default_ai: "hostile",
+            renderable: (
+                glyph: 'w',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 1,
+            ),
+            fov_range: 20,
+            blocker: true,
+            stats: (
+                hp: 5,
+                max_hp: 5,
+                attack: 2,
+                defense: 2,
+            ),
+        ),
+
     ],
 )

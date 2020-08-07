@@ -214,7 +214,7 @@ impl Map {
             'g' => {
                 self.tiles[idx] = Tile::fakemob();
             }
-            'Φ'  => {
+            'Φ' => {
                 self.tiles[idx] = Tile::computer();
             }
             '~' => {

@@ -279,7 +279,9 @@ pub fn spawn_mob(
         let mob = &raws.raws.mobs[raws.mob_index[name]];
         let mut ent = entity;
 
-        ent = ent.with(Mob {});
+        ent = ent.with(Mob {
+            mob_type: mob.mob_type.parse().unwrap(),
+        });
         ent = ent.with(Name {
             name: mob.name.clone(),
         });

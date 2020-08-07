@@ -1,5 +1,5 @@
 use super::{Map, Tile};
-use bracket_lib::prelude::{XpFile, to_char};
+use bracket_lib::prelude::{to_char, XpFile};
 
 /*
  *
