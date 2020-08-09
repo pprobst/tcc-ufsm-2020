@@ -54,9 +54,14 @@ impl RawMaster {
         if self.item_index.contains_key(name) {
             return &self.raws.items[self.item_index[name]].renderable;
         }
-
         if self.mob_index.contains_key(name) {
             return &self.raws.mobs[self.mob_index[name]].renderable;
+        }
+        if self.container_index.contains_key(name) {
+            return &self.raws.containers[self.container_index[name]].renderable;
+        }
+        if self.furniture_index.contains_key(name) {
+            return &self.raws.furnitures[self.furniture_index[name]].renderable;
         }
 
         &None

@@ -150,12 +150,19 @@ pub fn spawn_remains(ecs: &mut World, items: Vec<Entity>, ent_name: String, pos:
 }
 
 pub fn spawn_map(ecs: &mut World, map: &Map) {
-    let idx = map.idx(map.width / 2 + 2, map.height / 2 + 2);
+    let idx = map.idx(8, 16);
     let pt = map.idx_pos(idx);
     ecs.insert(Point::new(pt.x, pt.y));
     let player = player(ecs, pt.x, pt.y);
     ecs.insert(player);
     let raws = &RAWS.lock().unwrap();
+
+    spawn_furniture(
+        "Bonfire",
+        Position::new(pt.x + 2, pt.y),
+        ecs.create_entity(),
+        raws,
+    );
 
     spawn_item(
         "Med-Kit",

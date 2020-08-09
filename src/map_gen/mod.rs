@@ -71,7 +71,9 @@ impl MapGenerator {
         //self.gen_tight_cave(idx, None);
         //self.gen_cave(idx, None);
 
+        let region = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
         self.gen_prefab_map(idx, "resources/level01_80x60.xp");
+        //self.gen_forest(idx, None);
         //self.forest_bsp_ruin(idx);
         //self.wfc_01(idx);
         /*
@@ -90,8 +92,7 @@ impl MapGenerator {
         //self.maps[idx].add_borders(TileType::Wall);
         self.maps[idx].pretty_walls();
 
-        let region = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
-        add_vegetation(&mut self.maps[idx], region, true);
+        add_vegetation(&mut self.maps[idx], region, false);
 
         println!("Map generated!");
     }

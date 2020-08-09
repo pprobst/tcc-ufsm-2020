@@ -333,7 +333,7 @@ pub fn add_vegetation(map: &mut Map, region: &CustomRegion, trees: bool) {
                                 map.tiles[idx] = Tile::mushroom();
                             }
                         } else if chance < 70 {
-                            if rng.range(0, 5) <= 1 {
+                            if rng.range(0, 10) <= 1 {
                                 map.tiles[idx] = Tile::grass3();
                             } else {
                                 map.tiles[idx] = Tile::grass();

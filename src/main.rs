@@ -30,7 +30,7 @@ pub const WINDOW_HEIGHT: i32 = 60;
 pub const TILE_WIDTH: i32 = 16;
 pub const TILE_HEIGHT: i32 = 16;
 
-pub const SHOW_MAP: bool = false;
+pub const SHOW_MAP: bool = true;
 
 embedded_resource!(FONT01, "../resources/fonts/Sapphos-square-16x16.png");
 embedded_resource!(FONT02, "../resources/fonts/Anikki-square-16x16.png");
@@ -39,7 +39,7 @@ fn main() -> BError {
     link_resource!(FONT01, "resources/Sapphos-square-16x16.png");
     link_resource!(FONT02, "resources/Anikki-square-16x16.png");
 
-    let term = BTermBuilder::new()
+    let mut term = BTermBuilder::new()
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
@@ -47,9 +47,10 @@ fn main() -> BError {
         .with_font("Anikki-square-16x16.png", 16, 16)
         .with_simple_console(WINDOW_WIDTH, WINDOW_HEIGHT, "Sapphos-square-16x16.png")
         .with_sparse_console(WINDOW_WIDTH, WINDOW_HEIGHT, "Anikki-square-16x16.png")
-        .with_fullscreen(true)
         .with_fps_cap(60.0)
         .build()?;
+
+    //term.post_scanlines = true;
 
     // Load external files.
     rexloader::load_dungeons();

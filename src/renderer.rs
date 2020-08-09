@@ -116,7 +116,7 @@ impl<'a> Renderer<'a> {
                     if !covered {
                         draw_batch.set(
                             *pt,
-                            ColorPair::new(color("Green", 1.0), color("Background", 1.0)),
+                            ColorPair::new(color("BrightCyan", 1.0), color("Background", 1.0)),
                             to_cp437('∙'),
                         );
                     } else {
@@ -268,7 +268,7 @@ impl<'a> Renderer<'a> {
                     && mouse_pos.1 < WINDOW_HEIGHT - Y_OFFSET
                     && mouse_pos.1 > 0
                 {
-                    draw_batch.set_bg(Point::new(mouse_pos.0, mouse_pos.1), color("Magenta", 0.4));
+                    draw_batch.set_bg(Point::new(mouse_pos.0, mouse_pos.1), color("Cyan", 0.5));
                     tooltips::show_tooltip(self.ecs, self.term, draw_batch, min_x, min_y);
                 }
 

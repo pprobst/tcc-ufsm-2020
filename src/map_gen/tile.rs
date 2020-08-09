@@ -108,7 +108,7 @@ impl Tile {
         Self {
             ttype: TileType::WoodenFloor,
             glyph: to_cp437('_'),
-            color: ColorPair::new(color("Black", 1.0), color("Background", 1.0)),
+            color: ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }

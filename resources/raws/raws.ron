@@ -1,5 +1,12 @@
 #![enable(implicit_some)]
 (
+    spawn_table: [
+       (
+           name: "Med-Kit", 
+           spawn_weight: 5,
+        ), 
+    ],
+
     /* Items and equipment. */
     items: [
         (
@@ -168,7 +175,7 @@
         ),
         (
             name: "Guarah",
-            descr: "A long-legged auburn wolf.\nA majestical creature, dotted with\na careful wit that exceeds\nits Canidae siblings.",
+            descr: "A long-legged auburn wolf,\ndotted with a careful\nwit that exceeds\nits Canidae siblings.",
             mob_type: "Wildlife",
             // faction: "man-apes",
             // default_ai: "hostile",
@@ -185,6 +192,27 @@
                 max_hp: 5,
                 attack: 2,
                 defense: 2,
+            ),
+        ),
+        (
+            name: "Raccoon",
+            descr: "This furry creature carefully\nwanders the wild while\ncarrying a nut with its\nsmall, dexterous hands.",
+            mob_type: "Wildlife",
+            // faction: "man-apes",
+            // default_ai: "hostile",
+            renderable: (
+                glyph: 'r',
+                fg: "White",
+                bg: "Background",
+                layer: 1,
+            ),
+            fov_range: 20,
+            blocker: true,
+            stats: (
+                hp: 3,
+                max_hp: 3,
+                attack: 0,
+                defense: 0,
             ),
         ),
 
