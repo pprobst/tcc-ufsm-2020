@@ -9,6 +9,7 @@ mod input;
 mod killer;
 mod log;
 mod map_gen;
+use map_gen::TileType;
 mod player;
 mod raws;
 mod renderer;
@@ -100,7 +101,7 @@ fn main() -> BError {
     let (height, width) = (80, 60);
     game_state
         .ecs
-        .insert(map_gen::Map::new(height, width, true));
+        .insert(map_gen::Map::new(height, width, TileType::Floor, None));
     let map = game_state.generate_new_map(height, width);
 
     // Spawn entities on the map.

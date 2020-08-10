@@ -1,8 +1,9 @@
-use super::{CustomRegion, Tile, TileType};
+use super::{get_tile_function, CustomRegion, Tile, TileType};
 use crate::components::Position;
 use crate::utils::directions::*;
 use bracket_lib::prelude::*;
 use specs::prelude::Entity;
+use strum_macros::Display;
 
 /*
  *
@@ -12,6 +13,15 @@ use specs::prelude::Entity;
  *
  */
 
+#[derive(Display, Debug, Clone)]
+pub enum MapType {
+    Forest,
+    Ruins,
+    Cave,
+    Structure,
+    Town,
+}
+
 #[derive(Clone, Debug)]
 pub struct Map {
     pub tiles: Vec<Tile>,
@@ -19,23 +29,29 @@ pub struct Map {
     pub size: i32,
     pub width: i32,
     pub height: i32,
+    pub maptype: Option<MapType>,
     pub entities: Vec<Option<Entity>>, //pub spawn_point: (i32, i32),
                                        //pub exit_point: (i32, i32)
 }
 
 #[allow(dead_code)]
 impl Map {
-    pub fn new(width: i32, height: i32, empty: bool) -> Map {
+    pub fn new(width: i32, height: i32, ttype: TileType, maptype: Option<MapType>) -> Self {
         let map_size = width * height;
-        let tile = if empty { Tile::floor() } else { Tile::wall() };
+        let tile = get_tile_function(ttype);
         Self {
             tiles: vec![tile; map_size as usize],
             region: CustomRegion::new_rect(0, 0, width, height),
             size: map_size,
             width,
             height,
+            maptype,
             entities: vec![None; map_size as usize],
         }
+    }
+
+    pub fn set_maptype(&mut self, maptype: MapType) {
+        self.maptype = Some(maptype);
     }
 
     pub fn get_region(&self) -> CustomRegion {
@@ -60,8 +76,8 @@ impl Map {
     }
 
     pub fn pretty_walls(&mut self) {
-        for y in 1..self.height - 1 {
-            for x in 1..self.width - 1 {
+        for y in 0..self.height {
+            for x in 0..self.width {
                 let idx = self.idx(x, y);
                 if self.tiles[idx].ttype == TileType::Wall {
                     let glyph = self.get_wall_glyph(x, y);
@@ -72,9 +88,11 @@ impl Map {
     }
 
     fn get_wall_glyph(&self, x: i32, y: i32) -> char {
+        /*
         if !self.in_map_bounds_xy(x, y) {
             return '■';
         }
+        */
         let curr_pt = Point { x, y };
         let mut bitmask: u8 = 0;
 
@@ -127,68 +145,7 @@ impl Map {
     }
 
     pub fn paint_tile(&mut self, idx: usize, ttype: TileType) {
-        match ttype {
-            TileType::Floor => {
-                self.tiles[idx] = Tile::floor();
-            }
-            TileType::Floor2 => {
-                self.tiles[idx] = Tile::floor2();
-            }
-            TileType::WoodenFloor => {
-                self.tiles[idx] = Tile::woodenfloor();
-            }
-            TileType::ClosedDoor => {
-                self.tiles[idx] = Tile::closed_door();
-            }
-            TileType::OpenDoor => {
-                self.tiles[idx] = Tile::open_door();
-            }
-            TileType::Tree => {
-                self.tiles[idx] = Tile::tree();
-            }
-            TileType::Wall => {
-                self.tiles[idx] = Tile::wall();
-            }
-            TileType::InvisibleWall => {
-                self.tiles[idx] = Tile::invisible_wall();
-            }
-            TileType::ShallowWater => {
-                self.tiles[idx] = Tile::shallow_water();
-            }
-            TileType::DeepWater => {
-                self.tiles[idx] = Tile::deep_water();
-            }
-            TileType::Grass => {
-                self.tiles[idx] = Tile::grass();
-            }
-            TileType::Grass2 => {
-                self.tiles[idx] = Tile::grass2();
-            }
-            TileType::Grass3 => {
-                self.tiles[idx] = Tile::grass3();
-            }
-            TileType::Grass4 => {
-                self.tiles[idx] = Tile::grass4();
-            }
-            TileType::TallGrass => {
-                self.tiles[idx] = Tile::tallgrass();
-            }
-            TileType::Flower => {
-                self.tiles[idx] = Tile::flower();
-            }
-            TileType::Mushroom => {
-                self.tiles[idx] = Tile::mushroom();
-            }
-            TileType::Computer => {
-                self.tiles[idx] = Tile::computer();
-            }
-            TileType::FakeMob => {
-                self.tiles[idx] = Tile::fakemob();
-            }
-            _ => {
-                self.tiles[idx] = Tile::floor();
-            }
-        }
+        self.tiles[idx] = get_tile_function(ttype);
     }
 
     pub fn paint_tile_char(&mut self, idx: usize, ch: char) {

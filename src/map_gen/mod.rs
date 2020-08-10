@@ -1,7 +1,8 @@
 use super::{Point, Position};
 use bracket_lib::prelude::RandomNumberGenerator;
+
 pub mod tile;
-pub use tile::{Tile, TileType};
+pub use tile::{get_tile_function, Tile, TileType};
 mod room;
 use room::*;
 mod tunnel;
@@ -11,7 +12,7 @@ use region::*;
 mod custom_region;
 use custom_region::*;
 pub mod map;
-pub use map::Map;
+pub use map::{Map, MapType};
 pub mod common;
 pub use common::*;
 mod random_walk;
@@ -47,13 +48,13 @@ impl MapGenerator {
             rooms: None,
             tunnels: None,
             regions: None,
-            wfc_input: Map::new(80, 60, false),
+            wfc_input: Map::new(80, 60, TileType::Wall, None),
             rng: RandomNumberGenerator::new(),
         }
     }
 
     pub fn push_map(&mut self, width: i32, height: i32) {
-        let map = Map::new(width, height, false);
+        let map = Map::new(width, height, TileType::Wall, None);
         self.maps.push(map);
     }
 
@@ -72,9 +73,9 @@ impl MapGenerator {
         //self.gen_cave(idx, None);
 
         let region = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
-        self.gen_prefab_map(idx, "resources/level01_80x60.xp");
+        self.gen_bsp_ruin(idx, None);
+        //self.gen_prefab_map(idx, "resources/level01_80x60.xp");
         //self.gen_forest(idx, None);
-        //self.forest_bsp_ruin(idx);
         //self.wfc_01(idx);
         /*
         let room = self.rooms.as_ref().unwrap()[0];

@@ -1,7 +1,9 @@
 use super::{
-    map_gen::Map, raws::*, utils::colors::*, BaseStats, Contained, Container, Description,
-    Equipment, Fov, Health, InBackpack, InventoryCapacity, Mob, Name, Player, Position, Remains,
-    Renderable,
+    map_gen::{Map, MapType},
+    raws::*,
+    utils::colors::*,
+    BaseStats, Contained, Container, Description, Equipment, Fov, Health, InBackpack,
+    InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -15,6 +17,49 @@ use specs::prelude::*;
  */
 
 // Some of this stuff is based on https://github.com/tylervipond/apprentice/blob/master/src/spawner.rs
+
+pub struct Spawn {
+    pub name: String,
+    pub weight: i32,
+}
+
+pub struct SpawnTable {
+    pub spawns: Vec<Spawn>,
+    pub total_weight: i32,
+}
+
+impl SpawnTable {
+    pub fn new() -> Self {
+        Self {
+            spawns: Vec::new(),
+            total_weight: 0,
+        }
+    }
+
+    pub fn add(&mut self, name: String, weight: i32) {
+        self.spawns.push(Spawn { name, weight });
+        self.total_weight += weight;
+    }
+
+    pub fn roll(&self, rng: &mut RandomNumberGenerator) -> String {
+        if self.total_weight == 0 {
+            return "None".to_string();
+        }
+
+        let mut roll = rng.range(1, self.total_weight);
+        let mut idx = 0;
+
+        while roll > 0 {
+            if roll < self.spawns[idx].weight {
+                return self.spawns[idx].name.to_string();
+            }
+            roll -= self.spawns[idx].weight;
+            idx += 1;
+        }
+
+        return "None".to_string();
+    }
+}
 
 fn entity_in_container(ecs: &mut World, container: Entity) -> EntityBuilder {
     ecs.create_entity().with(Contained {
@@ -128,7 +173,7 @@ pub fn spawn_remains(ecs: &mut World, items: Vec<Entity>, ent_name: String, pos:
     let remains = entity_with_position(ecs, pos.x, pos.y)
         .with(Renderable {
             glyph: to_cp437('▓'),
-            color: ColorPair::new(color("Red", 0.5), color("Background", 1.0)),
+            color: ColorPair::new(color("Red", 0.6), color("Background", 1.0)),
             layer: 0,
         })
         .with(Remains {})
@@ -149,6 +194,10 @@ pub fn spawn_remains(ecs: &mut World, items: Vec<Entity>, ent_name: String, pos:
     }
 }
 
+pub fn spawn_from_table(ecs: &mut World, raws: &RawMaster, level: i32, maptype: MapType) {
+    let spawn_table = get_spawn_table(level, maptype, raws);
+}
+
 pub fn spawn_map(ecs: &mut World, map: &Map) {
     let idx = map.idx(8, 16);
     let pt = map.idx_pos(idx);
@@ -157,37 +206,37 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
     ecs.insert(player);
     let raws = &RAWS.lock().unwrap();
 
-    spawn_furniture(
+    spawn_entity(
         "Bonfire",
-        Position::new(pt.x + 2, pt.y),
+        Some(Position::new(pt.x + 2, pt.y)),
         ecs.create_entity(),
         raws,
     );
 
-    spawn_item(
+    spawn_entity(
         "Med-Kit",
         Some(Position::new(pt.x + 2, pt.y + 1)),
         ecs.create_entity(),
         raws,
     );
 
-    spawn_item(
+    spawn_entity(
         "Tantou",
         Some(Position::new(pt.x + 1, pt.y + 1)),
         ecs.create_entity(),
         raws,
     );
 
-    spawn_item(
+    spawn_entity(
         "Old Leather Armor",
         Some(Position::new(pt.x + 1, pt.y + 2)),
         ecs.create_entity(),
         raws,
     );
 
-    spawn_container(
+    spawn_entity(
         "Chest",
-        Position::new(pt.x + 3, pt.y + 1),
+        Some(Position::new(pt.x + 3, pt.y + 1)),
         ecs.create_entity(),
         raws,
     );
@@ -201,7 +250,12 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
         let y = rng.roll_dice(1, map.height - 2);
         let idx = map.idx(x, y);
         if !map.tiles[idx].block {
-            spawn_mob("Man-ape", Position::new(x, y), ecs.create_entity(), raws);
+            spawn_entity(
+                "Man-Ape",
+                Some(Position::new(x, y)),
+                ecs.create_entity(),
+                raws,
+            );
         }
     }
 

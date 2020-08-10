@@ -3,6 +3,8 @@ use crate::components::{
     Armor, BaseStats, Blocker, Consumable, Container, Description, EquipSlot, Equipable, Fov,
     Health, Item, MeleeWeapon, MeleeWeaponClass, Mob, Name, Position, Renderable,
 };
+use crate::map_gen::map::MapType;
+use crate::spawner::SpawnTable;
 use crate::utils::colors::color;
 use bracket_lib::prelude::{to_cp437, ColorPair, RandomNumberGenerator};
 use specs::prelude::*;
@@ -15,6 +17,7 @@ pub struct RawMaster {
     container_index: HashMap<String, usize>,
     furniture_index: HashMap<String, usize>,
     mob_index: HashMap<String, usize>,
+    spawn_index: HashMap<String, usize>,
 }
 
 impl RawMaster {
@@ -25,11 +28,13 @@ impl RawMaster {
                 containers: Vec::new(),
                 furnitures: Vec::new(),
                 mobs: Vec::new(),
+                spawn_table: Vec::new(),
             },
             item_index: HashMap::new(),
             container_index: HashMap::new(),
             furniture_index: HashMap::new(),
             mob_index: HashMap::new(),
+            spawn_index: HashMap::new(),
         }
     }
 
@@ -47,6 +52,9 @@ impl RawMaster {
         }
         for (i, mob) in self.raws.mobs.iter().enumerate() {
             self.mob_index.insert(mob.name.clone(), i);
+        }
+        for (i, spawn) in self.raws.spawn_table.iter().enumerate() {
+            self.spawn_index.insert(spawn.name.clone(), i);
         }
     }
 
@@ -124,6 +132,46 @@ pub fn get_items_tier(tier: u8, raws: &RawMaster) -> Vec<String> {
         .filter(|x| x.tier == tier)
         .map(|x| x.name.clone())
         .collect::<Vec<String>>()
+}
+
+pub fn get_spawn_table(level: i32, maptype: MapType, raws: &RawMaster) -> SpawnTable {
+    let mut spawn_table = SpawnTable::new();
+
+    for spawn in raws.raws.spawn_table.iter() {
+        let mut insert_to_table = true;
+        let mut spawn_weight = spawn.spawn_weight;
+        if let Some(min_max) = spawn.min_max_level {
+            if level >= min_max.0 && level <= min_max.1 {
+                spawn_weight += level;
+            } else {
+                insert_to_table = false;
+            }
+        }
+        if let Some(level_type) = &spawn.level_type {
+            if insert_to_table {
+                if level_type.contains(&maptype.to_string()) {
+                    insert_to_table = false;
+                }
+            }
+        }
+        if insert_to_table {
+            spawn_table.add(spawn.name.to_string(), spawn_weight);
+        }
+    }
+
+    spawn_table
+}
+
+pub fn spawn_entity(name: &str, pos: Option<Position>, entity: EntityBuilder, raws: &RawMaster) {
+    if raws.mob_index.contains_key(name) {
+        spawn_mob(name, pos.unwrap(), entity, raws);
+    } else if raws.item_index.contains_key(name) {
+        spawn_item(name, pos, entity, raws);
+    } else if raws.furniture_index.contains_key(name) {
+        spawn_furniture(name, pos.unwrap(), entity, raws);
+    } else if raws.container_index.contains_key(name) {
+        spawn_container(name, pos.unwrap(), entity, raws);
+    }
 }
 
 pub fn spawn_container(

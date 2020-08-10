@@ -319,3 +319,28 @@ impl Tile {
         self.glyph = to_cp437(newglyph);
     }
 }
+
+pub fn get_tile_function(ttype: TileType) -> Tile {
+    match ttype {
+        TileType::Floor => Tile::floor(),
+        TileType::Floor2 => Tile::floor2(),
+        TileType::WoodenFloor => Tile::woodenfloor(),
+        TileType::ClosedDoor => Tile::closed_door(),
+        TileType::OpenDoor => Tile::open_door(),
+        TileType::Tree => Tile::tree(),
+        TileType::Wall => Tile::wall(),
+        TileType::InvisibleWall => Tile::invisible_wall(),
+        TileType::ShallowWater => Tile::shallow_water(),
+        TileType::DeepWater => Tile::deep_water(),
+        TileType::Grass => Tile::grass(),
+        TileType::Grass2 => Tile::grass2(),
+        TileType::Grass3 => Tile::grass3(),
+        TileType::Grass4 => Tile::grass4(),
+        TileType::TallGrass => Tile::tallgrass(),
+        TileType::Flower => Tile::flower(),
+        TileType::Mushroom => Tile::mushroom(),
+        TileType::Computer => Tile::computer(),
+        TileType::FakeMob => Tile::fakemob(),
+        _ => Tile::floor(),
+    }
+}

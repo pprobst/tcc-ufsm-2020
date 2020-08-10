@@ -1,10 +1,26 @@
 #![enable(implicit_some)]
 (
     spawn_table: [
-       (
+        (
            name: "Med-Kit", 
-           spawn_weight: 5,
+           spawn_weight: 1,
         ), 
+        (
+            name: "Guarah", 
+            spawn_weight: 10,
+            level_type: ["Forest", "Ruins"],
+        ),
+        (
+            name: "Raccoon",
+            spawn_weight: 5,
+            level_type: ["Forest", "Ruins"],
+        ),
+        (
+            name: "Man-Ape",
+            spawn_weight: 50,
+            min_max_level: (1, 3),
+            level_type: ["Forest", "Ruins", "Cave"],
+        ),
     ],
 
     /* Items and equipment. */
@@ -149,7 +165,7 @@
     /* NPCs and such. */
     mobs: [
         (
-            name: "Man-ape",
+            name: "Man-Ape",
             descr: "Millenia living in the\nshadows of strange dark\nplaces took a toll on its\nbody. Primal instincts\ngovern its actions yet\nagain; it may no longer\nbe called a human, but\na feral, pale and\nruby-eyed creature.",
             mob_type: "Savage",
             // faction: "man-apes",

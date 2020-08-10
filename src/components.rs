@@ -2,6 +2,7 @@ use crate::utils::directions::Direction;
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RGB};
 use specs::{prelude::*, Component};
 use std::ops::{Add, AddAssign, Sub};
+use strum_macros::EnumString;
 //use std::collections::HashSet;
 
 /*
@@ -65,7 +66,7 @@ impl Renderable {
 #[derive(Component)]
 pub struct Player {}
 
-#[derive(Debug)]
+#[derive(EnumString, Debug)]
 pub enum MobType {
     Gen,        // A "true" human. May be genetically/cybernetically modified or not.
     Savage,     // Various savages that will probably try to eat you. Can be human, but not Gen.
@@ -74,6 +75,7 @@ pub enum MobType {
     Threadling, // Beings that navigate between the various threads of existence. Have a physical form or not.
 }
 
+/*
 impl std::str::FromStr for MobType {
     type Err = String;
 
@@ -88,6 +90,7 @@ impl std::str::FromStr for MobType {
         }
     }
 }
+*/
 
 #[derive(Component)]
 // Enemies & NPCs.

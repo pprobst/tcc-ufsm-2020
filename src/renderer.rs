@@ -1,6 +1,6 @@
 use super::{
-    map_gen::Map, raws::*, ui::*, utils::colors::*, Name, Position, Renderable, RunState, Target,
-    WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
+    map_gen::Map, raws::*, ui::*, utils::colors::*, Name, Position, Remains, Renderable, RunState,
+    Target, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -109,7 +109,7 @@ impl<'a> Renderer<'a> {
                 if i == points.len() - 1 {
                     draw_batch.set(
                         *pt,
-                        ColorPair::new(render.color.fg, color("BrightBlack", 0.5)),
+                        ColorPair::new(render.color.fg, color("BrightBlack", 0.7)),
                         render.glyph,
                     );
                 } else if i != 0 {
@@ -313,6 +313,7 @@ impl<'a> Renderer<'a> {
 
     pub fn reload_colors(&mut self) {
         let mut map = self.ecs.fetch_mut::<Map>();
+
         map.reload_tile_colors();
 
         let mut renderables = self.ecs.write_storage::<Renderable>();
@@ -331,6 +332,11 @@ impl<'a> Renderer<'a> {
                         ColorPair::new(color(&renderable.fg, 1.0), color(&renderable.bg, 1.0));
                 }
             }
+        }
+
+        let remains = self.ecs.read_storage::<Remains>();
+        for (render, _remain) in (&mut renderables, &remains).join() {
+            render.color = ColorPair::new(color("Red", 0.6), color("Background", 1.0));
         }
     }
 }
