@@ -14,6 +14,8 @@ specs-derive = "0.4.1"
 ron          = "0.6.0"
 serde        = { version = "1.0.106", features = [ "derive" ] }
 serde_ron    = { version = "0.6", package = "ron", optional = true }
+strum        = "0.19"
+strum_macros = "0.19"
 
 [features]
 default = ["bracket-lib/opengl"]
