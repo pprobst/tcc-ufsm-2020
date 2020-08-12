@@ -7,6 +7,7 @@ use super::{
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
+use std::collections::HashMap;
 
 /*
  *
@@ -17,6 +18,8 @@ use specs::prelude::*;
  */
 
 // Some of this stuff is based on https://github.com/tylervipond/apprentice/blob/master/src/spawner.rs
+
+const MAX_MOBS_AREA: i32 = 12;
 
 pub struct Spawn {
     pub name: String,
@@ -194,8 +197,45 @@ pub fn spawn_remains(ecs: &mut World, items: Vec<Entity>, ent_name: String, pos:
     }
 }
 
-pub fn spawn_from_table(ecs: &mut World, raws: &RawMaster, level: i32, maptype: MapType) {
-    let spawn_table = get_spawn_table(level, maptype, raws);
+pub fn get_spawn_table_for_level(level: usize, maptype: MapType, raws: &RawMaster) -> SpawnTable {
+    get_spawn_table(level as i32, maptype, raws)
+}
+
+pub fn build_spawn_list(
+    spawn_list: &mut Vec<(usize, String)>,
+    spawn_table: &SpawnTable,
+    loc: &[usize],
+    level: i32,
+    rng: &mut RandomNumberGenerator,
+) {
+    let mut loc_size = loc.len() as i32;
+    if loc_size == 0 {
+        return;
+    }
+    let mut spawns: HashMap<usize, String> = HashMap::new();
+    let mut spawn_locs: Vec<usize> = Vec::from(loc);
+    let num_mobs = i32::min(
+        loc_size,
+        rng.range(1, MAX_MOBS_AREA) + level - MAX_MOBS_AREA / 2,
+    );
+
+    {
+        for _i in 0..num_mobs {
+            loc_size = spawn_locs.len() as i32;
+            let idx = if loc_size == 1 {
+                0usize
+            } else {
+                (rng.roll_dice(1, loc_size) - 1) as usize
+            };
+            let map_idx = spawn_locs[idx];
+            spawns.insert(map_idx, spawn_table.roll(rng));
+            spawn_locs.remove(idx);
+        }
+    }
+
+    for spawn in spawns {
+        spawn_list.push((spawn.0, spawn.1));
+    }
 }
 
 pub fn spawn_map(ecs: &mut World, map: &Map) {

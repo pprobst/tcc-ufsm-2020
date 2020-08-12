@@ -7,6 +7,7 @@ use specs::prelude::*;
  * killer.rs
  * ---------
  * Works as a "cleaner" by deleting the dead entities from the world.
+ * Also inserts dead mob's remains (if there are items to be dropped).
  *
  */
 

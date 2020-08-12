@@ -1,16 +1,12 @@
 use super::{Point, Position};
+use crate::raws::RAWS;
+use crate::spawner::*;
 use bracket_lib::prelude::RandomNumberGenerator;
+use specs::prelude::World;
+use std::collections::HashSet;
 
 pub mod tile;
 pub use tile::{get_tile_function, Tile, TileType};
-mod room;
-use room::*;
-mod tunnel;
-use tunnel::*;
-mod region;
-use region::*;
-mod custom_region;
-use custom_region::*;
 pub mod map;
 pub use map::{Map, MapType};
 pub mod common;
@@ -30,11 +26,20 @@ use prefab_section::*;
 mod wfc;
 use wfc::*;
 
+mod room;
+use room::*;
+mod tunnel;
+use tunnel::*;
+mod custom_region;
+use custom_region::*;
+mod region;
+use region::*;
+
 pub struct MapGenerator {
     pub maps: Vec<Map>,
-    pub rooms: Option<Vec<Room>>,
-    pub tunnels: Option<Vec<Tunnel>>,
-    pub regions: Option<Vec<Region>>,
+    pub rooms: Vec<Room>,
+    pub tunnels: HashSet<Tunnel>,
+    pub regions: HashSet<Region>,
     pub wfc_input: Map,
     pub rng: RandomNumberGenerator,
 }
@@ -45,17 +50,64 @@ impl MapGenerator {
         Self {
             //maps: Map::new(width, height).push(),
             maps: Vec::new(),
-            rooms: None,
-            tunnels: None,
-            regions: None,
+            rooms: Vec::new(),
+            tunnels: HashSet::new(),
+            regions: HashSet::new(),
             wfc_input: Map::new(80, 60, TileType::Wall, None),
             rng: RandomNumberGenerator::new(),
+        }
+    }
+
+    pub fn spawn_entities(&mut self, ecs: &mut World, idx: usize) {
+        let raws = &RAWS.lock().unwrap();
+        let maptype = self.maps[idx].get_maptype();
+        let spawn_table = get_spawn_table_for_level(idx, maptype, raws);
+
+        let mut spawn_list: Vec<(usize, String)> = Vec::new();
+
+        {
+            for room in self.rooms.iter() {
+                let free_room = room.get_area_idx(&self.maps[idx]);
+                build_spawn_list(
+                    &mut spawn_list,
+                    &spawn_table,
+                    &free_room,
+                    idx as i32,
+                    &mut self.rng,
+                );
+            }
+            for tunnel in self.tunnels.iter() {
+                build_spawn_list(
+                    &mut spawn_list,
+                    &spawn_table,
+                    &tunnel,
+                    idx as i32,
+                    &mut self.rng,
+                );
+            }
+            for region in self.regions.iter() {
+                use region::*; // wtf?
+                let free_region = region.get_floor_idx(&self.maps[idx]);
+                build_spawn_list(
+                    &mut spawn_list,
+                    &spawn_table,
+                    &free_region,
+                    idx as i32,
+                    &mut self.rng,
+                );
+            }
         }
     }
 
     pub fn push_map(&mut self, width: i32, height: i32) {
         let map = Map::new(width, height, TileType::Wall, None);
         self.maps.push(map);
+    }
+
+    pub fn clear_regions_generator(&mut self) {
+        self.rooms.clear();
+        self.tunnels.clear();
+        self.regions.clear();
     }
 
     pub fn gen_map(&mut self, idx: usize) {
@@ -184,6 +236,14 @@ impl MapGenerator {
         let mut cell_automata2 = CellularAutomata::new(reg, 1, 3, 20, true, true);
         cell_automata2.generate(&mut self.maps[idx]);
 
+        self.regions.insert(
+            get_all_regions(&self.maps[idx], &reg)
+                .iter()
+                .flat_map(|arr| arr.iter())
+                .map(|e| *e)
+                .collect::<Region>(),
+        );
+
         apply_forest_theme(&mut self.maps[idx], reg);
         add_vegetation(&mut self.maps[idx], reg, true);
     }
@@ -210,6 +270,14 @@ impl MapGenerator {
 
         let mut cell_automata2 = CellularAutomata::new(reg, 1, 4, 5, true, true);
         cell_automata2.generate(&mut self.maps[idx]);
+
+        self.regions.insert(
+            get_all_regions(&self.maps[idx], &reg)
+                .iter()
+                .flat_map(|arr| arr.iter())
+                .map(|e| *e)
+                .collect::<Region>(),
+        );
 
         if self.rng.range(0, 3) < 1 {
             add_vegetation(&mut self.maps[idx], reg, false);
@@ -240,6 +308,14 @@ impl MapGenerator {
 
         let mut cell_automata2 = CellularAutomata::new(reg, 5, rule, 5, true, true);
         cell_automata2.generate(&mut self.maps[idx]);
+
+        self.regions.insert(
+            get_all_regions(&self.maps[idx], &reg)
+                .iter()
+                .flat_map(|arr| arr.iter())
+                .map(|e| *e)
+                .collect::<Region>(),
+        );
 
         if self.rng.range(0, 5) < 1 {
             add_vegetation(&mut self.maps[idx], reg, false);
@@ -283,8 +359,11 @@ impl MapGenerator {
                 }
             }
         }
-        self.rooms = Some(bsp.get_rooms());
-        add_doors(&mut self.maps[idx], self.rooms.as_ref(), 30, &mut self.rng);
+        let rooms = bsp.get_rooms();
+        add_doors(&mut self.maps[idx], rooms.as_ref(), 30, &mut self.rng);
+        for room in rooms.iter() {
+            self.rooms.push(*room);
+        }
     }
 
     pub fn gen_bsp_ruin(&mut self, idx: usize, region: Option<&CustomRegion>) {
@@ -334,8 +413,12 @@ impl MapGenerator {
         // (min_size, max_size, num_features (approx)
         let mut digger = Digger::new(reg, 10, 15, 30);
         digger.generate(&mut self.maps[idx], &mut self.rng);
-        self.rooms = Some(digger.get_rooms());
-        add_doors(&mut self.maps[idx], self.rooms.as_ref(), 30, &mut self.rng);
+        //self.rooms = digger.get_rooms();
+        let rooms = digger.get_rooms();
+        add_doors(&mut self.maps[idx], rooms.as_ref(), 30, &mut self.rng);
+        for room in rooms.iter() {
+            self.rooms.push(*room);
+        }
     }
 
     pub fn gen_digger_inverted(&mut self, idx: usize, region: Option<&CustomRegion>) {

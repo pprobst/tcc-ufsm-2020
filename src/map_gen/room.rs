@@ -27,6 +27,7 @@ use bracket_lib::prelude::{Point, RandomNumberGenerator, Rect};
 pub trait Operations {
     fn get_wall(&self, map: &Map, dir: Direction) -> Point;
     fn get_borders(&self, map: &Map) -> Vec<Point>;
+    fn get_area_idx(&self, map: &Map) -> Vec<usize>;
 }
 
 pub type Room = Rect;
@@ -81,5 +82,18 @@ impl Operations for Room {
             }
         }
         borders
+    }
+
+    fn get_area_idx(&self, map: &Map) -> Vec<usize> {
+        let mut free_idx: Vec<usize> = Vec::new();
+        for y in self.y1 + 1..self.y2 {
+            for x in self.x1 + 1..self.x2 {
+                let idx = map.idx(x, y);
+                if map.is_floor(idx) {
+                    free_idx.push(idx);
+                }
+            }
+        }
+        free_idx
     }
 }

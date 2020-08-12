@@ -13,7 +13,7 @@ use strum_macros::Display;
  *
  */
 
-#[derive(Display, Debug, Clone)]
+#[derive(Display, Debug, Copy, Clone)]
 pub enum MapType {
     Forest,
     Ruins,
@@ -56,6 +56,10 @@ impl Map {
 
     pub fn get_region(&self) -> CustomRegion {
         self.region.clone()
+    }
+
+    pub fn get_maptype(&self) -> MapType {
+        self.maptype.unwrap()
     }
 
     /// Add solid borders to the map.

@@ -489,15 +489,11 @@ pub fn apply_forest_theme(map: &mut Map, region: &CustomRegion) {
 }
 
 /// Adds doors to ROOMS of a map, given a certain chance.
-pub fn add_doors(
-    map: &mut Map,
-    rooms: Option<&Vec<Room>>,
-    chance: i32,
-    rng: &mut RandomNumberGenerator,
-) {
-    if rooms != None {
+pub fn add_doors(map: &mut Map, rooms: &Vec<Room>, chance: i32, rng: &mut RandomNumberGenerator) {
+    if rooms.len() > 0 {
         let mut locs_vec: Vec<Vec<usize>> = Vec::new();
-        let mut r = rooms.unwrap().clone();
+        //let mut r = rooms.unwrap().clone();
+        let mut r = rooms.clone();
         r.retain(|a| a.width() >= 5);
         //r.sort_by(|a, b| a.x2.cmp(&b.x2));
         for room in r.iter() {
