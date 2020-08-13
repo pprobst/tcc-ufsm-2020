@@ -61,8 +61,9 @@ impl MapGenerator {
     pub fn spawn_entities(&mut self, ecs: &mut World, idx: usize) {
         let raws = &RAWS.lock().unwrap();
         let maptype = self.maps[idx].get_maptype();
-        let spawn_table = get_spawn_table_for_level(idx, maptype, raws);
+        let spawn_table = get_spawn_table_for_level(idx + 1, maptype, raws);
 
+        println!("{:?}", spawn_table);
         let mut spawn_list: Vec<(usize, String)> = Vec::new();
 
         {
@@ -72,7 +73,7 @@ impl MapGenerator {
                     &mut spawn_list,
                     &spawn_table,
                     &free_room,
-                    idx as i32,
+                    idx as i32 + 1,
                     &mut self.rng,
                 );
             }
@@ -81,7 +82,7 @@ impl MapGenerator {
                     &mut spawn_list,
                     &spawn_table,
                     &tunnel,
-                    idx as i32,
+                    idx as i32 + 1,
                     &mut self.rng,
                 );
             }
@@ -92,11 +93,13 @@ impl MapGenerator {
                     &mut spawn_list,
                     &spawn_table,
                     &free_region,
-                    idx as i32,
+                    idx as i32 + 1,
                     &mut self.rng,
                 );
             }
         }
+        println!("Spawn list size: {}", spawn_list.len());
+        spawn_from_list(ecs, spawn_list, &self.maps[idx], raws, &mut self.rng);
     }
 
     pub fn push_map(&mut self, width: i32, height: i32) {
@@ -124,9 +127,7 @@ impl MapGenerator {
         //self.gen_tight_cave(idx, None);
         //self.gen_cave(idx, None);
 
-        let region = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
-        self.gen_bsp_ruin(idx, None);
-        //self.gen_prefab_map(idx, "resources/level01_80x60.xp");
+        //self.gen_bsp_ruin(idx, None);
         //self.gen_forest(idx, None);
         //self.wfc_01(idx);
         /*
@@ -139,15 +140,31 @@ impl MapGenerator {
         self.gen_wfc(idx, Some(region), "../rex_resources/wfc_6x6_internal.xp", 9, 9, 3);
         */
 
+        self.level_01(idx);
         //self.gen_wfc(idx, None, "../rex_resources/wfc_15x15.xp", 15, 15, 5);
 
         self.maps[idx].add_borders(TileType::InvisibleWall);
         //self.maps[idx].add_borders(TileType::Wall);
         self.maps[idx].pretty_walls();
 
-        add_vegetation(&mut self.maps[idx], region, false);
+        //add_vegetation(&mut self.maps[idx], region, false);
 
         println!("Map generated!");
+    }
+
+    pub fn level_01(&mut self, idx: usize) {
+        self.maps[idx].set_maptype(MapType::Ruins);
+        self.maps[idx].set_spawn(Position::new(8, 16));
+        self.gen_prefab_map(idx, "resources/level01_80x60.xp");
+        let reg = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
+        add_vegetation(&mut self.maps[idx], reg, false);
+        self.regions.insert(
+            get_all_regions(&self.maps[idx], &reg)
+                .iter()
+                .flat_map(|arr| arr.iter())
+                .map(|e| *e)
+                .collect::<Region>(),
+        );
     }
 
     pub fn forest_bsp_ruin(&mut self, idx: usize) {
@@ -446,5 +463,9 @@ impl MapGenerator {
 
     pub fn get_map(&self, idx: usize) -> Map {
         self.maps[idx].clone()
+    }
+
+    pub fn get_last_map_idx(&self) -> usize {
+        self.maps.len() - 1
     }
 }

@@ -21,11 +21,13 @@ use std::collections::HashMap;
 
 const MAX_MOBS_AREA: i32 = 12;
 
+#[derive(Debug)]
 pub struct Spawn {
     pub name: String,
     pub weight: i32,
 }
 
+#[derive(Debug)]
 pub struct SpawnTable {
     pub spawns: Vec<Spawn>,
     pub total_weight: i32,
@@ -214,10 +216,7 @@ pub fn build_spawn_list(
     }
     let mut spawns: HashMap<usize, String> = HashMap::new();
     let mut spawn_locs: Vec<usize> = Vec::from(loc);
-    let num_mobs = i32::min(
-        loc_size,
-        rng.range(1, MAX_MOBS_AREA) + level - MAX_MOBS_AREA / 2,
-    );
+    let num_mobs = i32::min(loc_size, rng.range(1, MAX_MOBS_AREA) + level);
 
     {
         for _i in 0..num_mobs {
@@ -238,7 +237,36 @@ pub fn build_spawn_list(
     }
 }
 
+pub fn spawn_from_list(
+    ecs: &mut World,
+    spawn_list: Vec<(usize, String)>,
+    map: &Map,
+    raws: &RawMaster,
+    rng: &mut RandomNumberGenerator,
+) {
+    // Seek and spawn each entity in spawn_list.
+    for spawn in spawn_list {
+        let pos = map.idx_pos(spawn.0);
+        let name = &spawn.1;
+        spawn_entity(name, Some(pos), ecs.create_entity(), raws)
+    }
+
+    // Insert itens in chests.
+    populate_containers(ecs, raws, rng);
+    // Equip mobs with equipment.
+    equip_mobs(ecs, raws, rng);
+}
+
+pub fn spawn_player(ecs: &mut World, map: &Map) {
+    let pos = map.spawn_point;
+    let idx = map.idx(pos.x, pos.y);
+    ecs.insert(Point::new(pos.x, pos.y));
+    let player = player(ecs, pos.x, pos.y);
+    ecs.insert(player);
+}
+
 pub fn spawn_map(ecs: &mut World, map: &Map) {
+    /*
     let idx = map.idx(8, 16);
     let pt = map.idx_pos(idx);
     ecs.insert(Point::new(pt.x, pt.y));
@@ -300,4 +328,5 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
     }
 
     equip_mobs(ecs, raws, &mut rng);
+    */
 }

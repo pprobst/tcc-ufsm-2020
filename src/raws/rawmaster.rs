@@ -149,7 +149,7 @@ pub fn get_spawn_table(level: i32, maptype: MapType, raws: &RawMaster) -> SpawnT
         }
         if let Some(level_type) = &spawn.level_type {
             if insert_to_table {
-                if level_type.contains(&maptype.to_string()) {
+                if !level_type.contains(&maptype.to_string()) {
                     insert_to_table = false;
                 }
             }

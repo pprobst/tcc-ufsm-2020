@@ -30,8 +30,9 @@ pub struct Map {
     pub width: i32,
     pub height: i32,
     pub maptype: Option<MapType>,
-    pub entities: Vec<Option<Entity>>, //pub spawn_point: (i32, i32),
-                                       //pub exit_point: (i32, i32)
+    pub entities: Vec<Option<Entity>>,
+    pub spawn_point: Position,
+    pub exit_point: Position,
 }
 
 #[allow(dead_code)]
@@ -47,11 +48,21 @@ impl Map {
             height,
             maptype,
             entities: vec![None; map_size as usize],
+            spawn_point: Position::new(-1, -1),
+            exit_point: Position::new(-1, -1),
         }
     }
 
     pub fn set_maptype(&mut self, maptype: MapType) {
         self.maptype = Some(maptype);
+    }
+
+    pub fn set_spawn(&mut self, pos: Position) {
+        self.spawn_point = pos;
+    }
+
+    pub fn set_exit(&mut self, pos: Position) {
+        self.exit_point = pos;
     }
 
     pub fn get_region(&self) -> CustomRegion {

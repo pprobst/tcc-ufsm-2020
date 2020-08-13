@@ -100,10 +100,15 @@ impl State {
 
     pub fn generate_new_map(&mut self, width: i32, height: i32) -> Map {
         self.map_generator.push_map(width, height);
-        let idx = self.map_generator.maps.len() - 1;
+        let idx = self.map_generator.get_last_map_idx();
         self.map_generator.gen_map(idx);
         self.set_curr_map(idx);
         self.map_generator.get_map(idx)
+    }
+
+    pub fn populate_map(&mut self) {
+        let idx = self.map_generator.get_last_map_idx();
+        self.map_generator.spawn_entities(&mut self.ecs, idx);
     }
 
     pub fn set_curr_map(&mut self, idx: usize) {
