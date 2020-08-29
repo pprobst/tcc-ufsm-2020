@@ -213,6 +213,9 @@ impl Map {
             '¥' => {
                 self.tiles[idx] = Tile::flower();
             }
+            '>' => {
+                self.tiles[idx] = Tile::exit();
+            }
             _ => {
                 self.tiles[idx] = Tile::floor();
             }
@@ -279,6 +282,14 @@ impl Map {
         match ttype {
             TileType::OpenDoor => true,
             TileType::ClosedDoor => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_exit(&self, idx: usize) -> bool {
+        let ttype = self.tiles[idx].ttype;
+        match ttype {
+            TileType::Exit => true,
             _ => false,
         }
     }

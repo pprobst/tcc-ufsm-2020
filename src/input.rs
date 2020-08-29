@@ -16,6 +16,8 @@ use bracket_lib::prelude::*;
 
 /// Valid inputs while playing normally.
 pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
+    //let input_mutex = &INPUT.lock();
+    //let lshift_down = input_mutex.is_key_pressed(VirtualKeyCode::LShift);
     match term.key {
         None => return RunState::Waiting,
         Some(key) => match key {

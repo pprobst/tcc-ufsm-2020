@@ -140,7 +140,7 @@ impl MapGenerator {
         self.gen_wfc(idx, Some(region), "../rex_resources/wfc_6x6_internal.xp", 9, 9, 3);
         */
 
-        self.level_01(idx);
+        self.generate_next_level(idx);
         //self.gen_wfc(idx, None, "../rex_resources/wfc_15x15.xp", 15, 15, 5);
 
         self.maps[idx].add_borders(TileType::InvisibleWall);
@@ -152,12 +152,24 @@ impl MapGenerator {
         println!("Map generated!");
     }
 
+    pub fn generate_next_level(&mut self, idx: usize) {
+        match idx {
+            0 => {
+                self.level_01(idx)
+            },
+            _ => println!("Oops!")
+        }
+    }
+
     pub fn level_01(&mut self, idx: usize) {
+
         self.maps[idx].set_maptype(MapType::Ruins);
         self.maps[idx].set_spawn(Position::new(8, 16));
+
         self.gen_prefab_map(idx, "resources/level01_80x60.xp");
         let reg = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
         add_vegetation(&mut self.maps[idx], reg, false);
+
         self.regions.insert(
             get_all_regions(&self.maps[idx], &reg)
                 .iter()
@@ -165,6 +177,14 @@ impl MapGenerator {
                 .map(|e| *e)
                 .collect::<Region>(),
         );
+
+        let mut i;
+        for y in 0..self.maps[idx].height {
+            i = self.maps[idx].idx(self.maps[idx].width-2, y);
+            if self.maps[idx].is_walkable(i) {
+                self.maps[idx].paint_tile(i, TileType::Exit);
+            }
+        }
     }
 
     pub fn forest_bsp_ruin(&mut self, idx: usize) {

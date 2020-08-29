@@ -38,6 +38,7 @@ pub enum RunState {
     AccessContainer,
     Mapgen,
     Menu { menu_selection: MenuSelection },
+    NextLevel,
 }
 
 pub struct State {
@@ -188,6 +189,9 @@ impl GameState for State {
                     }
                 }
             },
+            RunState::NextLevel => {
+                println!("TODO NextLevel");
+            }
         }
 
         // F3 to enable/disable post-processing effects.

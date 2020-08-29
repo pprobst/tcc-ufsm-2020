@@ -202,12 +202,18 @@ enum PossibleContexts {
     Nothing,
     Door,
     Container,
+    ExitLevel,
 }
 
 /// Does a contextual action (i.e. opens a door if there's one nearby, talk, etc).
 pub fn context_action(ecs: &mut World) -> RunState {
     let ppos = **(&ecs.fetch::<Point>());
     let mut map = ecs.fetch_mut::<Map>();
+
+    // If the player is over the ">", go to the next level.
+    if map.is_exit(map.idx_pt(ppos)) {
+        return RunState::NextLevel;
+    }
 
     let tile_list = vec![TileType::OpenDoor, TileType::ClosedDoor];
     let possible_count_dir = count_neighbor_tile_entity(&map, ppos, tile_list, true);

@@ -12,6 +12,7 @@ use bracket_lib::prelude::{to_cp437, ColorPair};
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Hash)]
 pub enum TileType {
     Empty,
+    Exit,
     Wall,
     InvisibleWall,
     Floor,
@@ -61,6 +62,16 @@ impl Tile {
             block: false,
             glyph: to_cp437(' '),
             color: ColorPair::new(color("Background", 1.0), color("Background", 1.0)),
+            ..Default::default()
+        }
+    }
+
+    pub fn exit() -> Self {
+        Self {
+            ttype: TileType::Exit,
+            block: false,
+            glyph: to_cp437('>'),
+            color: ColorPair::new(color("BrightMagenta", 1.0), color("Background", 1.0)),
             ..Default::default()
         }
     }
@@ -309,6 +320,9 @@ impl Tile {
             TileType::FakeMob => {
                 self.color = ColorPair::new(color("Red", 1.0), color("Background", 1.0));
             }
+            TileType::Exit => {
+                self.color = ColorPair::new(color("BrightMagenta", 1.0), color("Background", 1.0));
+            }
             _ => {
                 self.color = ColorPair::new(color("Background", 1.0), color("Background", 1.0));
             }
@@ -341,6 +355,7 @@ pub fn get_tile_function(ttype: TileType) -> Tile {
         TileType::Mushroom => Tile::mushroom(),
         TileType::Computer => Tile::computer(),
         TileType::FakeMob => Tile::fakemob(),
+        TileType::Exit => Tile::exit(),
         _ => Tile::floor(),
     }
 }
