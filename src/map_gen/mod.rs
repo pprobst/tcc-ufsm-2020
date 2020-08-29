@@ -68,31 +68,36 @@ impl MapGenerator {
 
         {
             for room in self.rooms.iter() {
-                let free_room = room.get_area_idx(&self.maps[idx]);
-                build_spawn_list(
-                    &mut spawn_list,
-                    &spawn_table,
-                    &free_room,
-                    idx as i32 + 1,
-                    &mut self.rng,
-                );
+                if self.rng.range(0, 3) == 0 {
+                    let free_room = room.get_area_idx(&self.maps[idx]);
+                    build_spawn_list(
+                        &mut spawn_list,
+                        &spawn_table,
+                        &free_room,
+                        true,
+                        idx as i32 + 1,
+                        &mut self.rng,
+                    );
+                }
             }
             for tunnel in self.tunnels.iter() {
                 build_spawn_list(
                     &mut spawn_list,
                     &spawn_table,
                     &tunnel,
+                    true,
                     idx as i32 + 1,
                     &mut self.rng,
                 );
             }
             for region in self.regions.iter() {
-                use region::*; // wtf?
+                use region::*;
                 let free_region = region.get_floor_idx(&self.maps[idx]);
                 build_spawn_list(
                     &mut spawn_list,
                     &spawn_table,
                     &free_region,
+                    false,
                     idx as i32 + 1,
                     &mut self.rng,
                 );
@@ -153,6 +158,7 @@ impl MapGenerator {
     }
 
     pub fn generate_next_level(&mut self, idx: usize) {
+        self.clear_regions_generator();
         match idx {
             0 => self.level_01(idx),
             1 => {

@@ -1,4 +1,4 @@
-use super::{log::Log, spawner::spawn_remains, BaseStats, InBackpack, Name, Player, Position};
+use super::{log::Log, spawner::spawn_remains, BaseStats, Inventory, Name, Player, Position};
 use crate::utils::colors::*;
 use specs::prelude::*;
 
@@ -58,10 +58,10 @@ impl<'a> Killer<'a> {
     fn insert_remains(&mut self, ent: Entity, ent_name: String, ent_pos: Position) {
         let mut items: Vec<Entity> = Vec::new();
         {
-            let backpack = self.ecs.read_storage::<InBackpack>();
+            let inventory = self.ecs.read_storage::<Inventory>();
             let entities = self.ecs.entities();
 
-            items = (&backpack, &entities)
+            items = (&inventory, &entities)
                 .join()
                 .filter(|item| item.0.owner == ent)
                 .map(|item| item.1)

@@ -1,4 +1,4 @@
-use crate::components::{BaseStats, Consumable, ConsumeItem, InBackpack, InventoryCapacity, Name};
+use crate::components::{BaseStats, Consumable, ConsumeItem, Inventory, InventoryCapacity, Name};
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -21,7 +21,7 @@ impl<'a> System<'a> for ConsumableSystem {
         WriteExpect<'a, Log>,
         WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, ConsumeItem>,
-        WriteStorage<'a, InBackpack>,
+        WriteStorage<'a, Inventory>,
         WriteStorage<'a, BaseStats>,
     );
 
@@ -33,7 +33,7 @@ impl<'a> System<'a> for ConsumableSystem {
             mut log,
             mut capacity,
             mut to_consume,
-            mut backpack,
+            mut inventory,
             mut stats,
         ) = data;
 
@@ -47,7 +47,7 @@ impl<'a> System<'a> for ConsumableSystem {
                 target_stats.health.max_hp,
                 target_stats.health.hp + item.heal,
             );
-            backpack.remove(c.item);
+            inventory.remove(c.item);
 
             if c.target == *player {
                 log.add(

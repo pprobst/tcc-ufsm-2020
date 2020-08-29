@@ -1,4 +1,4 @@
-use crate::components::{Equipable, Equipment, InBackpack, InventoryCapacity, Name, TryEquip};
+use crate::components::{Equipable, Equipment, Inventory, InventoryCapacity, Name, TryEquip};
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -21,7 +21,7 @@ impl<'a> System<'a> for EquipmentSystem {
         WriteExpect<'a, Log>,
         ReadStorage<'a, Equipable>,
         WriteStorage<'a, InventoryCapacity>,
-        WriteStorage<'a, InBackpack>,
+        WriteStorage<'a, Inventory>,
         WriteStorage<'a, TryEquip>,
     );
 
@@ -33,7 +33,7 @@ impl<'a> System<'a> for EquipmentSystem {
             mut log,
             equipable,
             mut capacity,
-            mut backpack,
+            mut inventory,
             mut try_equip,
         ) = data;
 
@@ -57,17 +57,17 @@ impl<'a> System<'a> for EquipmentSystem {
             }
             for ue in to_unequip {
                 equips.remove(ue);
-                backpack
+                inventory
                     .insert(
                         ue,
-                        InBackpack {
+                        Inventory {
                             owner: to_equip_user,
                         },
                     )
-                    .expect("FAILED inserting item in backpack.");
+                    .expect("FAILED inserting item in inventory.");
                 inventory_cap.curr += 1;
             }
-            backpack.remove(e.equipment.equip);
+            inventory.remove(e.equipment.equip);
             inventory_cap.curr -= 1;
             equips
                 .insert(

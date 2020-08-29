@@ -1,4 +1,4 @@
-use crate::components::{CollectItem, Contained, InBackpack, InventoryCapacity, Name, Position};
+use crate::components::{CollectItem, Contained, Inventory, InventoryCapacity, Name, Position};
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -21,7 +21,7 @@ impl<'a> System<'a> for ItemCollectSystem {
         WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, CollectItem>,
-        WriteStorage<'a, InBackpack>,
+        WriteStorage<'a, Inventory>,
         WriteStorage<'a, Contained>,
     );
 
@@ -33,7 +33,7 @@ impl<'a> System<'a> for ItemCollectSystem {
             mut capacity,
             mut pos,
             mut collect,
-            mut backpack,
+            mut inventory,
             mut contained,
         ) = data;
 
@@ -47,8 +47,8 @@ impl<'a> System<'a> for ItemCollectSystem {
                     log.add(format!("Your inventory is full!"), magenta);
                     break;
                 }
-                backpack
-                    .insert(c.0, InBackpack { owner: c.1 })
+                inventory
+                    .insert(c.0, Inventory { owner: c.1 })
                     .expect("FAILED to insert item in backpack.");
                 if c.1 == *player {
                     log.add(

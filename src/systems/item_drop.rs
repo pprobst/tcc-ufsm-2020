@@ -1,4 +1,4 @@
-use crate::components::{DropItem, InBackpack, InventoryCapacity, Name, Position};
+use crate::components::{DropItem, Inventory, InventoryCapacity, Name, Position};
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -21,11 +21,11 @@ impl<'a> System<'a> for ItemDropSystem {
         WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, DropItem>,
-        WriteStorage<'a, InBackpack>,
+        WriteStorage<'a, Inventory>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, name, mut log, mut capacity, mut pos, mut drop, mut backpack) = data;
+        let (player, name, mut log, mut capacity, mut pos, mut drop, mut inventory) = data;
         let white = color("BrightWhite", 1.0);
 
         let mut inventory_cap = capacity.get_mut(*player).unwrap();
@@ -33,7 +33,7 @@ impl<'a> System<'a> for ItemDropSystem {
             let drop_pos = pos.get(d.dropper).unwrap().clone();
             pos.insert(d.item, Position::new(drop_pos.x, drop_pos.y))
                 .expect("Unable to insert position");
-            backpack.remove(d.item);
+            inventory.remove(d.item);
 
             if d.dropper == *player {
                 inventory_cap.curr -= 1;

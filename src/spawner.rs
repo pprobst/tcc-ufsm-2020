@@ -2,7 +2,7 @@ use super::{
     map_gen::{Map, MapType},
     raws::*,
     utils::colors::*,
-    BaseStats, Contained, Container, Description, Equipment, Fov, Health, InBackpack,
+    BaseStats, Contained, Container, Description, Equipment, Fov, Health, Inventory,
     InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
@@ -163,10 +163,10 @@ fn equip_mobs(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator
                         // equipping in their inventory, so as to make their remains' drop more
                         // generic --  this is not the case for the player. Mobs don't really
                         // have to think about inventory management, after all.
-                        let mut backpack = ecs.write_storage::<InBackpack>();
-                        backpack
-                            .insert(e, InBackpack { owner: mob.0 })
-                            .expect("FAILED to insert item in backpack.");
+                        let mut inventory = ecs.write_storage::<Inventory>();
+                        inventory
+                            .insert(e, Inventory { owner: mob.0 })
+                            .expect("FAILED to insert item in inventory.");
                     }
                 }
             }
@@ -207,6 +207,7 @@ pub fn build_spawn_list(
     spawn_list: &mut Vec<(usize, String)>,
     spawn_table: &SpawnTable,
     loc: &[usize],
+    is_room: bool,
     level: i32,
     rng: &mut RandomNumberGenerator,
 ) {
@@ -216,7 +217,11 @@ pub fn build_spawn_list(
     }
     let mut spawns: HashMap<usize, String> = HashMap::new();
     let mut spawn_locs: Vec<usize> = Vec::from(loc);
-    let num_mobs = i32::min(loc_size, rng.range(1, MAX_MOBS_AREA) + level);
+    let num_mobs = if !is_room {
+        i32::min(loc_size, rng.range(level, MAX_MOBS_AREA))
+    } else {
+        i32::min(loc_size, rng.range(1, 6))
+    };
 
     {
         for _i in 0..num_mobs {

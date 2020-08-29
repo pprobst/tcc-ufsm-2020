@@ -87,7 +87,7 @@ fn main() -> BError {
     world.register::<CollectItem>();
     world.register::<DropItem>();
     world.register::<ConsumeItem>();
-    world.register::<InBackpack>();
+    world.register::<Inventory>();
     world.register::<SelectedItem>();
     world.register::<SelectedPosition>();
     world.register::<Remains>();

@@ -1,6 +1,6 @@
 use super::{common::draw_list_items, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
 use crate::components::{
-    ConsumeItem, DropItem, Equipable, Equipment, InBackpack, InventoryCapacity, Name, SelectedItem,
+    ConsumeItem, DropItem, Equipable, Equipment, Inventory, InventoryCapacity, Name, SelectedItem,
     TryEquip,
 };
 use crate::utils::colors::*;
@@ -35,7 +35,7 @@ pub fn show_inventory(
 ) -> InventoryResult {
     let names = ecs.read_storage::<Name>();
     let player = ecs.fetch::<Entity>();
-    let backpack = ecs.read_storage::<InBackpack>();
+    let backpack = ecs.read_storage::<Inventory>();
     let inventory_cap = ecs.read_storage::<InventoryCapacity>();
     let entities = ecs.entities();
 

@@ -305,7 +305,7 @@ pub struct ConsumeItem {
 }
 
 #[derive(Component, Debug)]
-pub struct InBackpack {
+pub struct Inventory {
     pub owner: Entity,
 }
 

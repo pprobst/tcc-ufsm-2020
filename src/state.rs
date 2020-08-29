@@ -1,4 +1,5 @@
 use super::{
+    components::*,
     input::*,
     killer::remove_dead_entities,
     map_gen::*,
@@ -107,6 +108,40 @@ impl State {
         self.map_generator.get_map(idx)
     }
 
+    pub fn entities_to_delete(&mut self) -> Vec<Entity> {
+        let ents = self.ecs.entities();
+        let player = self.ecs.read_storage::<Player>();
+        let player_ent = self.ecs.fetch::<Entity>();
+        let inventory = self.ecs.read_storage::<Inventory>();
+        let equipment = self.ecs.read_storage::<super::components::Equipment>();
+
+        let mut to_delete = Vec::new();
+        for ent in ents.join() {
+            let p = player.get(ent);
+            if let Some(_p) = p {
+                continue;
+            }
+
+            let equip = equipment.get(ent);
+            if let Some(equip) = equip {
+                if equip.user == *player_ent {
+                    continue;
+                }
+            }
+
+            let inv = inventory.get(ent);
+            if let Some(inv) = inv {
+                if inv.owner == *player_ent {
+                    continue;
+                }
+            }
+
+            to_delete.push(ent);
+        }
+
+        to_delete
+    }
+
     pub fn populate_map(&mut self) {
         let idx = self.map_generator.get_last_map_idx();
         self.map_generator.spawn_entities(&mut self.ecs, idx);
@@ -181,7 +216,13 @@ impl GameState for State {
                 }
                 Some(key) => {
                     if let VirtualKeyCode::Space = key {
-                        self.generate_new_map(100, 100);
+                        for ent in self.entities_to_delete() {
+                            self.ecs
+                                .delete_entity(ent)
+                                .expect("FAILED to delete entity");
+                        }
+                        self.generate_new_map(80, 60);
+                        self.populate_map();
                     }
                     if let VirtualKeyCode::Return = key {
                         self.show_map = false;
@@ -190,7 +231,13 @@ impl GameState for State {
                 }
             },
             RunState::NextLevel => {
-                self.generate_new_map(100, 100);
+                for ent in self.entities_to_delete() {
+                    self.ecs
+                        .delete_entity(ent)
+                        .expect("FAILED to delete entity");
+                }
+                self.generate_new_map(80, 60);
+                self.populate_map();
                 curr_state = RunState::Running;
             }
         }
