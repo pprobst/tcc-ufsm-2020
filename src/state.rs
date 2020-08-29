@@ -181,7 +181,7 @@ impl GameState for State {
                 }
                 Some(key) => {
                     if let VirtualKeyCode::Space = key {
-                        self.generate_new_map(80, 60);
+                        self.generate_new_map(100, 100);
                     }
                     if let VirtualKeyCode::Return = key {
                         self.show_map = false;
@@ -190,7 +190,8 @@ impl GameState for State {
                 }
             },
             RunState::NextLevel => {
-                println!("TODO NextLevel");
+                self.generate_new_map(100, 100);
+                curr_state = RunState::Running;
             }
         }
 

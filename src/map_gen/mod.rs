@@ -154,15 +154,15 @@ impl MapGenerator {
 
     pub fn generate_next_level(&mut self, idx: usize) {
         match idx {
-            0 => {
-                self.level_01(idx)
-            },
-            _ => println!("Oops!")
+            0 => self.level_01(idx),
+            1 => {
+                self.level_02(idx);
+            }
+            _ => println!("Oops!"),
         }
     }
 
     pub fn level_01(&mut self, idx: usize) {
-
         self.maps[idx].set_maptype(MapType::Ruins);
         self.maps[idx].set_spawn(Position::new(8, 16));
 
@@ -180,11 +180,17 @@ impl MapGenerator {
 
         let mut i;
         for y in 0..self.maps[idx].height {
-            i = self.maps[idx].idx(self.maps[idx].width-2, y);
+            i = self.maps[idx].idx(self.maps[idx].width - 2, y);
             if self.maps[idx].is_walkable(i) {
                 self.maps[idx].paint_tile(i, TileType::Exit);
             }
         }
+    }
+
+    pub fn level_02(&mut self, idx: usize) {
+        self.maps[idx].set_maptype(MapType::Ruins);
+        self.maps[idx].set_spawn(Position::new(2, 30));
+        self.forest_bsp_ruin(idx);
     }
 
     pub fn forest_bsp_ruin(&mut self, idx: usize) {
