@@ -25,6 +25,8 @@ máquina](https://doc.rust-lang.org/book/ch01-01-installation.html).
 
 Após isso, baixe este repositório e execute no terminal o comando ```cargo run```.
 
+Avise-me caso houver algum problema.
+
 ## Main Quest
 Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
 - [x] Estruturar o básico do básico do [bracket-lib](https://github.com/thebracket/bracket-lib) 
@@ -71,17 +73,18 @@ considere que itens marcados já possuem a _estrutura básica_ concluída.
 ###  Sidequests
 Objetivos opcionais. Provavelmente não serão realizados no momento, mas de
 qualquer forma serão inseridos no futuro.
+- [x] Sistema de spawning;
 - [ ] Combate melhorado (e.g. torná-lo estocástico);
     - [ ] Também aplicar bônus dos equipamentos, que por enquanto não fazem
       nada.
 - [ ] IA relativamente avançada para os mobs.
-- [ ] Sistema de spawning;
 - [ ] Narrativa procedural;
 - [ ] Itens únicos com efeitos aleatórios;
 - [ ] Sistema de partículas;
-- [ ] Otimizações gerais;
-- [ ] Refatoração no código da UI (chato);
-- [ ] Salvar o jogo (extremamente tedioso).
+- [ ] Expandir o log;
+- [ ] Refatoração no código da UI;
+- [ ] Salvar e carregar o jogo.
+- [ ] Narrativa procedural;
 
 ## Problemas conhecidos, etc.
 - Distorção dos tiles dependendo da resolução.
