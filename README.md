@@ -1,31 +1,29 @@
 # tcc-ufsm-2020
-Este é o repositório do meu trabalho de conclusão de curso (TCC) da UFSM.
+This is the repository for my bachelor's degree final project (UFSM).
 
-Como o trabalho ainda está em sua fase inicial, os detalhes serão descritos
-futuramente.
+## Wait! I read your article from SBGames 2020! Where do I go?
+[/src/map_gen/](https://github.com/pprobst/tcc-ufsm-2020/tree/master/src/map_gen) contains all the algorithms presented in the article. They're
+generally easy to follow, but for fully understanding WaveFunctionCollapse it
+would be wise to read Gridbugs' [article](https://gridbugs.org/wave-function-collapse/) (my implementation directly derives from it) or Karth & Smith [research paper](https://adamsmith.as/papers/wfc_is_constraint_solving_in_the_wild.pdf).
+Keep in mind that the procgen pipelines are still far from perfect, and I'll
+still keep working on them. I'm also working on the general game mechanics and
+in the future I'll play with procedural narrative -- a new interest for me.
 
-Note que este TCC se difere da maioria por uma miríade de motivos. Além das
-linhas de código, está o fato de que eu apenas tenho interesse (e me divirto) em
-aprender sobre como fazer jogos e geração procedural, que são interesses
-recentes (desde quando comecei a jogar [_Caves of
-Qud_](https://store.steampowered.com/app/333640/Caves_of_Qud/) em 2019); também
-pretendo continuar a trabalhar neste jogo após a conclusão do TCC, já que nem
-50% do que tenho como visão estará implementado. Este trabalho também utiliza
-de várias referências da indústria e outras que achei "in the wild", além de
-referências propriamente acadêmicas.
+However, this is a game prototype (not a procedural dungeon generation tool!) and still not ready for playing. But if
+you know your way around Rust and want to fiddle with the procgen algorithms,
+feel free to do it!
 
-Ou seja, é um TCC muito menos "científico" do que a maioria, podendo ser
-considerado mais como um _passion project_ meu que apenas estou aproveitando
-como trabalho. De qualquer forma, eu absolutamente discordo de que haja apenas
-um método de fazer ciência, muito menos acredito cegamente no método científico.
+If you want to contact me for whatever reason, send me an email. You can use the email on my GitHub
+profile or the one in the paper.
 
-## Execução
-Primeiro, [instale e configure o Rust na sua
-máquina](https://doc.rust-lang.org/book/ch01-01-installation.html).
+## Execution
+First, [install and configure Rust in your machine](https://doc.rust-lang.org/book/ch01-01-installation.html).
 
-Após isso, baixe este repositório e execute no terminal o comando ```cargo run```.
+Then, clone this repository, navigate to it and run ```cargo run``` from your terminal emulator.
 
-Avise-me caso houver algum problema.
+Tell me if you have any problems.
+
+---
 
 ## Main Quest
 Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
