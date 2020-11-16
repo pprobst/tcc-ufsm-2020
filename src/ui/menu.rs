@@ -16,7 +16,6 @@ use bracket_lib::prelude::*;
 pub enum MenuSelection {
     NewGame,
     LoadGame,
-    Help,
     Quit,
 }
 
@@ -25,7 +24,6 @@ impl MenuSelection {
         String::from(match self {
             MenuSelection::NewGame => "New Journey",
             MenuSelection::LoadGame => "Continue",
-            MenuSelection::Help => "Help",
             MenuSelection::Quit => "Abandon",
         })
     }
@@ -66,6 +64,12 @@ pub fn main_menu(
         ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0)),
     );
 
+    draw_batch.print_color_centered(
+        WINDOW_HEIGHT - 6,
+        "Press F1 to consult the stars for guidance.",
+        ColorPair::new(color("BrightBlack", 1.0), color("Background", 1.0)),
+    );
+
     let mut y: i32 = 10;
     // Title
     draw_batch.print_color_centered(
@@ -78,13 +82,11 @@ pub fn main_menu(
         vec![
             MenuSelection::LoadGame,
             MenuSelection::NewGame,
-            MenuSelection::Help,
             MenuSelection::Quit,
         ]
     } else {
         vec![
             MenuSelection::NewGame,
-            MenuSelection::Help,
             MenuSelection::Quit,
         ]
     };

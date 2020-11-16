@@ -1,6 +1,6 @@
 (
     // All colorschemes should be here, as a list.
-    // Keep in mind that EVERY scheme should have the same color names as "default",
+    // Keep in mind that EVERY scheme should have the same color names
     // and a valid hex code.
     // See: https://extended-ascii-viewer.herokuapp.com/
     colorschemes: [
@@ -19,7 +19,7 @@
                 "BrightWhite":"#ededec",
                 "BrightYellow":"#fce94e",
                 "Cyan":"#05989a",
-                "Green":"#4e9a05",
+                "Green":"#2F5609",
                 "Magenta":"#74507a",
                 "Red":"#cc0000",
                 "White":"#d3d7cf",

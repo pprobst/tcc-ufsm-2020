@@ -252,8 +252,10 @@ pub fn spawn_from_list(
     // Seek and spawn each entity in spawn_list.
     for spawn in spawn_list {
         let pos = map.idx_pos(spawn.0);
-        let name = &spawn.1;
-        spawn_entity(name, Some(pos), ecs.create_entity(), raws)
+        if pos != map.spawn_point {
+            let name = &spawn.1;
+            spawn_entity(name, Some(pos), ecs.create_entity(), raws)
+        }
     }
 
     // Insert itens in chests.
@@ -264,7 +266,6 @@ pub fn spawn_from_list(
 
 pub fn spawn_player(ecs: &mut World, map: &Map) {
     let pos = map.spawn_point;
-    let idx = map.idx(pos.x, pos.y);
     ecs.insert(Point::new(pos.x, pos.y));
     let player = player(ecs, pos.x, pos.y);
     ecs.insert(player);

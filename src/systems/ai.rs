@@ -40,7 +40,6 @@ impl<'a> System<'a> for HostileAISystem {
         for (_mob, mut fov, mut pos, ent) in (&mob, &mut fov, &mut pos, &entities).join() {
             let d = DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), ppos);
             if d < 1.5 {
-                println!("I'm touching you!");
                 melee_attack
                     .insert(ent, MeleeAttack { target: *player })
                     .expect("Melee attack insertion failed");

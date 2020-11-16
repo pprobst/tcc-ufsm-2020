@@ -246,10 +246,6 @@ impl<'a> Renderer<'a> {
                             // TODO
                             *write_state = RunState::Start;
                         }
-                        menu::MenuSelection::Help => {
-                            // TODO
-                            *write_state = RunState::Start;
-                        }
                         menu::MenuSelection::Quit => {
                             ::std::process::exit(0);
                         }

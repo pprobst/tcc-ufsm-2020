@@ -105,6 +105,7 @@ impl MapGenerator {
         }
         println!("Spawn list size: {}", spawn_list.len());
         spawn_from_list(ecs, spawn_list, &self.maps[idx], raws, &mut self.rng);
+        spawn_player(ecs, &self.maps[idx]);
     }
 
     pub fn push_map(&mut self, width: i32, height: i32) {
@@ -159,16 +160,82 @@ impl MapGenerator {
 
     pub fn generate_next_level(&mut self, idx: usize) {
         self.clear_regions_generator();
+
+        /* Time tests
+        let chance1 = self.rng.range(0, 2);
+        let d1: bool = if chance1 == 0 { false } else { true };
+        let chance2 = self.rng.range(0, 2);
+        let d2: bool = if chance2 == 0 { false } else { true };
+
+        use std::time::{Instant};
+        let start = Instant::now();
+
+        self.test(idx, d1, d2);
+
+        let duration = start.elapsed();
+        println!("Time elapsed in expensive_function() is: {:?}", duration);
+
+        use std::fs::OpenOptions;
+        use std::io::prelude::*;
+
+        let mut file = OpenOptions::new()
+            .write(true)
+            .append(true)
+            .open("times.csv")
+            .unwrap();
+
+        if let Err(e) = writeln!(file, "WFC_01,{:?}", duration) {
+            eprintln!("Couldn't write to file: {}", e);
+        }
+        */
+
         match idx {
-            0 => self.level_01(idx),
+            0 => self.level_00(idx),
             1 => {
-                self.level_02(idx);
+                self.level_01(idx);
             }
             _ => println!("Oops!"),
         }
     }
 
-    pub fn level_01(&mut self, idx: usize) {
+    /*
+    pub fn test(&mut self, idx: usize, d1: bool, d2: bool) {
+        self.maps[idx].set_maptype(MapType::Ruins);
+        self.maps[idx].set_spawn(Position::new(8, 16));
+
+        let reg1 = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
+
+        self.wfc_01(idx);
+
+        self.gen_wfc(
+            idx,
+            Some(reg1),
+            "resources/wfc_20x20_2.xp",
+            20,
+            20,
+            20,
+        );
+
+
+        let mut random_walker = RandomWalker::new(reg1, 0.25, false, false);
+        random_walker.generate(&mut self.maps[idx], &mut self.rng);
+
+        // n_iterations, n_walls_rule, min_cave_size, open_halls, dry_caves
+        //let mut cell_automata = CellularAutomata::new(reg1, 12, 5, 10, false, true);
+        //cell_automata.generate(&mut self.maps[idx]);
+
+        //make_lake(&mut self.maps[idx], reg1, TileType::ShallowWater, 200);
+
+        let mut cell_automata2 = CellularAutomata::new(reg1, 1, 5, 15, true, true);
+        cell_automata2.generate(&mut self.maps[idx]);
+
+        let mut all_regions = get_all_regions(&self.maps[idx], &self.maps[idx].get_region());
+        all_regions.sort_by(|a, b| self.maps[idx].idx_pos(a[0]).x.cmp(&self.maps[idx].idx_pos(b[0]).x));
+        connect_regions(&mut self.maps[idx], all_regions, TileType::Floor, true);
+    }
+    */
+
+    pub fn level_00(&mut self, idx: usize) {
         self.maps[idx].set_maptype(MapType::Ruins);
         self.maps[idx].set_spawn(Position::new(8, 16));
 
@@ -193,9 +260,9 @@ impl MapGenerator {
         }
     }
 
-    pub fn level_02(&mut self, idx: usize) {
+    pub fn level_01(&mut self, idx: usize) {
         self.maps[idx].set_maptype(MapType::Ruins);
-        self.maps[idx].set_spawn(Position::new(2, 30));
+        self.maps[idx].set_spawn(Position::new(1, 25));
         self.forest_bsp_ruin(idx);
     }
 
@@ -205,8 +272,20 @@ impl MapGenerator {
         let region_bottom =
             &CustomRegion::new_rect(0, 30, self.maps[idx].width, self.maps[idx].height - 30);
         self.gen_bsp(idx, Some(region_top));
+
+        for room in self.rooms.clone() {
+            if self.rng.range(0, 4) > 1 || (room.width() >= 6 && room.height() >= 6) {
+                let room_reg = &CustomRegion::new_rect(room.x1, room.y1, room.width(), room.height());
+                self.gen_wfc(idx, Some(room_reg), "resources/wfc_6x6.xp", 8, 8, 4);
+            }
+        }
+
         self.gen_forest(idx, Some(region_middle));
         self.gen_bsp_ruin(idx, Some(region_bottom));
+
+        let all_regions = get_all_regions(&self.maps[idx], &self.maps[idx].get_region());
+        connect_regions(&mut self.maps[idx], all_regions, TileType::Floor, false);
+
         add_vegetation(&mut self.maps[idx], region_top, false);
     }
 
@@ -227,6 +306,13 @@ impl MapGenerator {
             self.gen_digger(idx, Some(region_middle));
         } else {
             self.gen_bsp(idx, Some(region_middle));
+        }
+
+        for room in self.rooms.clone() {
+            if self.rng.range(0, 4) > 0 {
+            let room_reg = &CustomRegion::new_rect(room.x1, room.y1, room.width(), room.height());
+            self.gen_wfc(idx, Some(room_reg), "resources/wfc_6x6_internal.xp", 9, 9, 3);
+            }
         }
 
         if self.rng.range(0, 2) < 1 {
@@ -392,12 +478,15 @@ impl MapGenerator {
                 // With smaller block sizes (e.g. 5), tunnels_left and tunnels_down become bad.
                 0 => {
                     bsp.build_tunnels_left(&mut self.maps[idx], &mut self.rng);
+                    println!("LEFT");
                 }
                 1 => {
                     bsp.build_tunnels_down(&mut self.maps[idx], &mut self.rng);
+                    println!("DOWN");
                 }
                 _ => {
                     bsp.build_tunnels(&mut self.maps[idx], &mut self.rng);
+                    println!("RANDOM");
                 }
             }
         } else {

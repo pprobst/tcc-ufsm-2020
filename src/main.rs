@@ -28,10 +28,10 @@ pub const Y_OFFSET: i32 = 10; // Bottom box
 pub const WINDOW_WIDTH: i32 = 80;
 pub const WINDOW_HEIGHT: i32 = 60;
 //pub const WINDOW_HEIGHT: i32 = 80+Y_OFFSET;
-pub const TILE_WIDTH: i32 = 16;
-pub const TILE_HEIGHT: i32 = 16;
+pub const TILE_WIDTH: i32 = 18;
+pub const TILE_HEIGHT: i32 = 18;
 
-pub const SHOW_MAP: bool = true;
+pub const SHOW_MAP: bool = false;
 
 embedded_resource!(FONT01, "../resources/fonts/Sapphos-square-16x16.png");
 embedded_resource!(FONT02, "../resources/fonts/Anikki-square-16x16.png");
