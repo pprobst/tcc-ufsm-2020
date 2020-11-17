@@ -3,7 +3,7 @@ use super::{
     raws::*,
     utils::colors::*,
     BaseStats, Contained, Container, Description, Equipment, Fov, Health, Inventory,
-    InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable,
+    InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable, TryEquip
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -76,8 +76,8 @@ fn entity_with_position(ecs: &mut World, x: i32, y: i32) -> EntityBuilder {
     ecs.create_entity().with(Position { x, y })
 }
 
-fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
-    entity_with_position(ecs, x, y)
+pub fn create_player(ecs: &mut World) -> Entity {
+    entity_with_position(ecs, 0, 0)
         .with(Renderable {
             glyph: to_cp437('@'),
             color: ColorPair::new(color("BrightWhite", 1.0), color("Background", 1.0)),
@@ -103,6 +103,53 @@ fn player(ecs: &mut World, x: i32, y: i32) -> Entity {
         })
         .with(InventoryCapacity { curr: 0, max: 15 })
         .build()
+}
+
+pub fn equip_player(ecs: &mut World) {
+    let raws = &RAWS.lock().unwrap();
+    let melee_weapon = spawn_item("Tantou", None, ecs.create_entity(), raws).unwrap();
+    let missile_weapon = spawn_item("Revolver", None, ecs.create_entity(), raws).unwrap();
+    let armor = spawn_item("Old Leather Armor", None, ecs.create_entity(), raws).unwrap();
+    let pants = spawn_item("Bombacho", None, ecs.create_entity(), raws).unwrap();
+    let mut equipments = ecs.write_storage::<Equipment>();
+    let player_ent = ecs.fetch::<Entity>();
+
+    equipments
+        .insert(
+            melee_weapon,
+            Equipment {
+                user: *player_ent,
+                equip: melee_weapon,
+            },
+        )
+        .expect("FAILED to equip item.");
+    equipments
+        .insert(
+            armor,
+            Equipment {
+                user: *player_ent,
+                equip: armor,
+            },
+        )
+        .expect("FAILED to equip item.");
+    equipments
+        .insert(
+            pants,
+            Equipment {
+                user: *player_ent,
+                equip: pants,
+            },
+        )
+        .expect("FAILED to equip item.");
+    equipments
+        .insert(
+            missile_weapon,
+            Equipment {
+                user: *player_ent,
+                equip: missile_weapon,
+            },
+        )
+        .expect("FAILED to equip item.");
 }
 
 fn get_all_tiered_containers(ecs: &World) -> Vec<(Entity, Vec<u8>)> {
@@ -265,10 +312,20 @@ pub fn spawn_from_list(
 }
 
 pub fn spawn_player(ecs: &mut World, map: &Map) {
-    let pos = map.spawn_point;
-    ecs.insert(Point::new(pos.x, pos.y));
-    let player = player(ecs, pos.x, pos.y);
-    ecs.insert(player);
+    let player = ecs.fetch::<Entity>();
+    let mut pos = ecs.write_storage::<Position>();
+    let mut ppos = pos.get_mut(*player).unwrap();
+    let map_pos = map.spawn_point;
+    ppos.x = map_pos.x;
+    ppos.y = map_pos.y;
+
+    let mut player_pos = ecs.write_resource::<Point>();
+    player_pos.x = ppos.x;
+    player_pos.y = ppos.y;
+
+    let mut fov = ecs.write_storage::<Fov>();
+    let mut pfov = fov.get_mut(*player).unwrap();
+    pfov.dirty = true;
 }
 
 pub fn spawn_map(ecs: &mut World, map: &Map) {

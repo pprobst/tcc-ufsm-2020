@@ -105,7 +105,11 @@ fn main() -> BError {
         .insert(map_gen::Map::new(height, width, TileType::Floor, None));
 
     let map = game_state.generate_new_map(height, width);
-    spawner::spawn_player(&mut game_state.ecs, &map);
+    game_state.ecs.insert(Point::new(0, 0));
+    let player = spawner::create_player(&mut game_state.ecs);
+    game_state.ecs.insert(player);
+
+    spawner::equip_player(&mut game_state.ecs);
     game_state.populate_map();
 
     // Insert initial state into the ECS.

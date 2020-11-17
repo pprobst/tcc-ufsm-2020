@@ -78,6 +78,27 @@
             ),
         ),
         (
+            name: "Revolver",
+            descr: "Trusty firearm for the common drifter.",
+            tier: 2,
+            renderable: (
+                glyph: 'R',
+                fg: "Cyan",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "weapon2",
+            ),
+            missile: (
+                damage: 3,
+                range: 8,
+                class: "pistol",
+                ammo_type: "_32",
+                max_ammo: 7,
+            ),
+        ),
+        (
             name: "Filthy Rags",
             descr: "Stained pieces of fabric\nwith an indescribable odor\nthat can barely be\nconsidered clothing.",
             tier: 1,
@@ -128,6 +149,24 @@
                 defense: 1,
             ),
         ),
+        (
+            name: "Bombacho",
+            descr: "Large pants. Typical of the region.",
+            tier: 1,
+            renderable: (
+                glyph: 'P',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "legs",
+            ),
+            armor: (
+                defense: 1,
+            ),
+        ),
+
     ],
 
     /* Stuff that holds other stuff. */

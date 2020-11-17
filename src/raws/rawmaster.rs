@@ -1,7 +1,8 @@
 use super::{common_structs, Raws};
 use crate::components::{
     Armor, BaseStats, Blocker, Consumable, Container, Description, EquipSlot, Equipable, Fov,
-    Health, Item, MeleeWeapon, MeleeWeaponClass, Mob, Name, Position, Renderable,
+    Health, Item, MeleeWeapon, MeleeWeaponClass, MissileWeapon, MissileWeaponClass, Ammunition,
+    AmmoType, Mob, Name, Position, Renderable,
 };
 use crate::map_gen::map::MapType;
 use crate::spawner::SpawnTable;
@@ -9,6 +10,7 @@ use crate::utils::colors::color;
 use bracket_lib::prelude::{to_cp437, ColorPair, RandomNumberGenerator};
 use specs::prelude::*;
 use std::collections::HashMap;
+use std::str::FromStr;
 
 #[derive(Debug)]
 pub struct RawMaster {
@@ -249,6 +251,12 @@ pub fn spawn_item(
                         slot: EquipSlot::Weapon1,
                     })
                 }
+                "weapon2" => {
+                    ent = ent.with(Equipable {
+                        slot: EquipSlot::Weapon2,
+                    })
+                }
+ 
                 "torso" => {
                     ent = ent.with(Equipable {
                         slot: EquipSlot::Torso,
@@ -276,10 +284,28 @@ pub fn spawn_item(
                         class: MeleeWeaponClass::Axe,
                     })
                 }
-
                 _ => return None,
             }
         }
+        if let Some(missile) = &item.missile {
+            println!("HERE");
+            match missile.class.as_str() {
+                "pistol" => {
+                    ent = ent.with(MissileWeapon {
+                        base_damage: missile.damage,
+                        range: missile.range,
+                        class: MissileWeaponClass::Pistol,
+                        ammo: Ammunition {
+                           max_ammo: missile.max_ammo,
+                           ammo: missile.max_ammo,
+                           ammo_type: AmmoType::from_str(&missile.ammo_type).unwrap(),
+                        }
+                    })
+                }
+                _ => return None,
+            }
+        }
+
         if let Some(armor) = &item.armor {
             ent = ent.with(Armor {
                 defense: armor.defense,

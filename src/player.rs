@@ -50,6 +50,7 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
             let mut player_pos = ecs.write_resource::<Point>();
             player_pos.x = pos.x;
             player_pos.y = pos.y;
+            println!("New pos: {:?}", *player_pos);
             fov.dirty = true;
         }
     }

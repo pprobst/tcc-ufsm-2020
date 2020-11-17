@@ -59,6 +59,8 @@ impl MapGenerator {
     }
 
     pub fn spawn_entities(&mut self, ecs: &mut World, idx: usize) {
+        spawn_player(ecs, &self.maps[idx]);
+
         let raws = &RAWS.lock().unwrap();
         let maptype = self.maps[idx].get_maptype();
         let spawn_table = get_spawn_table_for_level(idx + 1, maptype, raws);
@@ -105,7 +107,6 @@ impl MapGenerator {
         }
         println!("Spawn list size: {}", spawn_list.len());
         spawn_from_list(ecs, spawn_list, &self.maps[idx], raws, &mut self.rng);
-        spawn_player(ecs, &self.maps[idx]);
     }
 
     pub fn push_map(&mut self, width: i32, height: i32) {

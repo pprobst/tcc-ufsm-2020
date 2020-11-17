@@ -189,7 +189,7 @@ pub struct MeleeWeapon {
     pub class: MeleeWeaponClass,
 }
 
-#[derive(Debug)]
+#[derive(Debug, EnumString)]
 pub enum AmmoType {
     Arrow,
     _32,
@@ -205,7 +205,7 @@ pub struct Ammunition {
 
 #[derive(Debug)]
 pub enum MissileWeaponClass {
-    Pistol, // incldues Revolvers
+    Pistol, // includes Revolvers
     Rifle,
     Heavy,
     Grenade,
@@ -215,9 +215,12 @@ pub enum MissileWeaponClass {
 pub struct MissileWeapon {
     pub base_damage: i32,
     pub range: i32, // Influence on misses
+    pub class: MissileWeaponClass,
     pub ammo: Ammunition,
-    pub charges: i32, // special effect?
 }
+
+#[derive(Component)]
+pub struct ActiveWeapon {}
 
 #[derive(Component)]
 pub struct Target {
