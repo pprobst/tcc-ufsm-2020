@@ -1,5 +1,5 @@
 use super::{Log, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{BaseStats, EquipSlot, EquipSlot::*, Equipable, Equipment, Name};
+use crate::components::{BaseStats, EquipSlot, EquipSlot::*, Equipable, Equipment, Name, ActiveWeapon};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -116,7 +116,15 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
     let equips = ecs.read_storage::<Equipment>();
     let equipables = ecs.read_storage::<Equipable>();
     let names = ecs.read_storage::<Name>();
+    let active_wpn = ecs.read_storage::<ActiveWeapon>();
     let player = ecs.fetch::<Entity>();
+    let entities = ecs.entities();
+
+    let black = color("Background", 1.0);
+    let white = color("White", 1.0);
+    let gray = color("BrightBlack", 1.0);
+    let mut melee_color = white;
+    let mut ranged_color = white;
 
     let mut equipment: Vec<(&str, EquipSlot)> = vec![
         ("None", Weapon1),
@@ -130,11 +138,21 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
         ("None", Floating),
     ];
 
-    for (equip, equipable, name) in (&equips, &equipables, &names).join() {
+    for (equip, equipable, name, ent) in (&equips, &equipables, &names, &entities).join() {
         if equip.user == *player {
             match equipable.slot {
-                Weapon1 => equipment[0].0 = &name.name,
-                Weapon2 => equipment[1].0 = &name.name,
+                Weapon1 => { 
+                    equipment[0].0 = &name.name;
+                    if let Some(_t) = active_wpn.get(ent) {
+                        melee_color = color("Cyan", 1.0);
+                    }
+                },
+                Weapon2 => { 
+                    equipment[1].0 = &name.name;
+                    if let Some(_t) = active_wpn.get(ent) {
+                        ranged_color = color("Cyan", 1.0);
+                    }
+                },
                 Head => equipment[2].0 = &name.name,
                 Torso => equipment[3].0 = &name.name,
                 Hands => equipment[4].0 = &name.name,
@@ -146,16 +164,13 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
         }
     }
 
-    let black = color("Background", 1.0);
-    let white = color("White", 1.0);
-    let gray = color("BrightBlack", 1.0);
 
     let y = 10;
     draw_batch.print_color(Point::new(0, y), "╞═ MELEE", ColorPair::new(gray, black));
     draw_batch.print_color(
         Point::new(3, y + 1),
         equipment[0].0,
-        ColorPair::new(white, black),
+        ColorPair::new(melee_color, black),
     );
     draw_batch.print_color(
         Point::new(0, y + 3),
@@ -165,7 +180,7 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
     draw_batch.print_color(
         Point::new(3, y + 4),
         equipment[1].0,
-        ColorPair::new(white, black),
+        ColorPair::new(ranged_color, black),
     );
     draw_batch.print_color(Point::new(0, y + 6), "╞═ HEAD", ColorPair::new(gray, black));
     draw_batch.print_color(

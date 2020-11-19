@@ -1,4 +1,4 @@
-use crate::components::{Equipable, Equipment, Inventory, InventoryCapacity, Name, TryEquip};
+use crate::components::{Equipable, Equipment, Inventory, InventoryCapacity, Name, TryEquip, ActiveWeapon};
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -23,6 +23,7 @@ impl<'a> System<'a> for EquipmentSystem {
         WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, Inventory>,
         WriteStorage<'a, TryEquip>,
+        WriteStorage<'a, ActiveWeapon>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -35,6 +36,7 @@ impl<'a> System<'a> for EquipmentSystem {
             mut capacity,
             mut inventory,
             mut try_equip,
+            mut active_wpn,
         ) = data;
 
         let mut inventory_cap = capacity.get_mut(*player).unwrap();
@@ -56,6 +58,9 @@ impl<'a> System<'a> for EquipmentSystem {
                 }
             }
             for ue in to_unequip {
+                if let Some(_t) = active_wpn.get(ue) {
+                    active_wpn.clear();
+                }
                 equips.remove(ue);
                 inventory
                     .insert(

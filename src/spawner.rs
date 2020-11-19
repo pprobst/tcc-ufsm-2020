@@ -3,7 +3,7 @@ use super::{
     raws::*,
     utils::colors::*,
     BaseStats, Contained, Container, Description, Equipment, Fov, Health, Inventory,
-    InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable, TryEquip
+    InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable, ActiveWeapon
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -150,6 +150,12 @@ pub fn equip_player(ecs: &mut World) {
             },
         )
         .expect("FAILED to equip item.");
+
+    let mut active_weapon = ecs.write_storage::<ActiveWeapon>();
+    active_weapon
+        .insert(melee_weapon, ActiveWeapon{})
+        .expect("Insert fail");
+
 }
 
 fn get_all_tiered_containers(ecs: &World) -> Vec<(Entity, Vec<u8>)> {

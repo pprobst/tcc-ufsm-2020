@@ -2,7 +2,7 @@ use super::{
     map_gen::{common::count_neighbor_tile_entity, Map, TileType},
     utils::directions::*,
     CollectItem, Container, Fov, Item, MeleeAttack, MissileAttack, Mob, Player, Position, RunState,
-    SelectedPosition, Target,
+    SelectedPosition, Target, ActiveWeapon, Equipment, Equipable, EquipSlot
 };
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -193,7 +193,28 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> 
 
 // TODO
 /// Switches between the two readied weapons.
-pub fn switch_weapon(_ecs: &mut World) {}
+pub fn switch_weapon(ecs: &mut World) -> RunState {
+    let mut active_wpn = ecs.write_storage::<ActiveWeapon>(); 
+    let slot = ecs.read_storage::<Equipable>(); 
+    let equipments = ecs.read_storage::<Equipment>();
+    let entities = ecs.entities();
+    let player = ecs.fetch::<Entity>();
+
+    let wpns = (&entities, &equipments, &slot)
+        .join()
+        .filter(|(_, equip, slot)| (slot.slot == EquipSlot::Weapon1 || slot.slot == EquipSlot::Weapon2) && equip.user == *player)
+        .map(|(ent, _, _)| ent)
+        .collect::<Vec<_>>();
+
+    if wpns.len() > 1 {
+        let weapon_to_switch = if let Some(_t) = active_wpn.get(wpns[0]) { wpns[1] } else { wpns[0] };
+        active_wpn.clear();
+        active_wpn.insert(weapon_to_switch, ActiveWeapon{}).expect("Active weapon insert fail");
+        return RunState::PlayerTurn;
+    }
+
+    RunState::Waiting
+}
 
 // TODO
 /// Reload ranged weapon.
