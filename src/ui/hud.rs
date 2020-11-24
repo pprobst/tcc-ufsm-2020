@@ -1,5 +1,5 @@
 use super::{Log, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{BaseStats, EquipSlot, EquipSlot::*, Equipable, Equipment, Name, ActiveWeapon};
+use crate::components::{BaseStats, EquipSlot, EquipSlot::*, Equipable, Equipment, Name, ActiveWeapon, MissileWeapon};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -138,6 +138,7 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
         ("None", Floating),
     ];
 
+    let mut ammo = "".to_string();
     for (equip, equipable, name, ent) in (&equips, &equipables, &names, &entities).join() {
         if equip.user == *player {
             match equipable.slot {
@@ -149,6 +150,9 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
                 },
                 Weapon2 => { 
                     equipment[1].0 = &name.name;
+                    let missile_wpn = ecs.read_storage::<MissileWeapon>();
+                    let wpn = missile_wpn.get(ent).unwrap();
+                    ammo = format!("{}/{}", wpn.ammo.ammo, wpn.ammo.max_ammo);
                     if let Some(_t) = active_wpn.get(ent) {
                         ranged_color = color("Cyan", 1.0);
                     }
@@ -164,7 +168,6 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
         }
     }
 
-
     let y = 10;
     draw_batch.print_color(Point::new(0, y), "╞═ MELEE", ColorPair::new(gray, black));
     draw_batch.print_color(
@@ -174,7 +177,7 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
     );
     draw_batch.print_color(
         Point::new(0, y + 3),
-        "╞═ RANGED",
+        format!("╞═ RANGED {}", ammo),
         ColorPair::new(gray, black),
     );
     draw_batch.print_color(

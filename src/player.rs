@@ -1,9 +1,11 @@
 use super::{
     map_gen::{common::count_neighbor_tile_entity, Map, TileType},
     utils::directions::*,
-    CollectItem, Container, Fov, Item, MeleeAttack, MissileAttack, Mob, Player, Position, RunState,
-    SelectedPosition, Target, ActiveWeapon, Equipment, Equipable, EquipSlot
+    CollectItem, Container, Fov, Item, MeleeAttack, MissileAttack, MissileWeapon, Mob, Player, Position, RunState,
+    SelectedPosition, Target, ActiveWeapon, Equipment, Equipable, EquipSlot,
 };
+use crate::log::Log;
+use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
 use std::cmp::Ordering;
@@ -56,8 +58,45 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
     }
 }
 
+/// Checks if ent can shoot a missile weapon, that is, if the weapon is selected and has ammo.
+fn can_shoot(ecs: &World, ent: Entity) -> bool {
+    let active_wpn = ecs.read_storage::<ActiveWeapon>(); 
+    let slot = ecs.read_storage::<Equipable>(); 
+    let missile_wpn = ecs.read_storage::<MissileWeapon>(); 
+    let equipments = ecs.read_storage::<Equipment>();
+    let entities = ecs.entities();
+
+    let wpn = (&entities, &equipments, &slot)
+        .join()
+        .filter(|(_, equip, slot)| slot.slot == EquipSlot::Weapon2 && equip.user == ent)
+        .map(|(ent, _, _)| ent)
+        .last();
+
+    match wpn {
+        Some(w) => {
+            if let Some(_t) = active_wpn.get(w) {
+                if missile_wpn.get(w).unwrap().ammo.ammo > 0 {
+                    return true;
+                }
+            }
+
+        }
+        None => return false
+    }
+
+    false
+}
+
 /// Cycles between the player's visible targets.
 pub fn choose_target(ecs: &mut World, up: bool) -> RunState {
+    let player = ecs.fetch::<Entity>();
+    let mut log = ecs.fetch_mut::<Log>();
+
+    if !can_shoot(&ecs, *player) {
+        log.add(format!("You can't use your ranged weapon."), color("BrightWhite", 1.0));
+        return RunState::Waiting;
+    }
+
     let vis_targets = visible_targets(ecs, true);
     let mut targets = ecs.write_storage::<Target>();
     let entities = ecs.entities();
@@ -119,7 +158,6 @@ pub fn choose_target(ecs: &mut World, up: bool) -> RunState {
 
 /// Performs a missile (ranged) attack to the selected entity.
 pub fn missile_attack(ecs: &mut World) {
-    // TODO: First check if the player readied weapon is ranged.
     let entities = ecs.entities();
     let mut targets = ecs.write_storage::<Target>();
 
@@ -151,7 +189,7 @@ pub fn reset_targeting(ecs: &mut World) -> RunState {
 }
 
 /// Returns all the visible and/or hittable targets in the player's FOV ordered by distance to the player (cresc.).
-fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> {
+fn visible_targets(ecs: &World, hittable: bool) -> Vec<(Entity, f32, bool)> {
     let player = ecs.read_storage::<Player>();
     let fov = ecs.read_storage::<Fov>();
     let map = ecs.fetch::<Map>();
@@ -191,7 +229,6 @@ fn visible_targets(ecs: &mut World, hittable: bool) -> Vec<(Entity, f32, bool)> 
     visible_targets
 }
 
-// TODO
 /// Switches between the two readied weapons.
 pub fn switch_weapon(ecs: &mut World) -> RunState {
     let mut active_wpn = ecs.write_storage::<ActiveWeapon>(); 

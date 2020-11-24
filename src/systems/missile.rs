@@ -1,4 +1,4 @@
-use crate::components::{BaseStats, MissileAttack, Name, SufferDamage};
+use crate::components::{BaseStats, MissileAttack, MissileWeapon, Equipment, ActiveWeapon, Name, SufferDamage};
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -17,15 +17,18 @@ impl<'a> System<'a> for MissileSystem {
     type SystemData = (
         Entities<'a>,
         ReadStorage<'a, BaseStats>,
+        ReadStorage<'a, Equipment>,
+        ReadStorage<'a, ActiveWeapon>,
         WriteStorage<'a, MissileAttack>,
         WriteStorage<'a, SufferDamage>,
+        WriteStorage<'a, MissileWeapon>,
         ReadExpect<'a, Entity>,
         WriteExpect<'a, Log>,
         ReadStorage<'a, Name>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, base_stats, mut missile_attack, mut do_damage, player, mut log, names) =
+        let (entities, base_stats, equipment, active_wpn, mut missile_attack, mut do_damage, mut missile_wpns, player, mut log, names) =
             data;
         let white = color("BrightWhite", 1.0);
 
@@ -37,17 +40,31 @@ impl<'a> System<'a> for MissileSystem {
             let victim_hp = victim_stats.health.hp;
 
             if attacker_hp > 0 && victim_hp > 0 {
-                // TODO: let damage come from weapon stats.
-                let damage = i32::max(0, attacker_stats.attack - victim_stats.defense);
-                let victim_name = names.get(missile.target).unwrap();
-                log.add(
-                    format!(
-                        "{} shoots {} for {} hp!",
-                        &name.name, &victim_name.name, damage
-                    ),
-                    white,
-                );
-                SufferDamage::add_damage(&mut do_damage, missile.target, damage, entity == *player);
+                for(_active_wpn, missile_wpn, equip, name_wpn) in (&active_wpn, &mut missile_wpns, &equipment, &names).join() {
+                    if equip.user == entity && missile_wpn.ammo.ammo > 0 {
+                        let damage = i32::max(0, missile_wpn.base_damage - victim_stats.defense);
+                        missile_wpn.ammo.ammo -= 1;
+                        let victim_name = names.get(missile.target).unwrap();
+                        log.add(
+                            format!(
+                                "{} shoots {} with a {} for {} hp!", 
+                                &name.name, &victim_name.name, &name_wpn.name, damage
+                            ),
+                            white,
+                        );
+                        SufferDamage::add_damage(&mut do_damage, missile.target, damage, entity == *player);
+                    } else {
+                        if entity == *player {
+                            log.add(
+                            format!(
+                                "No ammo for {}.", 
+                                &name_wpn.name
+                            ),
+                            white,
+                        );
+                        }
+                    }
+                }
             }
         }
         missile_attack.clear();

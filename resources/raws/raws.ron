@@ -91,7 +91,7 @@
                 slot: "weapon2",
             ),
             missile: (
-                damage: 3,
+                damage: 5,
                 range: 8,
                 class: "pistol",
                 ammo_type: "_32",
