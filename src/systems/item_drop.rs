@@ -36,7 +36,9 @@ impl<'a> System<'a> for ItemDropSystem {
             inventory.remove(d.item);
 
             if d.dropper == *player {
-                inventory_cap.curr -= 1;
+                if inventory_cap.curr > 0 {
+                    inventory_cap.curr -= 1;
+                }
                 log.add(
                     format!("You drop the {}", name.get(d.item).unwrap().name),
                     white,

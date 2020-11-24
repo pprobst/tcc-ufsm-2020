@@ -288,7 +288,6 @@ pub fn spawn_item(
             }
         }
         if let Some(missile) = &item.missile {
-            println!("HERE");
             match missile.class.as_str() {
                 "pistol" => {
                     ent = ent.with(MissileWeapon {
@@ -305,7 +304,13 @@ pub fn spawn_item(
                 _ => return None,
             }
         }
-
+        if let Some(ammo) = &item.ammunition {
+            ent = ent.with(Ammunition {
+                max_ammo: ammo.ammo,
+                ammo: ammo.ammo,
+                ammo_type: AmmoType::from_str(&ammo.ammo_type).unwrap(),
+            })
+        }
         if let Some(armor) = &item.armor {
             ent = ent.with(Armor {
                 defense: armor.defense,

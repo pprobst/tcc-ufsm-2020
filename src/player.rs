@@ -2,7 +2,7 @@ use super::{
     map_gen::{common::count_neighbor_tile_entity, Map, TileType},
     utils::directions::*,
     CollectItem, Container, Fov, Item, MeleeAttack, MissileAttack, MissileWeapon, Mob, Player, Position, RunState,
-    SelectedPosition, Target, ActiveWeapon, Equipment, Equipable, EquipSlot,
+    SelectedPosition, Target, ActiveWeapon, Equipment, Equipable, EquipSlot, TryReload
 };
 use crate::log::Log;
 use crate::utils::colors::*;
@@ -58,19 +58,26 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
     }
 }
 
-/// Checks if ent can shoot a missile weapon, that is, if the weapon is selected and has ammo.
-fn can_shoot(ecs: &World, ent: Entity) -> bool {
-    let active_wpn = ecs.read_storage::<ActiveWeapon>(); 
+fn get_weapon(ecs: &World, ent: Entity, wpn_slot: EquipSlot) -> Option<Entity> {
     let slot = ecs.read_storage::<Equipable>(); 
-    let missile_wpn = ecs.read_storage::<MissileWeapon>(); 
     let equipments = ecs.read_storage::<Equipment>();
     let entities = ecs.entities();
 
     let wpn = (&entities, &equipments, &slot)
         .join()
-        .filter(|(_, equip, slot)| slot.slot == EquipSlot::Weapon2 && equip.user == ent)
+        .filter(|(_, equip, slot)| slot.slot == wpn_slot && equip.user == ent)
         .map(|(ent, _, _)| ent)
         .last();
+
+    return wpn
+}
+
+/// Checks if ent can shoot a missile weapon, that is, if the weapon is selected and has ammo.
+fn can_shoot(ecs: &World, ent: Entity) -> bool {
+    let active_wpn = ecs.read_storage::<ActiveWeapon>(); 
+    let missile_wpn = ecs.read_storage::<MissileWeapon>(); 
+
+    let wpn = get_weapon(ecs, ent, EquipSlot::Weapon2);
 
     match wpn {
         Some(w) => {
@@ -253,9 +260,33 @@ pub fn switch_weapon(ecs: &mut World) -> RunState {
     RunState::Waiting
 }
 
-// TODO
 /// Reload ranged weapon.
-pub fn reload_weapon(_ecs: &mut World) {}
+pub fn reload_weapon(ecs: &mut World) -> RunState {
+    let player_ent = ecs.fetch::<Entity>();
+    let active_wpn = ecs.read_storage::<ActiveWeapon>(); 
+    let missile_wpn = ecs.read_storage::<MissileWeapon>(); 
+    let mut try_reload = ecs.write_storage::<TryReload>();
+
+    let wpn = get_weapon(ecs, *player_ent, EquipSlot::Weapon2);
+
+    match wpn {
+        Some(w) => {
+            if let Some(_t) = active_wpn.get(w) {
+                let ranged_wpn = missile_wpn.get(w).unwrap();
+                if ranged_wpn.ammo.ammo < ranged_wpn.ammo.max_ammo {
+                    try_reload
+                        .insert(*player_ent, TryReload { weapon: w })
+                        .expect("Reload insertion failed");
+                        return RunState::PlayerTurn;
+                } else {
+                    return RunState::Waiting;
+                }
+            }
+            return RunState::Waiting;
+        }
+        _ => return RunState::Waiting 
+    }
+}
 
 enum PossibleContexts {
     Nothing,

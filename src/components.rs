@@ -189,7 +189,7 @@ pub struct MeleeWeapon {
     pub class: MeleeWeaponClass,
 }
 
-#[derive(Debug, EnumString)]
+#[derive(Debug, EnumString, PartialEq)]
 pub enum AmmoType {
     Arrow,
     _32,
@@ -221,6 +221,11 @@ pub struct MissileWeapon {
 
 #[derive(Component)]
 pub struct ActiveWeapon {}
+
+#[derive(Component)]
+pub struct TryReload {
+    pub weapon: Entity,
+}
 
 #[derive(Component)]
 pub struct Target {

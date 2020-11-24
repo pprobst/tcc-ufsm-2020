@@ -9,7 +9,7 @@ use super::{
         ai::HostileAISystem, consumable::ConsumableSystem, damage::DamageSystem,
         equipment::EquipmentSystem, fov::FOVSystem, item_collect::ItemCollectSystem,
         item_drop::ItemDropSystem, mapping::MappingSystem, melee::MeleeSystem,
-        missile::MissileSystem,
+        missile::MissileSystem, weapon_reload::WeaponReloadSystem,
     },
     ui::menu::MenuSelection,
     SHOW_MAP,
@@ -71,6 +71,9 @@ impl State {
         let mut mapping = MappingSystem {};
         mapping.run_now(&self.ecs);
 
+        let mut reload = WeaponReloadSystem {};
+        reload.run_now(&self.ecs);
+        
         let mut melee = MeleeSystem {};
         melee.run_now(&self.ecs);
 

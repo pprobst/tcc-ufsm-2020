@@ -12,6 +12,7 @@ pub struct Item {
     pub equipable: Option<Equipable>,
     pub melee: Option<Melee>,
     pub missile: Option<Missile>,
+    pub ammunition: Option<Ammunition>,
     pub armor: Option<Armor>,
 }
 
@@ -35,6 +36,11 @@ pub struct Missile {
     pub max_ammo: i32,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct Ammunition {
+    pub ammo: i32,
+    pub ammo_type: String,
+}
 
 #[derive(Deserialize, Debug)]
 pub struct Armor {

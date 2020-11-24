@@ -1,7 +1,7 @@
 use super::{common::draw_list_items, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
 use crate::components::{
     ConsumeItem, DropItem, Equipable, Equipment, Inventory, InventoryCapacity, Name, SelectedItem,
-    TryEquip,
+    TryEquip, Ammunition,
 };
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
@@ -37,6 +37,7 @@ pub fn show_inventory(
     let player = ecs.fetch::<Entity>();
     let backpack = ecs.read_storage::<Inventory>();
     let inventory_cap = ecs.read_storage::<InventoryCapacity>();
+    let ammunition = ecs.read_storage::<Ammunition>();
     let entities = ecs.entities();
 
     let black = color("Background", 1.0);
@@ -64,13 +65,17 @@ pub fn show_inventory(
         .filter(|item| item.0.owner == *player)
     {
         let item_name = name.name.to_string();
-        *items.entry(item_name).or_insert(0) += 1;
+        let mut quant_to_add = 1;
+        if let Some(a) = ammunition.get(ent) {
+            quant_to_add = a.ammo as u32;
+        }
+        *items.entry(item_name).or_insert(0) += quant_to_add;
 
         if !items_vec.contains(&name.name.to_string()) {
             items_vec.push(name.name.to_string());
             items_ent.push(ent);
         }
-        item_count += 1;
+        if quant_to_add == 1 { item_count += 1 };
     }
 
     items_vec.sort();

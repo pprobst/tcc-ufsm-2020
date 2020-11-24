@@ -25,6 +25,7 @@
 
     /* Items and equipment. */
     items: [
+        // CONSUMABLES
         (
             name: "Med-Kit",
             descr: "A small package containing\ngeneral items for\nemergency first aid:\nbandages, medicinal herbs\nand assorted chemicals.",
@@ -41,6 +42,24 @@
                 },
             ),
         ),
+        // AMMO
+        (
+            name: ".32 Ammo Pack",
+            descr: "Ammunition for certain weapons.",
+            tier: 4,
+            renderable: (
+                glyph: '≡',
+                fg: "BrightYellow",
+                bg: "Background",
+                layer: 0,
+            ),
+            ammunition: (
+                ammo: 7,
+                ammo_type: "_32",
+            ),
+        ),
+
+        // MELEE WEAPONS
         (
             name: "Tantou",
             descr: "A guardless short sword.",
@@ -77,6 +96,7 @@
                 class: "axe"
             ),
         ),
+        // RANGED WEAPONS
         (
             name: "Revolver",
             descr: "Trusty firearm for the common drifter.",
@@ -98,6 +118,7 @@
                 max_ammo: 7,
             ),
         ),
+        // CLOTHING
         (
             name: "Filthy Rags",
             descr: "Stained pieces of fabric\nwith an indescribable odor\nthat can barely be\nconsidered clothing.",

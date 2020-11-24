@@ -8,3 +8,4 @@ pub mod item_drop;
 pub mod mapping;
 pub mod melee;
 pub mod missile;
+pub mod weapon_reload;

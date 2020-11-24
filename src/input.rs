@@ -59,7 +59,7 @@ pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
             VirtualKeyCode::I => return RunState::Inventory,
 
             // Reload ranged weapon.
-            VirtualKeyCode::R => reload_weapon(&mut gs.ecs),
+            VirtualKeyCode::R => return reload_weapon(&mut gs.ecs),
 
             VirtualKeyCode::Space => return context_action(&mut gs.ecs),
 
