@@ -2,12 +2,12 @@ use super::{common_structs, Raws};
 use crate::components::{
     Armor, BaseStats, Blocker, Consumable, Container, Description, EquipSlot, Equipable, Fov,
     Health, Item, MeleeWeapon, MeleeWeaponClass, MissileWeapon, MissileWeaponClass, Ammunition,
-    AmmoType, Mob, Name, Position, Renderable,
+    AmmoType, Mob, Name, Position, Renderable, Weapon,
 };
 use crate::map_gen::map::MapType;
 use crate::spawner::SpawnTable;
 use crate::utils::colors::color;
-use bracket_lib::prelude::{to_cp437, ColorPair, RandomNumberGenerator};
+use bracket_lib::prelude::{to_cp437, ColorPair, RandomNumberGenerator, parse_dice_string};
 use specs::prelude::*;
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -271,37 +271,55 @@ pub fn spawn_item(
             }
         }
         if let Some(melee) = &item.melee {
-            match melee.class.as_str() {
-                "dagger" => {
-                    ent = ent.with(MeleeWeapon {
-                        base_damage: melee.damage,
-                        class: MeleeWeaponClass::Dagger,
-                    })
+            if let Ok(dicetype) = parse_dice_string(&melee.damage) {
+                let weapon_stats = Weapon {
+                    base_damage: melee.damage.to_string(),
+                    dice_n: dicetype.n_dice,
+                    dice_faces: dicetype.die_type,
+                    dice_bonus: dicetype.bonus,
+                    range: 0,
+                };
+                match melee.class.as_str() {
+                    "dagger" => {
+                        ent = ent.with(MeleeWeapon {
+                            stats: weapon_stats,
+                            class: MeleeWeaponClass::Dagger,
+                        })
+                    }
+                    "axe" => {
+                        ent = ent.with(MeleeWeapon {
+                            stats: weapon_stats,
+                            class: MeleeWeaponClass::Axe,
+                        })
+                    }
+                    _ => return None,
                 }
-                "axe" => {
-                    ent = ent.with(MeleeWeapon {
-                        base_damage: melee.damage,
-                        class: MeleeWeaponClass::Axe,
-                    })
-                }
-                _ => return None,
             }
         }
         if let Some(missile) = &item.missile {
-            match missile.class.as_str() {
-                "pistol" => {
-                    ent = ent.with(MissileWeapon {
-                        base_damage: missile.damage,
-                        range: missile.range,
-                        class: MissileWeaponClass::Pistol,
-                        ammo: Ammunition {
-                           max_ammo: missile.max_ammo,
-                           ammo: missile.max_ammo,
-                           ammo_type: AmmoType::from_str(&missile.ammo_type).unwrap(),
-                        }
-                    })
+            if let Ok(dicetype) = parse_dice_string(&missile.damage) {
+                let weapon_stats = Weapon {
+                    base_damage: missile.damage.to_string(),
+                    dice_n: dicetype.n_dice,
+                    dice_faces: dicetype.die_type,
+                    dice_bonus: dicetype.bonus,
+                    range: 0,
+                };
+ 
+                match missile.class.as_str() {
+                    "pistol" => {
+                        ent = ent.with(MissileWeapon {
+                            stats: weapon_stats,
+                            class: MissileWeaponClass::Pistol,
+                            ammo: Ammunition {
+                                max_ammo: missile.max_ammo,
+                                ammo: missile.max_ammo,
+                                ammo_type: AmmoType::from_str(&missile.ammo_type).unwrap(),
+                            }
+                        })
+                    }
+                    _ => return None,
                 }
-                _ => return None,
             }
         }
         if let Some(ammo) = &item.ammunition {

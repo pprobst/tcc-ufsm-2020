@@ -74,7 +74,7 @@
                 slot: "weapon1",
             ),
             melee: (
-                damage: 5,
+                damage: "1d4",
                 class: "dagger"
             ),
         ),
@@ -92,7 +92,7 @@
                 slot: "weapon1",
             ),
             melee: (
-                damage: 3,
+                damage: "1d3",
                 class: "axe"
             ),
         ),
@@ -111,7 +111,7 @@
                 slot: "weapon2",
             ),
             missile: (
-                damage: 5,
+                damage: "1d5",
                 range: 8,
                 class: "pistol",
                 ammo_type: "_32",
@@ -242,7 +242,7 @@
                 hp: 7,
                 max_hp: 7,
                 attack: 2,
-                defense: 3,
+                defense: 1,
             ),
             equips: (
                 weapons: ["None", "Flint Axe"],
@@ -267,7 +267,7 @@
                 hp: 5,
                 max_hp: 5,
                 attack: 2,
-                defense: 2,
+                defense: 0,
             ),
         ),
         (

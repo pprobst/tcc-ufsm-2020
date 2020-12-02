@@ -23,13 +23,13 @@ pub struct Consumable {
 
 #[derive(Deserialize, Debug)]
 pub struct Melee {
-    pub damage: i32,
+    pub damage: String,
     pub class: String,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Missile {
-    pub damage: i32,
+    pub damage: String,
     pub range: i32,
     pub class: String,
     pub ammo_type: String,

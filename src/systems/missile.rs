@@ -1,4 +1,5 @@
 use crate::components::{BaseStats, MissileAttack, MissileWeapon, Equipment, ActiveWeapon, Name, SufferDamage};
+use bracket_lib::prelude::RandomNumberGenerator;
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -24,12 +25,13 @@ impl<'a> System<'a> for MissileSystem {
         WriteStorage<'a, MissileWeapon>,
         ReadExpect<'a, Entity>,
         WriteExpect<'a, Log>,
+        WriteExpect<'a, RandomNumberGenerator>,
         ReadStorage<'a, Name>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, base_stats, equipment, active_wpn, mut missile_attack, mut do_damage, mut missile_wpns, player, mut log, names) =
-            data;
+        let (entities, base_stats, equipment, active_wpn, mut missile_attack, mut do_damage, mut missile_wpns, 
+             player, mut log, mut rng, names) = data;
         let white = color("BrightWhite", 1.0);
 
         for (entity, missile, attacker_stats, name) in
@@ -40,9 +42,11 @@ impl<'a> System<'a> for MissileSystem {
             let victim_hp = victim_stats.health.hp;
 
             if attacker_hp > 0 && victim_hp > 0 {
-                for(_active_wpn, missile_wpn, equip, name_wpn) in (&active_wpn, &mut missile_wpns, &equipment, &names).join() {
+                for (_active_wpn, missile_wpn, equip, name_wpn) in (&active_wpn, &mut missile_wpns, &equipment, &names).join() {
                     if equip.user == entity && missile_wpn.ammo.ammo > 0 {
-                        let damage = i32::max(0, missile_wpn.base_damage - victim_stats.defense);
+                        let wpn_stats = &missile_wpn.stats;
+                        let total_intended_damage = rng.roll_dice(wpn_stats.dice_n, wpn_stats.dice_faces) + wpn_stats.dice_bonus;
+                        let damage = i32::max(0, total_intended_damage - victim_stats.defense);
                         missile_wpn.ammo.ammo -= 1;
                         let victim_name = names.get(missile.target).unwrap();
                         log.add(
@@ -53,6 +57,7 @@ impl<'a> System<'a> for MissileSystem {
                             white,
                         );
                         SufferDamage::add_damage(&mut do_damage, missile.target, damage, entity == *player);
+                        break;
                     } else {
                         if entity == *player {
                             log.add(

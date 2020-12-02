@@ -40,7 +40,7 @@ fn main() -> BError {
     link_resource!(FONT01, "resources/Sapphos-square-16x16.png");
     link_resource!(FONT02, "resources/Anikki-square-16x16.png");
 
-    let mut term = BTermBuilder::new()
+    let term = BTermBuilder::new()
         .with_dimensions(WINDOW_WIDTH, WINDOW_HEIGHT)
         .with_title("TCC")
         .with_tile_dimensions(TILE_WIDTH, TILE_HEIGHT)
@@ -74,6 +74,7 @@ fn main() -> BError {
     world.register::<SufferDamage>();
     world.register::<MeleeAttack>();
     world.register::<MissileAttack>();
+    world.register::<Weapon>();
     world.register::<MeleeWeapon>();
     world.register::<MissileWeapon>();
     world.register::<Ammunition>();
@@ -105,6 +106,8 @@ fn main() -> BError {
     game_state
         .ecs
         .insert(map_gen::Map::new(height, width, TileType::Floor, None));
+
+    game_state.ecs.insert(RandomNumberGenerator::new());
 
     let map = game_state.generate_new_map(height, width);
     game_state.ecs.insert(Point::new(0, 0));

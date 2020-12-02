@@ -184,8 +184,17 @@ pub enum MeleeWeaponClass {
 }
 
 #[derive(Component)]
+pub struct Weapon {
+    pub base_damage: String,
+    pub dice_n: i32,
+    pub dice_faces: i32,
+    pub dice_bonus: i32,
+    pub range: i32,
+}
+
+#[derive(Component)]
 pub struct MeleeWeapon {
-    pub base_damage: i32, // special effect?
+    pub stats: Weapon,
     pub class: MeleeWeaponClass,
 }
 
@@ -213,8 +222,7 @@ pub enum MissileWeaponClass {
 
 #[derive(Component)]
 pub struct MissileWeapon {
-    pub base_damage: i32,
-    pub range: i32, // Influence on misses
+    pub stats: Weapon,
     pub class: MissileWeaponClass,
     pub ammo: Ammunition,
 }

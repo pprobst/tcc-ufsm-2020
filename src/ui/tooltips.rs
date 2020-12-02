@@ -1,5 +1,5 @@
 use super::{common::Popup, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{Armor, BaseStats, Description, Item, MeleeWeapon, Name, Position};
+use crate::components::{Armor, BaseStats, Description, Item, MeleeWeapon, MissileWeapon, Name, Position};
 use crate::map_gen::Map;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -31,6 +31,7 @@ pub fn show_tooltip(
     let positions = ecs.read_storage::<Position>();
     let stats = ecs.read_storage::<BaseStats>();
     let melee = ecs.read_storage::<MeleeWeapon>();
+    let missile = ecs.read_storage::<MissileWeapon>();
     let armor = ecs.read_storage::<Armor>();
     let item = ecs.read_storage::<Item>();
     let entities = ecs.entities();
@@ -46,7 +47,10 @@ pub fn show_tooltip(
                 ttip.add(format!("\nHP: {}", s.health.hp));
             }
             if let Some(m) = melee.get(ent) {
-                ttip.add(format!("\n{:?}\n\nDMG: {}", m.class, m.base_damage));
+                ttip.add(format!("\n{:?}\n\nDMG: {}", m.class, m.stats.base_damage));
+            }
+            if let Some(m) = missile.get(ent) {
+                ttip.add(format!("\n{:?}\n\nDMG: {}", m.class, m.stats.base_damage));
             }
             if let Some(a) = armor.get(ent) {
                 ttip.add(format!("\nDEF: {}", a.defense));
