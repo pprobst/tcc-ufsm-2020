@@ -128,6 +128,15 @@ pub struct Fov {
 pub struct Blocker {}
 
 #[derive(Component, Debug)]
+pub struct Attack {
+    pub base_damage: String,
+    pub dice_n: i32,
+    pub dice_faces: i32,
+    pub dice_bonus: i32,
+    pub range: i32,
+}
+
+#[derive(Component, Debug)]
 pub struct Health {
     pub max_hp: i32,
     pub hp: i32,
@@ -137,7 +146,7 @@ pub struct Health {
 pub struct BaseStats {
     pub health: Health,
     pub defense: i32,
-    pub attack: i32,
+    pub attack: Attack,
     pub god: bool, // Doesn't die
 }
 
@@ -184,17 +193,8 @@ pub enum MeleeWeaponClass {
 }
 
 #[derive(Component)]
-pub struct Weapon {
-    pub base_damage: String,
-    pub dice_n: i32,
-    pub dice_faces: i32,
-    pub dice_bonus: i32,
-    pub range: i32,
-}
-
-#[derive(Component)]
 pub struct MeleeWeapon {
-    pub stats: Weapon,
+    pub stats: Attack,
     pub class: MeleeWeaponClass,
 }
 
@@ -222,7 +222,7 @@ pub enum MissileWeaponClass {
 
 #[derive(Component)]
 pub struct MissileWeapon {
-    pub stats: Weapon,
+    pub stats: Attack,
     pub class: MissileWeaponClass,
     pub ammo: Ammunition,
 }

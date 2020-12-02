@@ -2,7 +2,7 @@ use super::{common_structs, Raws};
 use crate::components::{
     Armor, BaseStats, Blocker, Consumable, Container, Description, EquipSlot, Equipable, Fov,
     Health, Item, MeleeWeapon, MeleeWeaponClass, MissileWeapon, MissileWeaponClass, Ammunition,
-    AmmoType, Mob, Name, Position, Renderable, Weapon,
+    AmmoType, Mob, Name, Position, Renderable, Attack,
 };
 use crate::map_gen::map::MapType;
 use crate::spawner::SpawnTable;
@@ -272,7 +272,7 @@ pub fn spawn_item(
         }
         if let Some(melee) = &item.melee {
             if let Ok(dicetype) = parse_dice_string(&melee.damage) {
-                let weapon_stats = Weapon {
+                let weapon_stats = Attack {
                     base_damage: melee.damage.to_string(),
                     dice_n: dicetype.n_dice,
                     dice_faces: dicetype.die_type,
@@ -298,7 +298,7 @@ pub fn spawn_item(
         }
         if let Some(missile) = &item.missile {
             if let Ok(dicetype) = parse_dice_string(&missile.damage) {
-                let weapon_stats = Weapon {
+                let weapon_stats = Attack {
                     base_damage: missile.damage.to_string(),
                     dice_n: dicetype.n_dice,
                     dice_faces: dicetype.die_type,
@@ -399,13 +399,30 @@ pub fn spawn_mob(
         if mob.blocker {
             ent = ent.with(Blocker {});
         }
+
+        let mut attack_stats = Attack {
+            base_damage: "1d3".to_string(),
+            dice_n: 1,
+            dice_faces: 3,
+            dice_bonus: 1,
+            range: 0,
+        };
+
+        if let Ok(dicetype) = parse_dice_string(&mob.stats.attack) {
+            attack_stats.base_damage = mob.stats.attack.to_string();
+            attack_stats.dice_n = dicetype.n_dice;
+            attack_stats.dice_faces = dicetype.die_type;
+            attack_stats.dice_bonus = dicetype.bonus;
+            attack_stats.range = mob.stats.attack_range;
+        } 
+
         ent = ent.with(BaseStats {
             health: Health {
                 max_hp: mob.stats.max_hp,
                 hp: mob.stats.hp,
             },
             defense: mob.stats.defense,
-            attack: mob.stats.attack,
+            attack: attack_stats,
             god: false,
         });
 

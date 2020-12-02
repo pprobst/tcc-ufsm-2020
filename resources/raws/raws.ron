@@ -241,7 +241,8 @@
             stats: (
                 hp: 7,
                 max_hp: 7,
-                attack: 2,
+                attack: "1d3+1",
+                attack_range: 0,
                 defense: 1,
             ),
             equips: (
@@ -266,7 +267,8 @@
             stats: (
                 hp: 5,
                 max_hp: 5,
-                attack: 2,
+                attack: "1d2+1",
+                attack_range: 0,
                 defense: 0,
             ),
         ),
@@ -287,7 +289,8 @@
             stats: (
                 hp: 3,
                 max_hp: 3,
-                attack: 0,
+                attack: "1d1",
+                attack_range: 0,
                 defense: 0,
             ),
         ),

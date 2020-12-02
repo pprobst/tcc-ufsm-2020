@@ -70,11 +70,11 @@ fn main() -> BError {
     world.register::<Fov>();
     world.register::<Blocker>();
     world.register::<Health>();
+    world.register::<Attack>();
     world.register::<BaseStats>();
     world.register::<SufferDamage>();
     world.register::<MeleeAttack>();
     world.register::<MissileAttack>();
-    world.register::<Weapon>();
     world.register::<MeleeWeapon>();
     world.register::<MissileWeapon>();
     world.register::<Ammunition>();

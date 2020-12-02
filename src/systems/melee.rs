@@ -63,11 +63,15 @@ impl<'a> System<'a> for MeleeSystem {
                     }
                 }
                 if !has_weapon_equipped {
-                    let damage = i32::max(0, attacker_stats.attack - victim_stats.defense);
+                    let attack = &attacker_stats.attack;
+                    let total_intended_damage = rng.roll_dice(attack.dice_n, attack.dice_faces) + attack.dice_bonus;
+                    let damage = i32::max(0, total_intended_damage - victim_stats.defense);
+                    let physical_attack_names = vec!["hits", "bumps into", "bites", "kicks", "punches", "violates", "harms", "assaults", "attacks",
+                                                 "hurts", "spanks", "strikes", "beats up", "slams", "slaps", "jumps on"];
                     log.add(
                         format!(
-                            "{} hits {} for {} hp!",
-                            &name.name, &victim_name.name, damage
+                            "{} {} {} for {} hp!",
+                            &name.name, rng.random_slice_entry(&physical_attack_names).unwrap(), &victim_name.name, damage
                         ),
                         white,
                     );

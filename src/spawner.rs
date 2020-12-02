@@ -3,7 +3,8 @@ use super::{
     raws::*,
     utils::colors::*,
     BaseStats, Contained, Container, Description, Equipment, Fov, Health, Inventory,
-    InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable, ActiveWeapon
+    InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable, ActiveWeapon,
+    Attack
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -98,7 +99,13 @@ pub fn create_player(ecs: &mut World) -> Entity {
         .with(BaseStats {
             health: Health { max_hp: 15, hp: 2 },
             defense: 3,
-            attack: 6,
+            attack: Attack {
+                base_damage: "1d3".to_string(),
+                dice_n: 1,
+                dice_faces: 3,
+                dice_bonus: 0,
+                range: 0,
+            },
             god: true,
         })
         .with(InventoryCapacity { curr: 0, max: 15 })
