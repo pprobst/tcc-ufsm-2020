@@ -1,5 +1,16 @@
 # tcc-ufsm-2020
-This is the repository for my bachelor's degree final project (UFSM).
+**(EN-US)** This is the repository for my bachelor's degree final project at [UFSM](https://www.ufsm.br/): a game
+prototype made to explore the Entity-Component-System (ECS) architecture and procedural dungeon generation.
+While the game is not fully playable (or even enjoyable) at the moment, it
+fulfills my expectations. A more profound development will occur independently in another
+repository, after my graduation.
+
+**(PT-BR)** Este é o repositório do meu trabalho de conclusão de curso (TCC) na [UFSM](https://www.ufsm.br/): um
+protótipo de jogo elaborado para explorar a arquitetura *Entity-Component-System* (ECS) e
+geração procedural de *dungeons*.
+Embora o jogo não seja totalmente jogável (ou mesmo divertido) no momento,
+ele cumpre minhas expectativas. Um desenvolvimento mais aprofundado ocorrerá de forma independente
+em outro repositório, após a minha graduação.
 
 ## Wait! I read your article from SBGames 2020! Where do I go?
 [/src/map_gen/](https://github.com/pprobst/tcc-ufsm-2020/tree/master/src/map_gen) contains all the algorithms presented in the article. They're
@@ -28,12 +39,12 @@ Tell me if you have any problems.
 ## Objetivos principais (TCC)
 Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
 - [x] Estruturar o básico do básico do [bracket-lib](https://github.com/thebracket/bracket-lib) 
-  (RLTK);
+  (RLTK) + [specs](https://github.com/amethyst/specs/), utilizando o tutorial desenvolvido por Wolverson como base;
 - [x] Movimento do jogador @;
 - [x] Estrutura básica de um mapa;
 - [x] Arquivo separado para a renderização do mapa e das entidades;
 - [x] Sistema de FOV (_field-of-view_);
-- [x] Câmera/viewport;
+- [x] Câmera/viewport (divergências começam aqui);
 - [x] Implementar uma UI básica e aproveitar para aprimorar os estados de jogo (game states);
 - [x] Mobs e estrutura básica do sistema de combate;
 - [x] Alguns métodos construtivos de geração de mapas:
@@ -68,12 +79,16 @@ alterar/aprimorar itens da checklist já marcados. Isso é um processo natural;
 considere que itens marcados já possuem a _estrutura básica_ concluída. 
 
 ## Problemas conhecidos, etc.
+- O sistema de spawning está longe do adequado.
 - Distorção dos tiles dependendo da resolução.
-    - TODO: ajustar tamanho do tile de acordo com a resolução do usuário.
+- Alguns crashes ocorrem de vez em quando na etapa de geração de mapas.
+    - Causa provável: acesso ao índice 0 do mapa (não utilizado).
+- Por enquanto, o WFC não reinicia quando há contradição (raro de acontecer). 
 
 ## Contribuições
 Se você tiver alguma boa ideia ou sugestão, sinta-se livre para abrir um 
 [_issue_](https://github.com/pprobst/tcc-ufsm-2020/issues/new).
 
 ## Referências e inspirações
-Em breve.
+Veja o arquivo da minha monografia para a lista de referências. Outros projetos do GitHub que tiveram
+porções de código utilizadas (ou que serviram de base para algo) estão referenciados em forma de comentários nos arquivos de código relevantes.
