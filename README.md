@@ -25,7 +25,7 @@ Tell me if you have any problems.
 
 ---
 
-## Main Quest
+## Objetivos principais (TCC)
 Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
 - [x] Estruturar o básico do básico do [bracket-lib](https://github.com/thebracket/bracket-lib) 
   (RLTK);
@@ -48,7 +48,6 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
   - [x] Carregar mapa externo desenhado manualmente;
   - [x] Aplicar WFC sobre o mapa atual;
   - [x] Assegurar conectividade pelo método do flood-fill (CA);
-  - [ ] Melhoramentos (e.g. wrapping, ?), etc. 
 - [x] Inserção de estruturas pré-fabricadas no mapa;
 - [x] Temáticas diferentes de mapas:
     - [x] TDCL (top-down cavern-like);
@@ -67,22 +66,6 @@ Ou, _"seria bom se eu fizesse tudo isso!_". Ordem de prioridade, mais ou menos.
 Naturalmente, à medida que vou desenvolvendo posso ter de 
 alterar/aprimorar itens da checklist já marcados. Isso é um processo natural;
 considere que itens marcados já possuem a _estrutura básica_ concluída. 
-
-###  Sidequests
-Objetivos opcionais. Provavelmente não serão realizados no momento, mas de
-qualquer forma serão inseridos no futuro.
-- [x] Sistema de spawning;
-- [ ] Combate melhorado (e.g. torná-lo estocástico);
-    - [ ] Também aplicar bônus dos equipamentos, que por enquanto não fazem
-      nada.
-- [ ] IA relativamente avançada para os mobs.
-- [ ] Narrativa procedural;
-- [ ] Itens únicos com efeitos aleatórios;
-- [ ] Sistema de partículas;
-- [ ] Expandir o log;
-- [ ] Refatoração no código da UI;
-- [ ] Salvar e carregar o jogo.
-- [ ] Narrativa procedural;
 
 ## Problemas conhecidos, etc.
 - Distorção dos tiles dependendo da resolução.
