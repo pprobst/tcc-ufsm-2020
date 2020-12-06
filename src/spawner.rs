@@ -2,9 +2,10 @@ use super::{
     map_gen::{Map, MapType},
     raws::*,
     utils::colors::*,
+    common::is_weapon,
     BaseStats, Contained, Container, Description, Equipment, Fov, Health, Inventory,
     InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable, ActiveWeapon,
-    Attack
+    Attack,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -20,7 +21,7 @@ use std::collections::HashMap;
 
 // Some of this stuff is based on https://github.com/tylervipond/apprentice/blob/master/src/spawner.rs
 
-const MAX_MOBS_AREA: i32 = 12;
+const MAX_MOBS_AREA: i32 = 8;
 
 #[derive(Debug)]
 pub struct Spawn {
@@ -211,6 +212,7 @@ fn equip_mobs(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator
     let mobs = get_all_named_mobs(ecs);
 
     for mob in mobs {
+        let mut equipped = false;
         if let Some(equips) = get_random_possible_equips(&mob.1, raws, rng) {
             for equip in equips.iter() {
                 if equip != "None" {
@@ -225,6 +227,15 @@ fn equip_mobs(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator
                                 },
                             )
                             .expect("FAILED to equip item.");
+
+                        if !equipped && is_weapon(&ecs, e) {
+                            let mut active_weapon = ecs.write_storage::<ActiveWeapon>();
+                            active_weapon
+                                .insert(e, ActiveWeapon{})
+                                .expect("Insert fail");
+                            equipped = true;
+                        }
+
                         // For simplicity's sake, mobs will have a clone of the item they're
                         // equipping in their inventory, so as to make their remains' drop more
                         // generic --  this is not the case for the player. Mobs don't really

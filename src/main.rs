@@ -1,6 +1,7 @@
 use bracket_lib::prelude::*;
 use specs::prelude::*;
 
+mod common;
 mod state;
 use state::{RunState, State};
 mod components;
