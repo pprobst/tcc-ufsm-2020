@@ -292,6 +292,15 @@ impl<'a> Renderer<'a> {
                             *write_state = RunState::MobTurn;
                         }
                     }
+                    RunState::Equipment => {
+                        let equip_result =
+                            equipment::show_equipment(self.ecs, self.term, draw_batch);
+                        if equip_result == equipment::EquipmentResult::Cancel {
+                            *write_state = RunState::Running;
+                        } else if equip_result == equipment::EquipmentResult::Select {
+                            *write_state = RunState::ItemUse;
+                        }
+                    }
                     RunState::AccessContainer => {
                         let container_result =
                             container::show_container(self.ecs, self.term, draw_batch);

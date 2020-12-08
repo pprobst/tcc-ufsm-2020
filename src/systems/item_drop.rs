@@ -1,4 +1,4 @@
-use crate::components::{DropItem, Inventory, InventoryCapacity, Name, Position};
+use crate::components::{DropItem, Inventory, InventoryCapacity, Name, Position, TryUnequip, Equipment};
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -18,6 +18,7 @@ impl<'a> System<'a> for ItemDropSystem {
         ReadExpect<'a, Entity>,
         ReadStorage<'a, Name>,
         WriteExpect<'a, Log>,
+        WriteStorage<'a, TryUnequip>,
         WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, DropItem>,
@@ -25,7 +26,7 @@ impl<'a> System<'a> for ItemDropSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, name, mut log, mut capacity, mut pos, mut drop, mut inventory) = data;
+        let (player, name, mut log, mut unequip_item, mut capacity, mut pos, mut drop, mut inventory) = data;
         let white = color("BrightWhite", 1.0);
 
         let mut inventory_cap = capacity.get_mut(*player).unwrap();
@@ -33,17 +34,38 @@ impl<'a> System<'a> for ItemDropSystem {
             let drop_pos = pos.get(d.dropper).unwrap().clone();
             pos.insert(d.item, Position::new(drop_pos.x, drop_pos.y))
                 .expect("Unable to insert position");
-            inventory.remove(d.item);
 
             if d.dropper == *player {
                 if inventory_cap.curr > 0 {
                     inventory_cap.curr -= 1;
                 }
+                unequip_item
+                    .insert(
+                        *player,
+                        TryUnequip {
+                            equipment: {
+                                Equipment {
+                                    user: *player,
+                                    equip: d.item,
+                                }
+                            },
+                        },
+                    )
+                    .expect("FAILED to unequip item.");
+                /*
+                if let Some(_t) = active_wpn.get(d.item) {
+                    active_wpn.clear();
+                }
+                if let Some(_e) = equipable.get(d.item) {
+                    equips.remove(d.item);
+                }
+                */
                 log.add(
                     format!("You drop the {}", name.get(d.item).unwrap().name),
                     white,
                 );
             }
+            inventory.remove(d.item);
         }
         drop.clear();
     }

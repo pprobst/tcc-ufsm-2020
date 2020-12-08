@@ -58,6 +58,9 @@ pub fn player_input(gs: &mut State, term: &mut BTerm) -> RunState {
             // Access inventory.
             VirtualKeyCode::I => return RunState::Inventory,
 
+            // Equipment management.
+            VirtualKeyCode::E => return RunState::Equipment,
+
             // Reload ranged weapon.
             VirtualKeyCode::R => return reload_weapon(&mut gs.ecs),
 

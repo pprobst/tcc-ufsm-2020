@@ -85,6 +85,7 @@ fn main() -> BError {
     world.register::<Equipable>();
     world.register::<Equipment>();
     world.register::<TryEquip>();
+    world.register::<TryUnequip>();
     world.register::<Item>();
     world.register::<Armor>();
     world.register::<Consumable>();

@@ -1,7 +1,7 @@
-use super::{common::draw_list_items, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
+use super::{common::draw_list_items, common::draw_named_box, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
 use crate::components::{
     ConsumeItem, DropItem, Equipable, Equipment, Inventory, InventoryCapacity, Name, SelectedItem,
-    TryEquip, Ammunition,
+    TryEquip, Ammunition, TryUnequip
 };
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
@@ -48,13 +48,6 @@ pub fn show_inventory(
     let w = X - X_OFFSET - 10;
     let h = Y - Y_OFFSET - 25;
 
-    draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
-    draw_batch.fill_region(
-        Rect::with_size(x1 + 1, y1 + 1, w - 2, h - 2),
-        ColorPair::new(black, black),
-        ' ' as u16,
-    );
-
     let mut items: HashMap<String, u32> = HashMap::new();
     let mut items_vec: Vec<String> = Vec::new();
     let mut items_ent: Vec<Entity> = Vec::new();
@@ -87,11 +80,7 @@ pub fn show_inventory(
             .cmp(&names.get(*b).unwrap().name)
     });
 
-    draw_batch.print_color(
-        Point::new(w - 5, y1),
-        "·INVENTORY·",
-        ColorPair::new(gray, black),
-    );
+    draw_named_box("·INVENTORY·", x1, y1, w, h, draw_batch);
 
     draw_list_items(&items, &items_vec, x1, y1, w, draw_batch);
 
@@ -159,12 +148,24 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
     let w = i32::max(15, item.1.name.len() as i32 + 1);
     let h = 5; // Number of lines + 1
 
-    draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
-    draw_batch.fill_region(
-        Rect::with_size(x1 + 1, y1 + 1, w - 2, h - 2),
-        ColorPair::new(black, black),
-        ' ' as u16,
-    );
+    match is_equip {
+        None => {
+            draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
+            draw_batch.fill_region(
+                Rect::with_size(x1 + 1, y1 + 1, w - 2, h - 2),
+                ColorPair::new(black, black),
+                ' ' as u16,
+            );
+        },
+        _ => {
+            draw_batch.draw_box(Rect::with_size(x1, y1, w + 2, h + 1), ColorPair::new(gray, black));
+            draw_batch.fill_region(
+                Rect::with_size(x1 + 1, y1 + 1, w, h - 2),
+                ColorPair::new(black, black),
+                ' ' as u16,
+            );
+        }
+    }
 
     draw_batch.print_color(
         Point::new(x1 + 1, y1 + 1),
@@ -204,6 +205,19 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
         format!(") Drop item."),
         ColorPair::new(white, black),
     );
+
+    if let Some(_e) = is_equip {
+        draw_batch.set(
+            Point::new(x1 + 1, y1 + 5),
+            ColorPair::new(white, black),
+            117 as FontCharType,
+        );
+        draw_batch.print_color(
+            Point::new(x1 + 2, y1 + 5),
+            format!(") Unequip item."),
+            ColorPair::new(white, black),
+        );
+    }
 
     match term.key {
         None => InventoryResult::Idle,
@@ -259,7 +273,27 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
                 selected_item.clear();
                 InventoryResult::UseItem
             }
-            _ => InventoryResult::Idle,
-        },
+            VirtualKeyCode::U => {
+                if let Some(_e) = is_equip {
+                    let mut unequip_item = ecs.write_storage::<TryUnequip>();
+                    unequip_item
+                        .insert(
+                            *player_ent,
+                            TryUnequip {
+                            equipment: {
+                                Equipment {
+                                    user: *player_ent,
+                                    equip: item.0.item,
+                                }
+                            },
+                        },
+                    )
+                    .expect("FAILED to unequip item.");
+                    selected_item.clear();
+                    InventoryResult::DropItem
+                } else { InventoryResult::Idle }
+            }
+            _ => { InventoryResult::Idle }
+        }
     }
 }

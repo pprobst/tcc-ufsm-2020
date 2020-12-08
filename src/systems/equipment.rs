@@ -1,4 +1,4 @@
-use crate::components::{Equipable, Equipment, Inventory, InventoryCapacity, Name, TryEquip, ActiveWeapon};
+use crate::components::{Equipable, Equipment, Inventory, InventoryCapacity, Name, TryEquip, TryUnequip, ActiveWeapon};
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -23,6 +23,7 @@ impl<'a> System<'a> for EquipmentSystem {
         WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, Inventory>,
         WriteStorage<'a, TryEquip>,
+        WriteStorage<'a, TryUnequip>,
         WriteStorage<'a, ActiveWeapon>,
     );
 
@@ -36,6 +37,7 @@ impl<'a> System<'a> for EquipmentSystem {
             mut capacity,
             mut inventory,
             mut try_equip,
+            mut try_unequip,
             mut active_wpn,
         ) = data;
 
@@ -90,5 +92,26 @@ impl<'a> System<'a> for EquipmentSystem {
         }
 
         try_equip.clear();
+
+        for e in try_unequip.join() {
+            let to_unequip = e.equipment.equip;
+            if let Some(_t) = active_wpn.get(to_unequip) {
+                active_wpn.clear();
+            }
+            if let Some(_e) = equipable.get(to_unequip) {
+                equips.remove(to_unequip);
+                inventory
+                    .insert(
+                        to_unequip,
+                        Inventory {
+                            owner: *player,
+                        },
+                    )
+                    .expect("FAILED inserting item in inventory.");
+                inventory_cap.curr += 1;
+            }
+        }
+
+        try_unequip.clear();
     }
 }

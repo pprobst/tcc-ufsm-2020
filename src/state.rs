@@ -35,6 +35,7 @@ pub enum RunState {
     Targeting,
     ChooseActionDir,
     Inventory,
+    Equipment,
     ItemUse,
     AccessContainer,
     Mapgen,
@@ -205,6 +206,9 @@ impl GameState for State {
             RunState::Inventory => {
                 curr_state = RunState::Inventory;
                 // Will change state on rendering (messy, but sometimes we just need things to work).
+            }
+            RunState::Equipment => {
+                curr_state = RunState::Equipment;
             }
             RunState::ItemUse => {
                 curr_state = RunState::ItemUse;

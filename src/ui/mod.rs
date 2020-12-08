@@ -4,6 +4,7 @@ mod common;
 pub mod container;
 pub mod hud;
 pub mod inventory;
+pub mod equipment;
 pub mod menu;
 pub mod popup;
 pub mod tooltips;

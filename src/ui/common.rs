@@ -128,3 +128,46 @@ pub fn draw_list_items(
         y += 1;
     }
 }
+
+pub fn draw_list(list: Vec<String>, x1: i32, y1: i32, w: i32, draw_batch: &mut DrawBatch) {
+    let black = color("Background", 1.0);
+    let white = color("White", 1.0);
+    let mut i = 0;
+    let mut y = y1 + 1;
+
+    for l in list.iter() {
+        draw_batch.set(
+            Point::new(x1 + 1, y),
+            ColorPair::new(white, black),
+            97 + i as FontCharType,
+        );
+        draw_batch.print_color(
+            Point::new(x1 + 2, y),
+            //format!(") {}", &item.0),
+            format!(") {}", l),
+            ColorPair::new(white, black),
+        );
+        i += 1;
+        y += 1;
+    }
+
+}
+
+
+pub fn draw_named_box(text: &str, x1: i32, y1: i32, w: i32, h: i32, draw_batch: &mut DrawBatch) {
+    let black = color("Background", 1.0);
+    let gray = color("BrightBlack", 1.0);
+
+    draw_batch.draw_box(Rect::with_size(x1, y1, w, h), ColorPair::new(gray, black));
+    draw_batch.fill_region(
+        Rect::with_size(x1 + 1, y1 + 1, w - 2, h - 2),
+        ColorPair::new(black, black),
+        ' ' as u16,
+    );
+
+    draw_batch.print_color(
+        Point::new(w - 5, y1),
+        text,
+        ColorPair::new(gray, black),
+    );
+}
