@@ -1,7 +1,10 @@
-use super::{common::draw_list_items, common::draw_named_box, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
+use super::{
+    common::draw_list_items, common::draw_named_box, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET,
+    Y_OFFSET,
+};
 use crate::components::{
-    ConsumeItem, DropItem, Equipable, Equipment, Inventory, InventoryCapacity, Name, SelectedItem,
-    TryEquip, Ammunition, TryUnequip
+    Ammunition, ConsumeItem, DropItem, Equipable, Equipment, Inventory, InventoryCapacity, Name,
+    SelectedItem, TryEquip, TryUnequip,
 };
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
@@ -68,7 +71,9 @@ pub fn show_inventory(
             items_vec.push(name.name.to_string());
             items_ent.push(ent);
         }
-        if quant_to_add == 1 { item_count += 1 };
+        if quant_to_add == 1 {
+            item_count += 1
+        };
     }
 
     items_vec.sort();
@@ -156,9 +161,12 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
                 ColorPair::new(black, black),
                 ' ' as u16,
             );
-        },
+        }
         _ => {
-            draw_batch.draw_box(Rect::with_size(x1, y1, w + 2, h + 1), ColorPair::new(gray, black));
+            draw_batch.draw_box(
+                Rect::with_size(x1, y1, w + 2, h + 1),
+                ColorPair::new(gray, black),
+            );
             draw_batch.fill_region(
                 Rect::with_size(x1 + 1, y1 + 1, w, h - 2),
                 ColorPair::new(black, black),
@@ -280,20 +288,22 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
                         .insert(
                             *player_ent,
                             TryUnequip {
-                            equipment: {
-                                Equipment {
-                                    user: *player_ent,
-                                    equip: item.0.item,
-                                }
+                                equipment: {
+                                    Equipment {
+                                        user: *player_ent,
+                                        equip: item.0.item,
+                                    }
+                                },
                             },
-                        },
-                    )
-                    .expect("FAILED to unequip item.");
+                        )
+                        .expect("FAILED to unequip item.");
                     selected_item.clear();
                     InventoryResult::DropItem
-                } else { InventoryResult::Idle }
+                } else {
+                    InventoryResult::Idle
+                }
             }
-            _ => { InventoryResult::Idle }
-        }
+            _ => InventoryResult::Idle,
+        },
     }
 }

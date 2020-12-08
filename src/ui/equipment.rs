@@ -1,7 +1,9 @@
-use super::{common::draw_named_box, common::draw_list, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
+use super::{
+    common::draw_list, common::draw_named_box, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
+};
 use crate::components::{
-    ConsumeItem, DropItem, Equipable, Equipment, Inventory, InventoryCapacity, Name, SelectedItem,
-    TryEquip, Ammunition,
+    Ammunition, ConsumeItem, DropItem, Equipable, Equipment, Inventory, InventoryCapacity, Name,
+    SelectedItem, TryEquip,
 };
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
@@ -29,7 +31,11 @@ pub enum EquipmentResult {
     Unequip,
 }
 
-pub fn show_equipment(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) -> EquipmentResult {
+pub fn show_equipment(
+    ecs: &World,
+    term: &mut BTerm,
+    draw_batch: &mut DrawBatch,
+) -> EquipmentResult {
     let names = ecs.read_storage::<Name>();
     let player = ecs.fetch::<Entity>();
     let equipments = ecs.read_storage::<Equipment>();
@@ -40,7 +46,10 @@ pub fn show_equipment(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch)
 
     let mut equips_vec: Vec<(String, Entity)> = Vec::new();
 
-    for (_equip, name, ent) in (&equipments, &names, &entities).join().filter(|e| e.0.user == *player) {
+    for (_equip, name, ent) in (&equipments, &names, &entities)
+        .join()
+        .filter(|e| e.0.user == *player)
+    {
         let equip_name = name.name.to_string();
         //equips_names_vec.push(equip_name);
         equips_vec.push((equip_name, ent));

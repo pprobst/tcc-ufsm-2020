@@ -1,5 +1,7 @@
 use super::{common::Popup, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{Armor, BaseStats, Description, Item, MeleeWeapon, MissileWeapon, Name, Position};
+use crate::components::{
+    Armor, BaseStats, Description, Item, MeleeWeapon, MissileWeapon, Name, Position,
+};
 use crate::map_gen::Map;
 use bracket_lib::prelude::*;
 use specs::prelude::*;

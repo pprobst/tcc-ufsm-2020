@@ -1,4 +1,6 @@
-use crate::components::{DropItem, Inventory, InventoryCapacity, Name, Position, TryUnequip, Equipment};
+use crate::components::{
+    DropItem, Equipment, Inventory, InventoryCapacity, Name, Position, TryUnequip,
+};
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -26,7 +28,16 @@ impl<'a> System<'a> for ItemDropSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player, name, mut log, mut unequip_item, mut capacity, mut pos, mut drop, mut inventory) = data;
+        let (
+            player,
+            name,
+            mut log,
+            mut unequip_item,
+            mut capacity,
+            mut pos,
+            mut drop,
+            mut inventory,
+        ) = data;
         let white = color("BrightWhite", 1.0);
 
         let mut inventory_cap = capacity.get_mut(*player).unwrap();

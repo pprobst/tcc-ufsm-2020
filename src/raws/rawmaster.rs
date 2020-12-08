@@ -1,13 +1,13 @@
 use super::{common_structs, Raws};
 use crate::components::{
-    Armor, BaseStats, Blocker, Consumable, Container, Description, EquipSlot, Equipable, Fov,
-    Health, Item, MeleeWeapon, MeleeWeaponClass, MissileWeapon, MissileWeaponClass, Ammunition,
-    AmmoType, Mob, Name, Position, Renderable, Attack,
+    AmmoType, Ammunition, Armor, Attack, BaseStats, Blocker, Consumable, Container, Description,
+    EquipSlot, Equipable, Fov, Health, Item, MeleeWeapon, MeleeWeaponClass, MissileWeapon,
+    MissileWeaponClass, Mob, Name, Position, Renderable,
 };
 use crate::map_gen::map::MapType;
 use crate::spawner::SpawnTable;
 use crate::utils::colors::color;
-use bracket_lib::prelude::{to_cp437, ColorPair, RandomNumberGenerator, parse_dice_string};
+use bracket_lib::prelude::{parse_dice_string, to_cp437, ColorPair, RandomNumberGenerator};
 use specs::prelude::*;
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -256,7 +256,7 @@ pub fn spawn_item(
                         slot: EquipSlot::Weapon2,
                     })
                 }
- 
+
                 "torso" => {
                     ent = ent.with(Equipable {
                         slot: EquipSlot::Torso,
@@ -305,7 +305,7 @@ pub fn spawn_item(
                     dice_bonus: dicetype.bonus,
                     range: 0,
                 };
- 
+
                 match missile.class.as_str() {
                     "pistol" => {
                         ent = ent.with(MissileWeapon {
@@ -315,7 +315,7 @@ pub fn spawn_item(
                                 max_ammo: missile.max_ammo,
                                 ammo: missile.max_ammo,
                                 ammo_type: AmmoType::from_str(&missile.ammo_type).unwrap(),
-                            }
+                            },
                         })
                     }
                     _ => return None,
@@ -414,7 +414,7 @@ pub fn spawn_mob(
             attack_stats.dice_faces = dicetype.die_type;
             attack_stats.dice_bonus = dicetype.bonus;
             attack_stats.range = mob.stats.attack_range;
-        } 
+        }
 
         ent = ent.with(BaseStats {
             health: Health {

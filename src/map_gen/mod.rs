@@ -276,7 +276,8 @@ impl MapGenerator {
 
         for room in self.rooms.clone() {
             if self.rng.range(0, 4) > 1 || (room.width() >= 6 && room.height() >= 6) {
-                let room_reg = &CustomRegion::new_rect(room.x1, room.y1, room.width(), room.height());
+                let room_reg =
+                    &CustomRegion::new_rect(room.x1, room.y1, room.width(), room.height());
                 self.gen_wfc(idx, Some(room_reg), "resources/wfc_6x6.xp", 8, 8, 4);
             }
         }
@@ -311,8 +312,16 @@ impl MapGenerator {
 
         for room in self.rooms.clone() {
             if self.rng.range(0, 4) > 0 {
-            let room_reg = &CustomRegion::new_rect(room.x1, room.y1, room.width(), room.height());
-            self.gen_wfc(idx, Some(room_reg), "resources/wfc_6x6_internal.xp", 9, 9, 3);
+                let room_reg =
+                    &CustomRegion::new_rect(room.x1, room.y1, room.width(), room.height());
+                self.gen_wfc(
+                    idx,
+                    Some(room_reg),
+                    "resources/wfc_6x6_internal.xp",
+                    9,
+                    9,
+                    3,
+                );
             }
         }
 

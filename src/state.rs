@@ -74,7 +74,7 @@ impl State {
 
         let mut reload = WeaponReloadSystem {};
         reload.run_now(&self.ecs);
-        
+
         let mut melee = MeleeSystem {};
         melee.run_now(&self.ecs);
 

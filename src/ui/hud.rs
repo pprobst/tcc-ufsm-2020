@@ -1,5 +1,7 @@
 use super::{Log, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{BaseStats, EquipSlot, EquipSlot::*, Equipable, Equipment, Name, ActiveWeapon, MissileWeapon};
+use crate::components::{
+    ActiveWeapon, BaseStats, EquipSlot, EquipSlot::*, Equipable, Equipment, MissileWeapon, Name,
+};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -142,13 +144,13 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
     for (equip, equipable, name, ent) in (&equips, &equipables, &names, &entities).join() {
         if equip.user == *player {
             match equipable.slot {
-                Weapon1 => { 
+                Weapon1 => {
                     equipment[0].0 = &name.name;
                     if let Some(_t) = active_wpn.get(ent) {
                         melee_color = color("Cyan", 1.0);
                     }
-                },
-                Weapon2 => { 
+                }
+                Weapon2 => {
                     equipment[1].0 = &name.name;
                     let missile_wpn = ecs.read_storage::<MissileWeapon>();
                     let wpn = missile_wpn.get(ent).unwrap();
@@ -156,7 +158,7 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
                     if let Some(_t) = active_wpn.get(ent) {
                         ranged_color = color("Cyan", 1.0);
                     }
-                },
+                }
                 Head => equipment[2].0 = &name.name,
                 Torso => equipment[3].0 = &name.name,
                 Hands => equipment[4].0 = &name.name,

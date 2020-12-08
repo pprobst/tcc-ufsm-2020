@@ -1,4 +1,4 @@
-use crate::components::{MissileWeapon, Name, TryReload, Inventory, Ammunition, AmmoType};
+use crate::components::{AmmoType, Ammunition, Inventory, MissileWeapon, Name, TryReload};
 use crate::log::Log;
 use crate::utils::colors::*;
 use specs::prelude::*;
@@ -26,7 +26,16 @@ impl<'a> System<'a> for WeaponReloadSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, mut missile_weapon, mut try_reload, inventory, mut ammo, player, mut log, names) = data;
+        let (
+            entities,
+            mut missile_weapon,
+            mut try_reload,
+            inventory,
+            mut ammo,
+            player,
+            mut log,
+            names,
+        ) = data;
 
         for (ent, reload) in (&entities, &try_reload).join() {
             if let Some(w) = missile_weapon.get_mut(reload.weapon) {
@@ -39,13 +48,16 @@ impl<'a> System<'a> for WeaponReloadSystem {
                                     amm.ammo -= 1;
                                     // TODO remove ammo from inventory if it reaches 0. Maybe add item drop?
                                     w.ammo.ammo += 1;
-                                },
+                                }
                                 _ => {}
                             }
                         }
                         if ent == *player {
                             log.add(
-                                format!("You reload the {}.", names.get(reload.weapon).unwrap().name),
+                                format!(
+                                    "You reload the {}.",
+                                    names.get(reload.weapon).unwrap().name
+                                ),
                                 color("BrightWhite", 1.0),
                             );
                         }

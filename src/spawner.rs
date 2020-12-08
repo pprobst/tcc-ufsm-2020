@@ -1,11 +1,10 @@
 use super::{
+    common::is_weapon,
     map_gen::{Map, MapType},
     raws::*,
     utils::colors::*,
-    common::is_weapon,
-    BaseStats, Contained, Container, Description, Equipment, Fov, Health, Inventory,
-    InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable, ActiveWeapon,
-    Attack,
+    ActiveWeapon, Attack, BaseStats, Contained, Container, Description, Equipment, Fov, Health,
+    Inventory, InventoryCapacity, Mob, Name, Player, Position, Remains, Renderable,
 };
 use bracket_lib::prelude::{to_cp437, ColorPair, Point, RandomNumberGenerator};
 use specs::prelude::*;
@@ -162,14 +161,13 @@ pub fn equip_player(ecs: &mut World) {
 
     let mut active_weapon = ecs.write_storage::<ActiveWeapon>();
     active_weapon
-        .insert(melee_weapon, ActiveWeapon{})
+        .insert(melee_weapon, ActiveWeapon {})
         .expect("Insert fail");
 
     let mut inventory = ecs.write_storage::<Inventory>();
-                        inventory
-                            .insert(ammo, Inventory { owner: *player_ent })
-                            .expect("FAILED to insert item in inventory.");
-
+    inventory
+        .insert(ammo, Inventory { owner: *player_ent })
+        .expect("FAILED to insert item in inventory.");
 }
 
 fn get_all_tiered_containers(ecs: &World) -> Vec<(Entity, Vec<u8>)> {
@@ -231,7 +229,7 @@ fn equip_mobs(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator
                         if !equipped && is_weapon(&ecs, e) {
                             let mut active_weapon = ecs.write_storage::<ActiveWeapon>();
                             active_weapon
-                                .insert(e, ActiveWeapon{})
+                                .insert(e, ActiveWeapon {})
                                 .expect("Insert fail");
                             equipped = true;
                         }

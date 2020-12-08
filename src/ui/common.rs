@@ -150,9 +150,7 @@ pub fn draw_list(list: Vec<String>, x1: i32, y1: i32, w: i32, draw_batch: &mut D
         i += 1;
         y += 1;
     }
-
 }
-
 
 pub fn draw_named_box(text: &str, x1: i32, y1: i32, w: i32, h: i32, draw_batch: &mut DrawBatch) {
     let black = color("Background", 1.0);
@@ -165,9 +163,5 @@ pub fn draw_named_box(text: &str, x1: i32, y1: i32, w: i32, h: i32, draw_batch: 
         ' ' as u16,
     );
 
-    draw_batch.print_color(
-        Point::new(w - 5, y1),
-        text,
-        ColorPair::new(gray, black),
-    );
+    draw_batch.print_color(Point::new(w - 5, y1), text, ColorPair::new(gray, black));
 }

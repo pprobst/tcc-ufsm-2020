@@ -85,10 +85,7 @@ pub fn main_menu(
             MenuSelection::Quit,
         ]
     } else {
-        vec![
-            MenuSelection::NewGame,
-            MenuSelection::Quit,
-        ]
+        vec![MenuSelection::NewGame, MenuSelection::Quit]
     };
 
     y += 15;

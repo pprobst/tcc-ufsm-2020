@@ -1,6 +1,4 @@
-use super::{
-    Equipable, EquipSlot,
-};
+use super::{EquipSlot, Equipable};
 use specs::prelude::*;
 
 /*
