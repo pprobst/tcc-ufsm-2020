@@ -1,14 +1,10 @@
 use super::{
     common::draw_list, common::draw_named_box, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
 };
-use crate::components::{
-    Ammunition, ConsumeItem, DropItem, Equipable, Equipment, Inventory, InventoryCapacity, Name,
-    SelectedItem, TryEquip,
-};
+use crate::components::{Equipable, Equipment, Inventory, Name, SelectedItem};
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
-use std::collections::HashMap;
 
 /*
  *
@@ -26,9 +22,9 @@ pub enum EquipmentResult {
     Select,
     Cancel,
     Idle,
-    DropEquip,
-    Equip,
-    Unequip,
+    //DropEquip,
+    //Equip,
+    //Unequip,
 }
 
 pub fn show_equipment(
@@ -39,10 +35,9 @@ pub fn show_equipment(
     let names = ecs.read_storage::<Name>();
     let player = ecs.fetch::<Entity>();
     let equipments = ecs.read_storage::<Equipment>();
+    let backpack = ecs.read_storage::<Inventory>();
+    let equipable = ecs.read_storage::<Equipable>();
     let entities = ecs.entities();
-
-    let black = color("Background", 1.0);
-    let gray = color("BrightBlack", 1.0);
 
     let mut equips_vec: Vec<(String, Entity)> = Vec::new();
 
@@ -50,9 +45,14 @@ pub fn show_equipment(
         .join()
         .filter(|e| e.0.user == *player)
     {
-        let equip_name = name.name.to_string();
-        //equips_names_vec.push(equip_name);
-        equips_vec.push((equip_name, ent));
+        equips_vec.push((name.name.to_string(), ent));
+    }
+
+    for (_inv, _equip, name, ent) in (&backpack, &equipable, &names, &entities)
+        .join()
+        .filter(|e| e.0.owner == *player)
+    {
+        equips_vec.push((name.name.to_string(), ent));
     }
 
     equips_vec.sort();

@@ -1,5 +1,5 @@
 use crate::components::{
-    DropItem, Equipment, Inventory, InventoryCapacity, Name, Position, TryUnequip,
+    ActiveWeapon, DropItem, Equipment, Inventory, InventoryCapacity, Name, Position,
 };
 use crate::log::Log;
 use crate::utils::colors::*;
@@ -20,7 +20,8 @@ impl<'a> System<'a> for ItemDropSystem {
         ReadExpect<'a, Entity>,
         ReadStorage<'a, Name>,
         WriteExpect<'a, Log>,
-        WriteStorage<'a, TryUnequip>,
+        WriteStorage<'a, ActiveWeapon>,
+        WriteStorage<'a, Equipment>,
         WriteStorage<'a, InventoryCapacity>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, DropItem>,
@@ -32,7 +33,8 @@ impl<'a> System<'a> for ItemDropSystem {
             player,
             name,
             mut log,
-            mut unequip_item,
+            mut active_wpn,
+            mut equipment,
             mut capacity,
             mut pos,
             mut drop,
@@ -50,27 +52,12 @@ impl<'a> System<'a> for ItemDropSystem {
                 if inventory_cap.curr > 0 {
                     inventory_cap.curr -= 1;
                 }
-                unequip_item
-                    .insert(
-                        *player,
-                        TryUnequip {
-                            equipment: {
-                                Equipment {
-                                    user: *player,
-                                    equip: d.item,
-                                }
-                            },
-                        },
-                    )
-                    .expect("FAILED to unequip item.");
-                /*
-                if let Some(_t) = active_wpn.get(d.item) {
-                    active_wpn.clear();
+                if equipment.get(d.item).is_some() {
+                    equipment.remove(d.item);
+                    if active_wpn.get(d.item).is_some() {
+                        active_wpn.clear();
+                    }
                 }
-                if let Some(_e) = equipable.get(d.item) {
-                    equips.remove(d.item);
-                }
-                */
                 log.add(
                     format!("You drop the {}", name.get(d.item).unwrap().name),
                     white,

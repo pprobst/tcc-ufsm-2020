@@ -102,10 +102,15 @@ impl<'a> System<'a> for EquipmentSystem {
             }
             if let Some(_e) = equipable.get(to_unequip) {
                 equips.remove(to_unequip);
-                inventory
-                    .insert(to_unequip, Inventory { owner: *player })
-                    .expect("FAILED inserting item in inventory.");
-                inventory_cap.curr += 1;
+                if inventory.get(to_unequip).is_none() {
+                    println!("EQUIP: {:?}", to_unequip);
+                    inventory
+                        .insert(to_unequip, Inventory { owner: *player })
+                        .expect("FAILED inserting item in inventory.");
+                    inventory_cap.curr += 1;
+                } else {
+                    inventory.remove(to_unequip);
+                }
             }
         }
 

@@ -1,10 +1,10 @@
 use super::{
-    common::draw_list_items, common::draw_named_box, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET,
-    Y_OFFSET, RunState
+    common::draw_list_items, common::draw_named_box, RunState, WINDOW_HEIGHT, WINDOW_WIDTH,
+    X_OFFSET, Y_OFFSET,
 };
 use crate::components::{
-    Ammunition, ConsumeItem, DropItem, Equipable, Equipment, Inventory, InventoryCapacity, Name,
-    SelectedItem, TryEquip, TryUnequip, Consumable
+    Ammunition, Consumable, ConsumeItem, DropItem, Equipable, Equipment, Inventory,
+    InventoryCapacity, Name, SelectedItem, TryEquip, TryUnequip,
 };
 use crate::player::reload_weapon;
 use crate::utils::colors::*;
@@ -308,7 +308,7 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
                         )
                         .expect("FAILED to unequip item.");
                     selected_item.clear();
-                    InventoryResult::DropItem
+                    InventoryResult::UseItem
                 } else {
                     InventoryResult::Idle
                 }

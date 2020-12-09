@@ -351,6 +351,6 @@ pub struct Container {
 
 #[derive(Component)]
 pub struct Contained {
-    // Similar to InBackpack, but specifically for containers.
+    // Similar to Inventory, but specifically for containers.
     pub container: Entity,
 }
