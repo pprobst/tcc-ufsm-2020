@@ -118,7 +118,7 @@ pub fn equip_player(ecs: &mut World) {
     let missile_weapon = spawn_item("Revolver", None, ecs.create_entity(), raws).unwrap();
     let armor = spawn_item("Old Leather Armor", None, ecs.create_entity(), raws).unwrap();
     let pants = spawn_item("Bombacho", None, ecs.create_entity(), raws).unwrap();
-    let ammo = spawn_item(".32 Ammo Pack", None, ecs.create_entity(), raws).unwrap();
+    let ammo = spawn_item(".32 Ammo", None, ecs.create_entity(), raws).unwrap();
     let mut equipments = ecs.write_storage::<Equipment>();
     let player_ent = ecs.fetch::<Entity>();
 

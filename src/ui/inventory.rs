@@ -1,11 +1,12 @@
 use super::{
     common::draw_list_items, common::draw_named_box, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET,
-    Y_OFFSET,
+    Y_OFFSET, RunState
 };
 use crate::components::{
     Ammunition, ConsumeItem, DropItem, Equipable, Equipment, Inventory, InventoryCapacity, Name,
-    SelectedItem, TryEquip, TryUnequip,
+    SelectedItem, TryEquip, TryUnequip, Consumable
 };
+use crate::player::reload_weapon;
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
@@ -250,16 +251,25 @@ pub fn show_use_menu(ecs: &World, term: &mut BTerm, draw_batch: &mut DrawBatch) 
             VirtualKeyCode::E => {
                 match is_equip {
                     None => {
-                        let mut use_item = ecs.write_storage::<ConsumeItem>();
-                        use_item
-                            .insert(
-                                *player_ent,
-                                ConsumeItem {
-                                    target: *player_ent,
-                                    item: item.0.item,
-                                },
-                            )
-                            .expect("FAILED to use item.");
+                        let consumable = ecs.read_storage::<Consumable>();
+                        if let Some(_c) = consumable.get(item.0.item) {
+                            let mut use_item = ecs.write_storage::<ConsumeItem>();
+                            use_item
+                                .insert(
+                                    *player_ent,
+                                    ConsumeItem {
+                                        target: *player_ent,
+                                        item: item.0.item,
+                                    },
+                                )
+                                .expect("FAILED to use item.");
+                        }
+                        let ammo = ecs.read_storage::<Ammunition>();
+                        if let Some(_a) = ammo.get(item.0.item) {
+                            if reload_weapon(ecs) == RunState::Waiting {
+                                return InventoryResult::Cancel;
+                            }
+                        }
                     }
                     _ => {
                         let mut equip_item = ecs.write_storage::<TryEquip>();

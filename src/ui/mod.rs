@@ -1,4 +1,4 @@
-use super::{log::Log, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
+use super::{log::Log, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET, RunState};
 
 mod common;
 pub mod container;

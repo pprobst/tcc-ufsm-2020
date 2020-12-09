@@ -273,7 +273,7 @@ pub fn switch_weapon(ecs: &mut World) -> RunState {
 }
 
 /// Reload ranged weapon.
-pub fn reload_weapon(ecs: &mut World) -> RunState {
+pub fn reload_weapon(ecs: &World) -> RunState {
     let player_ent = ecs.fetch::<Entity>();
     let active_wpn = ecs.read_storage::<ActiveWeapon>();
     let missile_wpn = ecs.read_storage::<MissileWeapon>();

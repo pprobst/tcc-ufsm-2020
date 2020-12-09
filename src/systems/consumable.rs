@@ -41,23 +41,29 @@ impl<'a> System<'a> for ConsumableSystem {
         let white = color("BrightWhite", 1.0);
 
         for c in to_consume.join() {
-            let item = consumable.get(c.item).unwrap();
-            let mut target_stats = stats.get_mut(c.target).unwrap();
-            target_stats.health.hp = i32::min(
-                target_stats.health.max_hp,
-                target_stats.health.hp + item.heal,
-            );
-            inventory.remove(c.item);
+            let mut has_consumed = false;
 
-            if c.target == *player {
-                log.add(
-                    format!(
-                        "You consume the {}, healing {} hp.",
-                        name.get(c.item).unwrap().name,
-                        item.heal
-                    ),
-                    white,
+            if let Some(item) = consumable.get(c.item) {
+                let mut target_stats = stats.get_mut(c.target).unwrap();
+                target_stats.health.hp = i32::min(
+                    target_stats.health.max_hp,
+                    target_stats.health.hp + item.heal,
                 );
+                if c.target == *player {
+                    log.add(
+                        format!(
+                            "You consume the {}, healing {} hp.",
+                            name.get(c.item).unwrap().name,
+                            item.heal
+                        ),
+                        white,
+                    );
+                }
+                has_consumed = true;
+            }
+
+            if has_consumed {
+                inventory.remove(c.item);
                 inventory_cap.curr -= 1;
             }
         }

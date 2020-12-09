@@ -44,7 +44,7 @@
         ),
         // AMMO
         (
-            name: ".32 Ammo Pack",
+            name: ".32 Ammo",
             descr: "Ammunition for certain weapons.",
             tier: 4,
             renderable: (
