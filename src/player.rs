@@ -35,15 +35,16 @@ pub fn move_player(dir: Direction, ecs: &mut World) {
         let dest = map.idx(pos.x + dir_x, pos.y + dir_y);
 
         // Tries melee if you're trying to move into an occupied tile.
-        for ent in map.entities[dest].iter() {
-            //let t = stats.get(*ent);
-            let t = mobs.get(*ent);
-            if let Some(_t) = t {
-                println!("Attacking enemy.");
-                let mut melee_attack = ecs.write_storage::<MeleeAttack>();
-                melee_attack
-                    .insert(entity, MeleeAttack { target: *ent })
-                    .expect("Melee attack insertion failed");
+        for ents in map.entities[dest].iter() {
+            for ent in ents.iter() {
+                let t = mobs.get(*ent);
+                if let Some(_t) = t {
+                    println!("Attacking enemy.");
+                    let mut melee_attack = ecs.write_storage::<MeleeAttack>();
+                    melee_attack
+                        .insert(entity, MeleeAttack { target: *ent })
+                        .expect("Melee attack insertion failed");
+                }
             }
         }
 
@@ -211,25 +212,27 @@ fn visible_targets(ecs: &World, hittable: bool) -> Vec<(Entity, f32, bool)> {
     for (_player, fov) in (&player, &fov).join() {
         for pos in fov.visible_pos.iter() {
             let idx = map.idx(pos.x, pos.y);
-            for ent in map.entities[idx].iter() {
-                let t = mobs.get(*ent);
-                if let Some(_t) = t {
-                    let mobpos = Point::new(pos.x, pos.y);
-                    let player_pos = positions.get(*player_ent).unwrap();
-                    let ppos = Point::new(player_pos.x, player_pos.y);
-                    let mut covered = false;
-                    if hittable {
-                        let points = line2d_vector(ppos, mobpos);
-                        for pt in points.iter().take(points.len() - 1) {
-                            let i = map.idx(pt.x, pt.y);
-                            // if there's a blocker in the aim line, you can't hit the entity.
-                            if map.tiles[i].block {
-                                covered = true;
+            for ents in map.entities[idx].iter() {
+                for ent in ents.iter() {
+                    let t = mobs.get(*ent);
+                    if let Some(_t) = t {
+                        let mobpos = Point::new(pos.x, pos.y);
+                        let player_pos = positions.get(*player_ent).unwrap();
+                        let ppos = Point::new(player_pos.x, player_pos.y);
+                        let mut covered = false;
+                        if hittable {
+                            let points = line2d_vector(ppos, mobpos);
+                            for pt in points.iter().take(points.len() - 1) {
+                                let i = map.idx(pt.x, pt.y);
+                                // if there's a blocker in the aim line, you can't hit the entity.
+                                if map.tiles[i].block {
+                                    covered = true;
+                                }
                             }
                         }
+                        let dist = DistanceAlg::Pythagoras.distance2d(mobpos, ppos);
+                        visible_targets.push((*ent, dist, covered));
                     }
-                    let dist = DistanceAlg::Pythagoras.distance2d(mobpos, ppos);
-                    visible_targets.push((*ent, dist, covered));
                 }
             }
         }
@@ -343,17 +346,21 @@ pub fn check_near(ecs: &World, pt: Point, map: &mut Map) -> RunState {
     let tile = map.tiles[idx].ttype;
 
     // Check for entities (e.g. containers).
-    if map.entities[idx] != None {
-        let ent = map.entities[idx].unwrap();
-        let containers = ecs.read_storage::<Container>();
-        let c = containers.get(ent);
-        if let Some(_c) = c {
-            let mut selected_pos = ecs.write_storage::<SelectedPosition>();
-            selected_pos
-                .insert(ent, SelectedPosition { pos: pt })
-                .expect("Could not select position.");
-            context = PossibleContexts::Container;
+    match &map.entities[idx] {
+        Some(ents) => {
+            for ent in ents.iter() {
+                let containers = ecs.read_storage::<Container>();
+                let c = containers.get(*ent);
+                if let Some(_c) = c {
+                    let mut selected_pos = ecs.write_storage::<SelectedPosition>();
+                    selected_pos
+                        .insert(*ent, SelectedPosition { pos: pt })
+                        .expect("Could not select position.");
+                    context = PossibleContexts::Container;
+                }
+            }
         }
+        None => return RunState::Waiting,
     }
 
     // Check for tiles (e.g. doors).

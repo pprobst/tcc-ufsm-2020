@@ -30,7 +30,7 @@ pub struct Map {
     pub width: i32,
     pub height: i32,
     pub maptype: Option<MapType>,
-    pub entities: Vec<Option<Entity>>,
+    pub entities: Vec<Option<Vec<Entity>>>,
     pub spawn_point: Position,
     pub exit_point: Position,
 }
@@ -366,7 +366,18 @@ impl Map {
 
     pub fn refresh_entities(&mut self) {
         for i in 0..self.entities.len() {
-            self.entities[i] = None
+            self.entities[i] = None;
+        }
+    }
+
+    pub fn add_entity(&mut self, ent: Entity, i: usize) {
+        match &mut self.entities[i] {
+            Some(x) => x.push(ent),
+            None => {
+                let mut vec: Vec<Entity> = Vec::new();
+                vec.push(ent);
+                self.entities[i] = Some(vec);
+            }
         }
     }
 

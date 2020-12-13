@@ -250,6 +250,8 @@ fn equip_mobs(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator
 }
 
 pub fn spawn_remains(ecs: &mut World, items: Vec<Entity>, ent_name: String, pos: Position) {
+    // TODO: check if there're already remains in this spot. If there are, then insert the content
+    // of previous remains to the new remains and remove old remains.
     let remains = entity_with_position(ecs, pos.x, pos.y)
         .with(Renderable {
             glyph: to_cp437('▓'),
@@ -356,8 +358,8 @@ pub fn spawn_player(ecs: &mut World, map: &Map) {
     pfov.dirty = true;
 }
 
+/*
 pub fn spawn_map(ecs: &mut World, map: &Map) {
-    /*
     let idx = map.idx(8, 16);
     let pt = map.idx_pos(idx);
     ecs.insert(Point::new(pt.x, pt.y));
@@ -419,5 +421,5 @@ pub fn spawn_map(ecs: &mut World, map: &Map) {
     }
 
     equip_mobs(ecs, raws, &mut rng);
-    */
 }
+*/

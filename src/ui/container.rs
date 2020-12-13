@@ -1,5 +1,5 @@
 use super::{common::draw_list_items, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET};
-use crate::components::{CollectItem, Contained, Name, SelectedPosition};
+use crate::components::{CollectItem, Contained, Container, Name, SelectedPosition};
 use crate::map_gen::Map;
 use crate::utils::colors::*;
 use bracket_lib::prelude::*;
@@ -31,6 +31,7 @@ pub fn show_container(
     draw_batch: &mut DrawBatch,
 ) -> ContainerResult {
     let names = ecs.read_storage::<Name>();
+    let containers = ecs.read_storage::<Container>();
     let mut selected_pos = ecs.write_storage::<SelectedPosition>();
     let map = ecs.fetch::<Map>();
     let entities = ecs.entities();
@@ -40,11 +41,23 @@ pub fn show_container(
 
     let sel_pos = (&selected_pos).join().collect::<Vec<_>>()[0];
     let idx = map.idx(sel_pos.pos.x, sel_pos.pos.y);
-    let container_ent = map.entities[idx];
+    let ents = &map.entities[idx];
 
-    if container_ent == None {
-        selected_pos.clear();
-        return ContainerResult::Cancel;
+    let mut container_ent = (&entities).join().collect::<Vec<_>>()[0];
+
+    match ents {
+        Some(ent_vec) => {
+            for ent in ent_vec.iter() {
+                if let Some(_e) = containers.get(*ent) {
+                    container_ent = *ent;
+                    break;
+                }
+            }
+        }
+        None => {
+            selected_pos.clear();
+            return ContainerResult::Cancel;
+        }
     }
 
     let mut items: HashMap<String, u32> = HashMap::new();
@@ -55,7 +68,7 @@ pub fn show_container(
 
     for (_c, name, ent) in (&contained, &names, &entities)
         .join()
-        .filter(|item| item.0.container == container_ent.unwrap())
+        .filter(|item| item.0.container == container_ent)
     {
         let item_name = name.name.to_string();
         *items.entry(item_name).or_insert(0) += 1;
@@ -87,11 +100,7 @@ pub fn show_container(
         ' ' as u16,
     );
 
-    let container_name = &names
-        .get(container_ent.unwrap())
-        .unwrap()
-        .name
-        .to_uppercase();
+    let container_name = &names.get(container_ent).unwrap().name.to_uppercase();
 
     draw_batch.print_color(
         Point::new(w - ((container_name.len() as i32 + 2) / 2), y1),

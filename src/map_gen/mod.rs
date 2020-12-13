@@ -190,13 +190,15 @@ impl MapGenerator {
         }
         */
 
+        self.level_01(idx);
+
+        /*
         match idx {
             0 => self.level_00(idx),
-            1 => {
-                self.level_01(idx);
-            }
+            1 => self.level_01(idx),
             _ => println!("Oops!"),
         }
+        */
     }
 
     /*

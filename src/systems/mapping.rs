@@ -31,13 +31,13 @@ impl<'a> System<'a> for MappingSystem {
         for (ent, pos, _blocker) in (&entities, &pos, &blockers).join() {
             map.add_blocker(pos.x, pos.y);
             let i = map.idx(pos.x, pos.y);
-            map.entities[i] = Some(ent.clone());
+            map.add_entity(ent.clone(), i);
         }
 
         // Iterate through all the remains.
         for (ent, pos, _remains) in (&entities, &pos, &remains).join() {
             let i = map.idx(pos.x, pos.y);
-            map.entities[i] = Some(ent.clone());
+            map.add_entity(ent.clone(), i);
         }
     }
 }
