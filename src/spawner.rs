@@ -249,9 +249,30 @@ fn equip_mobs(ecs: &mut World, raws: &RawMaster, rng: &mut RandomNumberGenerator
     }
 }
 
-pub fn spawn_remains(ecs: &mut World, items: Vec<Entity>, ent_name: String, pos: Position) {
-    // TODO: check if there're already remains in this spot. If there are, then insert the content
-    // of previous remains to the new remains and remove old remains.
+pub fn spawn_remains(ecs: &mut World, mut items: Vec<Entity>, ent_name: String, pos: Position) {
+    // Check if there're already remains in this spot. If there are, then insert the content
+    // of previous remains into the new remains.
+    {
+        let container = ecs.read_storage::<Container>();
+        let map = ecs.fetch::<Map>();
+        let idx = map.idx_pt(pos);
+        let entities = ecs.entities();
+        let contain = ecs.read_storage::<Contained>();
+
+        if let Some(ents) = &map.entities[idx] {
+            for ent in ents.iter() {
+                if let Some(_) = container.get(*ent) {
+                    for (_, e) in (&contain, &entities)
+                        .join()
+                        .filter(|item| item.0.container == *ent)
+                    {
+                        items.push(e);
+                    }
+                }
+            }
+        }
+    }
+
     let remains = entity_with_position(ecs, pos.x, pos.y)
         .with(Renderable {
             glyph: to_cp437('▓'),

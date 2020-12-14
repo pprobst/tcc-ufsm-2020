@@ -32,7 +32,7 @@ pub const WINDOW_HEIGHT: i32 = 60;
 pub const TILE_WIDTH: i32 = 18;
 pub const TILE_HEIGHT: i32 = 18;
 
-pub const SHOW_MAP: bool = true;
+pub const SHOW_MAP: bool = false;
 
 embedded_resource!(FONT01, "../resources/fonts/Sapphos-square-16x16.png");
 embedded_resource!(FONT02, "../resources/fonts/Anikki-square-16x16.png");
