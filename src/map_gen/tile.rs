@@ -265,6 +265,13 @@ impl Tile {
 
     pub fn shadowed(&mut self) {
         self.color.fg = color("Shadow", 1.0);
+        self.color.bg = if self.ttype == TileType::ShallowWater { 
+            color("Shadow", 0.8) 
+        } else if self.ttype == TileType::DeepWater { 
+            color("Shadow", 0.7) 
+        } else { 
+            self.color.bg 
+        };
     }
 
     pub fn reload_color(&mut self) {
