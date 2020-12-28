@@ -267,6 +267,12 @@ pub fn spawn_item(
                         slot: EquipSlot::Legs,
                     })
                 }
+                "back" => {
+                    ent = ent.with(Equipable {
+                        slot: EquipSlot::Back,
+                    })
+                }
+
                 _ => return None,
             }
         }

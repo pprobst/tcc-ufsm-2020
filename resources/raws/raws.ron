@@ -7,7 +7,7 @@
         ), 
         (
             name: "Guarah", 
-            spawn_weight: 20,
+            spawn_weight: 5,
             level_type: ["Forest", "Ruins"],
         ),
         (
@@ -155,7 +155,7 @@
         ),
         (
             name: "Cargo Pants",
-            descr: "A highly practical pair of pants.\nPreferred by tinkerers and\nadventurers alike.",
+            descr: "A highly practical pair of pants.\nPreferred by tinkerers.",
             tier: 1,
             renderable: (
                 glyph: 'P',
@@ -172,7 +172,7 @@
         ),
         (
             name: "Bombacho",
-            descr: "Large pants. Typical of the region.",
+            descr: "Large, wide pants. Typical clothing\nofthe region.",
             tier: 1,
             renderable: (
                 glyph: 'P',
@@ -182,6 +182,23 @@
             ),
             equipable: (
                 slot: "legs",
+            ),
+            armor: (
+                defense: 1,
+            ),
+        ),
+        (
+            name: "Sagum",
+            descr: "An earthly cloak made to\nprotect its user from\nnature elements.\nCommonly worn by ronin\nand autarchy soldiers.",
+            tier: 1,
+            renderable: (
+                glyph: 'T',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "back",
             ),
             armor: (
                 defense: 1,

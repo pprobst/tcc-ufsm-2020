@@ -73,6 +73,7 @@ pub fn show_equipment(
             VirtualKeyCode::Escape => EquipmentResult::Cancel,
             _ => {
                 let select = letter_to_option(key);
+                println!("SELECT: {} {:?} {}", select, key, equips_len);
                 if select >= 0 && select < equips_len {
                     let mut selected = ecs.write_storage::<SelectedItem>();
                     let selected_equip = equips_vec[select as usize].1;

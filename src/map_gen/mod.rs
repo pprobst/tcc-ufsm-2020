@@ -190,11 +190,34 @@ impl MapGenerator {
         }
         */
 
+        //self.wfc_test(idx);
+        
+        self.level_01(idx)
+
+        /*
         match idx {
             0 => self.level_00(idx),
             1 => self.level_01(idx),
             _ => println!("Oops!"),
         }
+        */
+    }
+
+    pub fn wfc_test(&mut self, idx: usize) {
+        self.maps[idx].set_maptype(MapType::Ruins);
+        self.maps[idx].set_spawn(Position::new(8, 16));
+
+        let reg1 = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
+
+        self.gen_wfc(
+            idx,
+            Some(reg1),
+            "resources/wfc_6x6.xp",
+            6,
+            6,
+            3,
+        );
+
     }
 
     /*

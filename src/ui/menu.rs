@@ -74,7 +74,7 @@ pub fn main_menu(
     // Title
     draw_batch.print_color_centered(
         10,
-        "CONE-SUR",
+        "YET ANOTHER NAMELESS ROGUELIKE",
         ColorPair::new(color("Green", 1.0), color("Background", 1.0)),
     );
 

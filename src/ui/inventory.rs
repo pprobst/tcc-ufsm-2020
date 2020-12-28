@@ -108,6 +108,7 @@ pub fn show_inventory(
             VirtualKeyCode::Escape => InventoryResult::Cancel,
             _ => {
                 let select = letter_to_option(key);
+                println!("SELECT (inv): {} {:?} {}", select, key, items_len);
                 if select >= 0 && select < items_len {
                     let mut selected = ecs.write_storage::<SelectedItem>();
                     let selected_item = items_ent[select as usize];

@@ -59,18 +59,16 @@ impl<'a> WaveFunctionCollapse<'a> {
     ) -> bool {
         self.build_patterns(input_map, input_x, input_y);
         let patterns = self.patterns.clone();
+        //println!("Patterns: {}", patterns.len());
         //map.tiles = vec![Tile::woodenfloor(); (map.width * map.height) as usize];
+        
+        // !!! ATTENTION !!!
         deduplicate(&mut self.patterns);
 
         self.build_constraints(); // patterns + adjacency rules
         let constraints = self.constraints.clone();
         self.compute_frequencies(&patterns, &constraints); // frequency hints
 
-        /*
-        let out_width = output_map.width / self.tile_size;
-        let out_height = output_map.height / self.tile_size;
-        let out_size = out_width * out_height;
-        */
         let out_width = self.region.width / self.tile_size;
         let out_height = self.region.height / self.tile_size;
         let out_size = out_width * out_height;
@@ -79,7 +77,6 @@ impl<'a> WaveFunctionCollapse<'a> {
         let cells = self.init_cells(out_size, rng);
 
         // Initialize Wave.
-        //let mut wave = Wave::new(cells, constraints, out_width, out_height);
         let mut wave = Wave::new(cells, constraints, out_width, out_height);
         wave.init_entropy_queue();
 
@@ -223,18 +220,23 @@ impl<'a> WaveFunctionCollapse<'a> {
                 compatible: Vec::new(),
                 size: self.tile_size,
             };
+            println!("{:?}", p1);
             for (j, p2) in self.patterns.iter().enumerate() {
                 if self.is_compatible(p1, p2, NORTH) {
                     map_tile.compatible.push((j, NORTH));
+                    println!("{} compat with {:?} NORTH", i, j);
                 }
                 if self.is_compatible(p1, p2, SOUTH) {
                     map_tile.compatible.push((j, SOUTH));
+                    println!("{} compat with {:?} SOUTH", i, j);
                 }
                 if self.is_compatible(p1, p2, EAST) {
                     map_tile.compatible.push((j, EAST));
+                    println!("{} compat with {:?} EAST", i, j);
                 }
                 if self.is_compatible(p1, p2, WEST) {
                     map_tile.compatible.push((j, WEST));
+                    println!("{} compat with {:?} WEST", i, j);
                 }
             }
             self.constraints.push(map_tile);

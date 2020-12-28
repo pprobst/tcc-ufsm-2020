@@ -20,7 +20,7 @@ use std::collections::HashMap;
 
 // Some of this stuff is based on https://github.com/tylervipond/apprentice/blob/master/src/spawner.rs
 
-const MAX_MOBS_AREA: i32 = 8;
+const MAX_MOBS_AREA: i32 = 6;
 
 #[derive(Debug)]
 pub struct Spawn {
@@ -119,6 +119,7 @@ pub fn equip_player(ecs: &mut World) {
     let armor = spawn_item("Old Leather Armor", None, ecs.create_entity(), raws).unwrap();
     let pants = spawn_item("Bombacho", None, ecs.create_entity(), raws).unwrap();
     let ammo = spawn_item(".32 Ammo", None, ecs.create_entity(), raws).unwrap();
+    let cloak = spawn_item("Sagum", None, ecs.create_entity(), raws).unwrap();
     let mut equipments = ecs.write_storage::<Equipment>();
     let player_ent = ecs.fetch::<Entity>();
 
@@ -146,6 +147,15 @@ pub fn equip_player(ecs: &mut World) {
             Equipment {
                 user: *player_ent,
                 equip: pants,
+            },
+        )
+        .expect("FAILED to equip item.");
+    equipments
+        .insert(
+            cloak,
+            Equipment {
+                user: *player_ent,
+                equip: cloak,
             },
         )
         .expect("FAILED to equip item.");
@@ -313,6 +323,7 @@ pub fn build_spawn_list(
     if loc_size == 0 {
         return;
     }
+    println!("loc size: {}", loc_size);
     let mut spawns: HashMap<usize, String> = HashMap::new();
     let mut spawn_locs: Vec<usize> = Vec::from(loc);
     let num_mobs = if !is_room {
@@ -356,7 +367,7 @@ pub fn spawn_from_list(
         }
     }
 
-    // Insert itens in chests.
+    // Insert items in chests.
     populate_containers(ecs, raws, rng);
     // Equip mobs with equipment.
     equip_mobs(ecs, raws, rng);
