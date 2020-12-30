@@ -2,7 +2,6 @@ use super::{
     common::draw_list, common::draw_named_box, WINDOW_HEIGHT, WINDOW_WIDTH, X_OFFSET, Y_OFFSET,
 };
 use crate::components::{Equipable, Equipment, Inventory, Name, SelectedItem};
-use crate::utils::colors::*;
 use bracket_lib::prelude::*;
 use specs::prelude::*;
 
@@ -64,7 +63,7 @@ pub fn show_equipment(
 
     draw_named_box("·EQUIPMENT·", x1, y1, w, h, draw_batch);
     let equips_names_vec: Vec<String> = equips_vec.clone().into_iter().map(|x| x.0).collect();
-    draw_list(equips_names_vec, x1, y1, w, draw_batch);
+    draw_list(equips_names_vec, x1, y1, draw_batch);
 
     let equips_len = equips_vec.len() as i32;
     match term.key {

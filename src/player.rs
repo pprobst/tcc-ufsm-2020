@@ -307,7 +307,7 @@ enum PossibleContexts {
     Nothing,
     Door,
     Container,
-    ExitLevel,
+    //ExitLevel,
 }
 
 /// Does a contextual action (i.e. opens a door if there's one nearby, talk, etc).

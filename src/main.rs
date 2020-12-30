@@ -111,7 +111,7 @@ fn main() -> BError {
 
     game_state.ecs.insert(RandomNumberGenerator::new());
 
-    let map = game_state.generate_new_map(height, width);
+    game_state.generate_new_map(height, width);
     game_state.ecs.insert(Point::new(0, 0));
     let player = spawner::create_player(&mut game_state.ecs);
     game_state.ecs.insert(player);

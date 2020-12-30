@@ -15,11 +15,11 @@ use strum_macros::Display;
 
 #[derive(Display, Debug, Copy, Clone)]
 pub enum MapType {
-    Forest,
+    //Forest,
     Ruins,
-    Cave,
-    Structure,
-    Town,
+    //Cave,
+    //Structure,
+    //Town,
 }
 
 #[derive(Clone, Debug)]

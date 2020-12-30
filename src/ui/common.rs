@@ -129,7 +129,7 @@ pub fn draw_list_items(
     }
 }
 
-pub fn draw_list(list: Vec<String>, x1: i32, y1: i32, w: i32, draw_batch: &mut DrawBatch) {
+pub fn draw_list(list: Vec<String>, x1: i32, y1: i32, draw_batch: &mut DrawBatch) {
     let black = color("Background", 1.0);
     let white = color("White", 1.0);
     let mut i = 0;

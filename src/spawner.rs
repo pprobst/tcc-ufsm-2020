@@ -120,6 +120,8 @@ pub fn equip_player(ecs: &mut World) {
     let pants = spawn_item("Bombacho", None, ecs.create_entity(), raws).unwrap();
     let ammo = spawn_item(".32 Ammo", None, ecs.create_entity(), raws).unwrap();
     let cloak = spawn_item("Sagum", None, ecs.create_entity(), raws).unwrap();
+    let gloves = spawn_item("Hide Gloves", None, ecs.create_entity(), raws).unwrap();
+    let boots = spawn_item("Leather Boots", None, ecs.create_entity(), raws).unwrap();
     let mut equipments = ecs.write_storage::<Equipment>();
     let player_ent = ecs.fetch::<Entity>();
 
@@ -156,6 +158,24 @@ pub fn equip_player(ecs: &mut World) {
             Equipment {
                 user: *player_ent,
                 equip: cloak,
+            },
+        )
+        .expect("FAILED to equip item.");
+        equipments
+        .insert(
+            gloves,
+            Equipment {
+                user: *player_ent,
+                equip: gloves,
+            },
+        )
+        .expect("FAILED to equip item.");
+        equipments
+        .insert(
+            boots,
+            Equipment {
+                user: *player_ent,
+                equip: boots,
             },
         )
         .expect("FAILED to equip item.");

@@ -71,7 +71,7 @@ pub fn show_tooltip(
         let mut x = mouse_real_pos.0 + 1;
         let mut y = mouse_real_pos.1 + 1;
         if x + tooltip.width() >= WINDOW_WIDTH {
-            x = x - tooltip.width();
+            x = x - tooltip.width() + 5;
         }
         if y + tooltip.height() >= WINDOW_HEIGHT - Y_OFFSET {
             y = y - tooltip.height() - 1;

@@ -111,7 +111,7 @@
                 slot: "weapon2",
             ),
             missile: (
-                damage: "1d5",
+                damage: "2d8",
                 range: 8,
                 class: "pistol",
                 ammo_type: "_32",
@@ -199,6 +199,40 @@
             ),
             equipable: (
                 slot: "back",
+            ),
+            armor: (
+                defense: 1,
+            ),
+        ),
+        (
+            name: "Hide Gloves",
+            descr: "May your hands be forever warm.",
+            tier: 1,
+            renderable: (
+                glyph: 'G',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "hands",
+            ),
+            armor: (
+                defense: 1,
+            ),
+        ),
+        (
+            name: "Leather Boots",
+            descr: "Trusty ",
+            tier: 1,
+            renderable: (
+                glyph: 'B',
+                fg: "Magenta",
+                bg: "Background",
+                layer: 0,
+            ),
+            equipable: (
+                slot: "feet",
             ),
             armor: (
                 defense: 1,

@@ -256,10 +256,19 @@ pub fn spawn_item(
                         slot: EquipSlot::Weapon2,
                     })
                 }
-
+                "head" => {
+                    ent = ent.with(Equipable {
+                        slot: EquipSlot::Head,
+                    })
+                }
                 "torso" => {
                     ent = ent.with(Equipable {
                         slot: EquipSlot::Torso,
+                    })
+                }
+                "hands" => {
+                    ent = ent.with(Equipable {
+                        slot: EquipSlot::Hands,
                     })
                 }
                 "legs" => {
@@ -272,7 +281,16 @@ pub fn spawn_item(
                         slot: EquipSlot::Back,
                     })
                 }
-
+                "feet" => {
+                    ent = ent.with(Equipable {
+                        slot: EquipSlot::Feet,
+                    })
+                }
+                "floating" => {
+                    ent = ent.with(Equipable {
+                        slot: EquipSlot::Floating,
+                    })
+                }
                 _ => return None,
             }
         }
