@@ -260,7 +260,7 @@ impl GameState for State {
                     self.set_colorscheme("wryan", term, curr_state);
                 }
                 if let VirtualKeyCode::F6 = key {
-                    self.set_colorscheme("elemental", term, curr_state);
+                    self.set_colorscheme("vherid_dusk", term, curr_state);
                 }
                 if let VirtualKeyCode::F7 = key {
                     self.set_colorscheme("spacegray_80s", term, curr_state);

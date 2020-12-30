@@ -38,7 +38,7 @@ impl Popup {
     }
 
     pub fn render_tooltip(&self, x: i32, y: i32, draw_batch: &mut DrawBatch) {
-        let white = color("White", 1.0);
+        let white = color("BrightWhite", 1.0);
         let gray = color("BrightBlack", 1.0);
         let black = color("Background", 1.0);
         draw_batch.draw_box(
@@ -61,7 +61,7 @@ impl Popup {
     }
 
     pub fn render_popup(&self, draw_batch: &mut DrawBatch) {
-        let white = color("White", 1.0);
+        let white = color("BrightWhite", 1.0);
         let gray = color("BrightBlack", 1.0);
         let black = color("Background", 1.0);
         let x = (WINDOW_WIDTH - 1 - self.width()).abs();
@@ -95,7 +95,7 @@ pub fn draw_list_items(
     draw_batch: &mut DrawBatch,
 ) {
     let black = color("Background", 1.0);
-    let white = color("White", 1.0);
+    let white = color("BrightWhite", 1.0);
     let mut i = 0;
     let mut y = y1 + 1;
     for item in items_vec.iter() {
@@ -131,7 +131,7 @@ pub fn draw_list_items(
 
 pub fn draw_list(list: Vec<String>, x1: i32, y1: i32, draw_batch: &mut DrawBatch) {
     let black = color("Background", 1.0);
-    let white = color("White", 1.0);
+    let white = color("BrightWhite", 1.0);
     let mut i = 0;
     let mut y = y1 + 1;
 

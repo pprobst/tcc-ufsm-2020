@@ -61,7 +61,7 @@ pub fn boxes(draw_batch: &mut DrawBatch) {
 /// Renders the player's name and their possible stats.
 pub fn name_stats(ecs: &World, draw_batch: &mut DrawBatch) {
     let black = color("Background", 1.0);
-    let white = color("White", 1.0);
+    let white = color("BrightWhite", 1.0);
     let red = color("Red", 1.0);
     let cyan = color("Cyan", 1.0);
     let med_red = color("BrightRed", 1.0);
@@ -123,7 +123,7 @@ pub fn show_equipped(ecs: &World, draw_batch: &mut DrawBatch) {
     let entities = ecs.entities();
 
     let black = color("Background", 1.0);
-    let white = color("White", 1.0);
+    let white = color("BrightWhite", 1.0);
     let gray = color("BrightBlack", 1.0);
     let mut melee_color = white;
     let mut ranged_color = white;

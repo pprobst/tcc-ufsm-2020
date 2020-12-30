@@ -283,7 +283,7 @@
             // default_ai: "hostile",
             renderable: (
                 glyph: 'm',
-                fg: "Red",
+                fg: "BrightRed",
                 bg: "Background",
                 layer: 1,
             ),

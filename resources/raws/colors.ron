@@ -5,6 +5,29 @@
     // See: https://extended-ascii-viewer.herokuapp.com/
     colorschemes: [
         (
+            name: "vherid_dusk",
+            colors: {
+                "Black":"#0A0A0A",
+                "Shadow":"#3B3231",
+                "Blue":"#04518C",
+                "BrightBlack":"#4F494C",
+                "BrightBlue":"#00B0EE",
+                "BrightCyan":"#0CBBA0",
+                "BrightGreen":"#A6B000",
+                "BrightMagenta":"#CE4901",
+                "BrightRed":"#A00307",
+                "BrightWhite":"#F2F7E6",
+                "BrightYellow":"#FFB74D",
+                "Cyan":"#0C4F4C",
+                "Green":"#5D6D06",
+                "Magenta":"#8E2800",
+                "Red":"#830A30",
+                "White":"#806D63",
+                "Yellow":"#EB8800",
+                "Background":"#0A0A0A",
+            },
+        ),
+        (
             name: "tango_dark",
             colors: {
                 "Black":"#000000",
@@ -49,29 +72,6 @@
                 "White":"#899ca1",
                 "Yellow":"#7c7c99",
                 "Background":"#101010"
-            },
-        ),
-        (
-            name: "elemental",
-            colors: {
-                "Black":"#3c3b30",
-                "Shadow":"#3B3231",
-                "Blue":"#497f7d",
-                "BrightBlack":"#545444",
-                "BrightBlue":"#78d8d8",
-                "BrightCyan":"#58d598",
-                "BrightGreen":"#60e06f",
-                "BrightMagenta":"#cd7c53",
-                "BrightRed":"#df502a",
-                "BrightWhite":"#fff1e8",
-                "BrightYellow":"#d69827",
-                "Cyan":"#387f58",
-                "Green":"#479942",
-                "Magenta":"#7e4e2e",
-                "Red":"#97280f",
-                "White":"#807974",
-                "Yellow":"#7f7110",
-                "Background":"#21211c",
             },
         ),
         (
