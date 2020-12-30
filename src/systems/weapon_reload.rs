@@ -42,24 +42,26 @@ impl<'a> System<'a> for WeaponReloadSystem {
                 let ammo_type = &w.ammo.ammo_type;
                 for (e, _inv) in (&entities, &inventory).join() {
                     if let Some(amm) = ammo.get_mut(e) {
-                        if amm.ammo_type == *ammo_type {
+                        if amm.ammo_type == *ammo_type && amm.ammo > 0 {
                             match ammo_type {
                                 AmmoType::_32 => {
                                     amm.ammo -= 1;
-                                    // TODO remove ammo from inventory if it reaches 0. Maybe add item drop?
+                                    if amm.ammo == 0 { 
+                                        entities.delete(e).ok();
+                                    }
                                     w.ammo.ammo += 1;
+                                    if ent == *player {
+                                        log.add(
+                                            format!(
+                                                "You reload the {}.",
+                                                names.get(reload.weapon).unwrap().name
+                                            ),
+                                            color("BrightWhite", 1.0),
+                                        );
+                                    }
                                 }
                                 _ => {}
                             }
-                        }
-                        if ent == *player {
-                            log.add(
-                                format!(
-                                    "You reload the {}.",
-                                    names.get(reload.weapon).unwrap().name
-                                ),
-                                color("BrightWhite", 1.0),
-                            );
                         }
                     }
                 }

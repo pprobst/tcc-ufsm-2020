@@ -74,7 +74,7 @@
                 slot: "weapon1",
             ),
             melee: (
-                damage: "1d4",
+                damage: "1d4+2",
                 class: "dagger"
             ),
         ),
@@ -92,7 +92,7 @@
                 slot: "weapon1",
             ),
             melee: (
-                damage: "1d3",
+                damage: "1d4",
                 class: "axe"
             ),
         ),
@@ -111,7 +111,7 @@
                 slot: "weapon2",
             ),
             missile: (
-                damage: "2d8",
+                damage: "1d8+5",
                 range: 8,
                 class: "pistol",
                 ammo_type: "_32",
@@ -287,11 +287,11 @@
                 bg: "Background",
                 layer: 1,
             ),
-            fov_range: 20,
+            fov_range: 15,
             blocker: true,
             stats: (
-                hp: 7,
-                max_hp: 7,
+                hp: 8,
+                max_hp: 8,
                 attack: "1d3+1",
                 attack_range: 0,
                 defense: 1,
