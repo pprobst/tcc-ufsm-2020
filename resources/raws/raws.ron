@@ -223,7 +223,7 @@
         ),
         (
             name: "Leather Boots",
-            descr: "Trusty ",
+            descr: "Trusty footwear.",
             tier: 1,
             renderable: (
                 glyph: 'B',

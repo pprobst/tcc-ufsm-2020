@@ -56,6 +56,7 @@ impl<'a> System<'a> for HostileAISystem {
                     map.clear_blocker(pos.x, pos.y);
                     pos.x = a_star.steps[1] as i32 % map.width;
                     pos.y = a_star.steps[1] as i32 / map.width;
+                    map.add_blocker(pos.x, pos.y);
                     fov.dirty = true;
                 }
             }
