@@ -1,4 +1,4 @@
-use super::{Map, Tile};
+use super::{Map, Tile, Point};
 use bracket_lib::prelude::{to_char, XpFile};
 
 /*
@@ -25,6 +25,8 @@ impl PrefabMap {
         let prefab_map = XpFile::from_resource(self.template).unwrap();
 
         for layer in &prefab_map.layers {
+            println!("height: {}", layer.height);
+            println!("width: {}", layer.width);
             for y in 0..layer.height {
                 for x in 0..layer.width {
                     let cell = layer.get(x, y).unwrap();
@@ -34,6 +36,28 @@ impl PrefabMap {
                     //map.paint_tile_char(idx, (cell.ch as u8) as char);
                     map.paint_tile_char(idx, to_char(cell.ch as u8));
                 }
+            }
+        }
+    }
+
+    pub fn repeat_template(&mut self, map: &mut Map) {
+        let prefab_map = XpFile::from_resource(self.template).unwrap();
+
+        for layer in &prefab_map.layers {
+            let tx = map.width / (layer.width as i32);
+            let ty = map.height / (layer.height as i32);
+            for y in 0..ty {
+                for x in 0..tx {
+                    let start = Point::new(x * layer.width as i32, y * layer.height as i32);
+                    let end = Point::new((x + 1) * layer.width as i32, (y + 1) * layer.height as i32);
+                    for py in start.y..end.y {
+                        for px in start.x..end.x {
+                            let cell = layer.get((px-start.x) as usize, (py-start.y) as usize).unwrap();
+                            let idx = map.idx(px, py);
+                            map.paint_tile_char(idx, to_char(cell.ch as u8));
+                        }
+                    }
+                }   
             }
         }
     }
