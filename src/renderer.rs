@@ -198,7 +198,8 @@ impl<'a> Renderer<'a> {
 
         for (pos, render, ent) in render_data {
             let idx = map.idx(pos.x, pos.y);
-            if map.tiles[idx].visible || show_map {
+            //if map.tiles[idx].visible || show_map {
+            if map.tiles[idx].visible {
                 let ent_x = pos.x - min_x;
                 let ent_y = pos.y - min_y;
                 if map.in_map_bounds_xy(ent_x, ent_y) {

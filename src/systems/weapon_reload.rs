@@ -46,7 +46,7 @@ impl<'a> System<'a> for WeaponReloadSystem {
                             match ammo_type {
                                 AmmoType::_32 => {
                                     amm.ammo -= 1;
-                                    if amm.ammo == 0 { 
+                                    if amm.ammo == 0 {
                                         entities.delete(e).ok();
                                     }
                                     w.ammo.ammo += 1;

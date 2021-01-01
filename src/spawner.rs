@@ -161,7 +161,7 @@ pub fn equip_player(ecs: &mut World) {
             },
         )
         .expect("FAILED to equip item.");
-        equipments
+    equipments
         .insert(
             gloves,
             Equipment {
@@ -170,7 +170,7 @@ pub fn equip_player(ecs: &mut World) {
             },
         )
         .expect("FAILED to equip item.");
-        equipments
+    equipments
         .insert(
             boots,
             Equipment {

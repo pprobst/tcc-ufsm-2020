@@ -1,4 +1,4 @@
-use super::{Map, Tile, Point};
+use super::{Map, Point, Tile};
 use bracket_lib::prelude::{to_char, XpFile};
 
 /*
@@ -49,15 +49,18 @@ impl PrefabMap {
             for y in 0..ty {
                 for x in 0..tx {
                     let start = Point::new(x * layer.width as i32, y * layer.height as i32);
-                    let end = Point::new((x + 1) * layer.width as i32, (y + 1) * layer.height as i32);
+                    let end =
+                        Point::new((x + 1) * layer.width as i32, (y + 1) * layer.height as i32);
                     for py in start.y..end.y {
                         for px in start.x..end.x {
-                            let cell = layer.get((px-start.x) as usize, (py-start.y) as usize).unwrap();
+                            let cell = layer
+                                .get((px - start.x) as usize, (py - start.y) as usize)
+                                .unwrap();
                             let idx = map.idx(px, py);
                             map.paint_tile_char(idx, to_char(cell.ch as u8));
                         }
                     }
-                }   
+                }
             }
         }
     }

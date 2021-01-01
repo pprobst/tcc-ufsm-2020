@@ -34,17 +34,19 @@ pub struct WaveFunctionCollapse<'a> {
     constraints: Vec<MapTile>,
     frequencies: HashMap<usize, f32>,
     region: &'a CustomRegion,
+    mix_match: bool, // Used for larger inputs.
 }
 
 #[allow(dead_code)]
 impl<'a> WaveFunctionCollapse<'a> {
-    pub fn new(tile_size: i32, region: &'a CustomRegion) -> Self {
+    pub fn new(tile_size: i32, region: &'a CustomRegion, mix_match: bool) -> Self {
         Self {
             tile_size,
             patterns: Vec::new(),
             constraints: Vec::new(),
             frequencies: HashMap::new(),
             region,
+            mix_match,
         }
     }
 
@@ -61,7 +63,7 @@ impl<'a> WaveFunctionCollapse<'a> {
         let patterns = self.patterns.clone();
         //println!("Patterns: {}", patterns.len());
         //map.tiles = vec![Tile::woodenfloor(); (map.width * map.height) as usize];
-        
+
         // !!! ATTENTION !!!
         deduplicate(&mut self.patterns);
 
@@ -152,31 +154,43 @@ impl<'a> WaveFunctionCollapse<'a> {
     fn build_patterns(&mut self, map: &Map, input_x: i32, input_y: i32) {
         self.patterns.clear();
         // Navigate the coordinates of each tile.
-        for ty in 0..(input_y / self.tile_size) {
-            for tx in 0..(input_x / self.tile_size) {
-                let start = Point::new(tx * self.tile_size, ty * self.tile_size);
-                let end = Point::new((tx + 1) * self.tile_size, (ty + 1) * self.tile_size);
+        let y1 = if !self.mix_match {
+            input_y
+        } else {
+            input_y / self.tile_size
+        };
+        let x1 = if !self.mix_match {
+            input_x
+        } else {
+            input_x / self.tile_size
+        };
+        for ty in 0..y1 {
+            for tx in 0..x1 {
+                let start = if !self.mix_match {
+                    Point::new(tx, ty)
+                } else {
+                    Point::new(tx * self.tile_size, ty * self.tile_size)
+                };
+                let end = if !self.mix_match {
+                    Point::new(tx + self.tile_size, ty + self.tile_size)
+                } else {
+                    Point::new((tx + 1) * self.tile_size, (ty + 1) * self.tile_size)
+                };
                 /*
-                 * Example (considering the first tile):
+                 * Example (considering the first tile and mix-and-match):
                  * > tile_size = 6
                  *
-                 * |--> x1 = 0 * 6 = 0
+                 * |--> start.x = 0 * 6 = 0
                  * |
-                 * #######--> x2 = (0+1) * 6 = 6
+                 * #######--> end.x = (0+1) * 6 = 6
                  * #.....#
                  * #.....#
                  * #.....#
                  * #.....#
                  * #.....#
-                 * #######--> y2 = (0+1) * 6 = 6
+                 * #######--> end.y = (0+1) * 6 = 6
                  * |
-                 * |--> y1 = 0 * 6 = 0
-                 *
-                 * For the second tile, 0 will be 1.
-                 * For the third tile, 1 will be 2.
-                 * And so on...
-                 * That is, the x2 and y2 of the current tile will be
-                 * the x1 and y1 of the next tile.
+                 * |--> start.y = 0 * 6 = 0
                  *
                  */
                 let normal_pattern = self.get_pattern(map, start, end, "normal");
@@ -220,23 +234,23 @@ impl<'a> WaveFunctionCollapse<'a> {
                 compatible: Vec::new(),
                 size: self.tile_size,
             };
-            println!("{:?}", p1);
+            //println!("{:?}", p1);
             for (j, p2) in self.patterns.iter().enumerate() {
                 if self.is_compatible(p1, p2, NORTH) {
                     map_tile.compatible.push((j, NORTH));
-                    println!("{} compat with {:?} NORTH", i, j);
+                    //println!("{} compat with {:?} NORTH", i, j);
                 }
                 if self.is_compatible(p1, p2, SOUTH) {
                     map_tile.compatible.push((j, SOUTH));
-                    println!("{} compat with {:?} SOUTH", i, j);
+                    //println!("{} compat with {:?} SOUTH", i, j);
                 }
                 if self.is_compatible(p1, p2, EAST) {
                     map_tile.compatible.push((j, EAST));
-                    println!("{} compat with {:?} EAST", i, j);
+                    //println!("{} compat with {:?} EAST", i, j);
                 }
                 if self.is_compatible(p1, p2, WEST) {
                     map_tile.compatible.push((j, WEST));
-                    println!("{} compat with {:?} WEST", i, j);
+                    //println!("{} compat with {:?} WEST", i, j);
                 }
             }
             self.constraints.push(map_tile);

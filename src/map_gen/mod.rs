@@ -191,8 +191,7 @@ impl MapGenerator {
         */
 
         //self.wfc_test(idx);
-        
-        self.level_01(idx)
+        self.level_01(idx);
 
         /*
         match idx {
@@ -209,15 +208,7 @@ impl MapGenerator {
 
         let reg1 = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
 
-        self.gen_wfc(
-            idx,
-            Some(reg1),
-            "resources/wfc_6x6.xp",
-            6,
-            6,
-            3,
-        );
-
+        self.gen_wfc(idx, Some(reg1), "resources/wfc_6x6.xp", 6, 6, 2, false);
     }
 
     /*
@@ -299,7 +290,7 @@ impl MapGenerator {
             if self.rng.range(0, 4) > 1 || (room.width() >= 6 && room.height() >= 6) {
                 let room_reg =
                     &CustomRegion::new_rect(room.x1, room.y1, room.width(), room.height());
-                self.gen_wfc(idx, Some(room_reg), "resources/wfc_6x6.xp", 8, 8, 4);
+                self.gen_wfc(idx, Some(room_reg), "resources/wfc_6x6.xp", 9, 9, 2, false);
             }
         }
 
@@ -324,6 +315,7 @@ impl MapGenerator {
             20,
             20,
             10,
+            true,
         );
         if self.rng.range(0, 2) < 1 {
             self.gen_digger(idx, Some(region_middle));
@@ -342,6 +334,7 @@ impl MapGenerator {
                     9,
                     9,
                     3,
+                    false,
                 );
             }
         }
@@ -365,6 +358,7 @@ impl MapGenerator {
         w: i32,
         h: i32,
         tile_size: i32,
+        mix_match: bool,
     ) {
         let map_region = &self.maps[idx].get_region();
         let reg = if region != None {
@@ -375,8 +369,10 @@ impl MapGenerator {
 
         let mut input = PrefabMap::new(template);
         input.generate(&mut self.wfc_input);
+        input.repeat_template(&mut self.wfc_input);
         //input.generate(&mut self.maps[idx]);
-        let mut wfc = WaveFunctionCollapse::new(tile_size, &reg);
+        //input.repeat_template(&mut self.maps[idx]);
+        let mut wfc = WaveFunctionCollapse::new(tile_size, &reg, mix_match);
         // (output, input taken, template width, template height, rng)
         wfc.generate(&mut self.maps[idx], &self.wfc_input, w, h, &mut self.rng);
     }
