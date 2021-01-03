@@ -343,7 +343,7 @@ pub fn build_spawn_list(
     if loc_size == 0 {
         return;
     }
-    println!("loc size: {}", loc_size);
+    //println!("loc size: {}", loc_size);
     let mut spawns: HashMap<usize, String> = HashMap::new();
     let mut spawn_locs: Vec<usize> = Vec::from(loc);
     let num_mobs = if !is_room {

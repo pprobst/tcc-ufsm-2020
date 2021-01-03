@@ -64,7 +64,6 @@ impl<'a> WaveFunctionCollapse<'a> {
         //println!("Patterns: {}", patterns.len());
         //map.tiles = vec![Tile::woodenfloor(); (map.width * map.height) as usize];
 
-        // !!! ATTENTION !!!
         deduplicate(&mut self.patterns);
 
         self.build_constraints(); // patterns + adjacency rules
@@ -98,7 +97,7 @@ impl<'a> WaveFunctionCollapse<'a> {
     fn init_cells(&self, n_cells: i32, rng: &mut RandomNumberGenerator) -> Vec<Cell> {
         let mut cells: Vec<Cell> = Vec::new();
         for _i in 0..n_cells {
-            let noise = rng.range(0.000001f32, 0.000009f32); // Random noise to break entropy ties
+            let noise = rng.rand::<f32>() / 10000.0; // Random noise to break entropy ties
             let cell = Cell::new(self.constraints.len(), noise);
             cells.push(cell);
         }
@@ -141,7 +140,7 @@ impl<'a> WaveFunctionCollapse<'a> {
             for y in y1..y2 {
                 for x in x1..x2 {
                     let map_idx = map.idx(x, y);
-                    let tile_idx = cell.possible_tiles[0];
+                    let tile_idx = cell.possible_tiles[0]; // Only one because the cell is collapsed.
                     let tile = self.constraints[tile_idx].pattern[j];
                     map.paint_tile(map_idx, tile);
                     j += 1;
@@ -155,7 +154,7 @@ impl<'a> WaveFunctionCollapse<'a> {
         self.patterns.clear();
         // Navigate the coordinates of each tile.
         let y1 = if !self.mix_match {
-            input_y
+            input_y 
         } else {
             input_y / self.tile_size
         };
@@ -176,23 +175,6 @@ impl<'a> WaveFunctionCollapse<'a> {
                 } else {
                     Point::new((tx + 1) * self.tile_size, (ty + 1) * self.tile_size)
                 };
-                /*
-                 * Example (considering the first tile and mix-and-match):
-                 * > tile_size = 6
-                 *
-                 * |--> start.x = 0 * 6 = 0
-                 * |
-                 * #######--> end.x = (0+1) * 6 = 6
-                 * #.....#
-                 * #.....#
-                 * #.....#
-                 * #.....#
-                 * #.....#
-                 * #######--> end.y = (0+1) * 6 = 6
-                 * |
-                 * |--> start.y = 0 * 6 = 0
-                 *
-                 */
                 let normal_pattern = self.get_pattern(map, start, end, "normal");
                 let vert_pattern = self.get_pattern(map, start, end, "vertical");
                 let horiz_pattern = self.get_pattern(map, start, end, "horizontal");
@@ -236,6 +218,7 @@ impl<'a> WaveFunctionCollapse<'a> {
             };
             //println!("{:?}", p1);
             for (j, p2) in self.patterns.iter().enumerate() {
+                //if p1 == p2 { continue; }
                 if self.is_compatible(p1, p2, NORTH) {
                     map_tile.compatible.push((j, NORTH));
                     //println!("{} compat with {:?} NORTH", i, j);

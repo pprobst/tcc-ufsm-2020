@@ -53,7 +53,7 @@ impl MapGenerator {
             rooms: Vec::new(),
             tunnels: HashSet::new(),
             regions: HashSet::new(),
-            wfc_input: Map::new(80, 60, TileType::Wall, None),
+            wfc_input: Map::new(80, 60, TileType::Floor, None),
             rng: RandomNumberGenerator::new(),
         }
     }
@@ -65,7 +65,7 @@ impl MapGenerator {
         let maptype = self.maps[idx].get_maptype();
         let spawn_table = get_spawn_table_for_level(idx + 1, maptype, raws);
 
-        println!("{:?}", spawn_table);
+        //println!("{:?}", spawn_table);
         let mut spawn_list: Vec<(usize, String)> = Vec::new();
 
         {
@@ -105,7 +105,7 @@ impl MapGenerator {
                 );
             }
         }
-        println!("Spawn list size: {}", spawn_list.len());
+        //println!("Spawn list size: {}", spawn_list.len());
         spawn_from_list(ecs, spawn_list, &self.maps[idx], raws, &mut self.rng);
     }
 
@@ -192,6 +192,9 @@ impl MapGenerator {
 
         //self.wfc_test(idx);
         self.level_01(idx);
+        //self.maps[idx].set_maptype(MapType::Ruins);
+        //self.maps[idx].set_spawn(Position::new(8, 16));
+        //self.wfc_01(idx);
 
         /*
         match idx {
@@ -208,7 +211,7 @@ impl MapGenerator {
 
         let reg1 = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
 
-        self.gen_wfc(idx, Some(reg1), "resources/wfc_6x6.xp", 6, 6, 2, false);
+        self.gen_wfc(idx, Some(reg1), "resources/wfc_9x9_1.xp", 9, 9, 6, false);
     }
 
     /*
@@ -330,10 +333,10 @@ impl MapGenerator {
                 self.gen_wfc(
                     idx,
                     Some(room_reg),
-                    "resources/wfc_6x6_internal.xp",
-                    9,
-                    9,
-                    3,
+                    "resources/small_6x6.xp",
+                    6,
+                    6,
+                    2,
                     false,
                 );
             }

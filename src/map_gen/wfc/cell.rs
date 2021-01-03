@@ -104,6 +104,9 @@ impl Cell {
         }
         self.sum_possible_weights = total;
         self.sum_possible_weights_log = total_log;
+        //println!("sum:     {}", self.sum_possible_weights);
+        //println!("sum log: {}", self.sum_possible_weights_log);
+        //println!("noise: {}", self.entropy_noise);
     }
 
     /// Selects a tile based on the frequency table.
@@ -112,7 +115,7 @@ impl Cell {
         freq: &HashMap<usize, f32>,
         rng: &mut RandomNumberGenerator,
     ) -> usize {
-        let mut remain = rng.range(0.0, self.sum_possible_weights);
+        let mut remain = rng.rand::<f32>() * self.sum_possible_weights;
 
         for idx in self.possible_tiles.iter() {
             let weight = *freq.get(idx).unwrap();
