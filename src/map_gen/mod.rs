@@ -211,7 +211,7 @@ impl MapGenerator {
 
         let reg1 = &CustomRegion::new_rect(0, 0, self.maps[idx].width, self.maps[idx].height);
 
-        self.gen_wfc(idx, Some(reg1), "resources/wfc_9x9_1.xp", 9, 9, 6, false);
+        self.gen_wfc(idx, Some(reg1), "resources/wfc_9x9_1.xp", 9, 9, 5, false);
     }
 
     /*
@@ -373,7 +373,9 @@ impl MapGenerator {
         let mut input = PrefabMap::new(template);
         input.generate(&mut self.wfc_input);
         input.repeat_template(&mut self.wfc_input);
+        //input.repeat_template_cont(&mut self.wfc_input);
         //input.generate(&mut self.maps[idx]);
+        //input.repeat_template_cont(&mut self.maps[idx]);
         //input.repeat_template(&mut self.maps[idx]);
         let mut wfc = WaveFunctionCollapse::new(tile_size, &reg, mix_match);
         // (output, input taken, template width, template height, rng)

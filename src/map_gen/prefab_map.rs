@@ -64,4 +64,27 @@ impl PrefabMap {
             }
         }
     }
+
+    pub fn repeat_template_cont(&mut self, map: &mut Map) {
+        let prefab_map = XpFile::from_resource(self.template).unwrap();
+
+        for layer in &prefab_map.layers {
+            let xt = layer.width as i32 - 1;
+            let yt = layer.height as i32 - 1;
+            for y in 0..map.height {
+                for x in xt..map.width {
+                    let idx = map.idx(xt, y);
+                    let tile_to_repeat = map.tiles[idx].ttype;
+                    map.paint_tile(map.idx(x, y), tile_to_repeat);
+                }
+            }
+            for y in yt..map.height {
+                for x in 0..map.width {
+                    let idx = map.idx(x, yt);
+                    let tile_to_repeat = map.tiles[idx].ttype;
+                    map.paint_tile(map.idx(x, y), tile_to_repeat);
+                }
+            }
+        }
+    }
 }
