@@ -103,7 +103,7 @@ impl Wave {
     /// Keeps propagating consequences until there are none (think like it's a sudoku game).
     pub fn propagate(&mut self, freq: &HashMap<usize, f32>) -> bool {
         let directions = [EAST, WEST, NORTH, SOUTH];
-        
+
         while let Some(removal_update) = self.tile_removals.pop() {
             //println!("NEW REMOVAL");
             // Iterate through each adjacent tile to the current one.

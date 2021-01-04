@@ -114,7 +114,7 @@ impl<'a> WaveFunctionCollapse<'a> {
             let next_coord = wave.choose_next_cell();
             wave.collapse_cell_at(next_coord, &self.frequencies, rng);
             if !wave.propagate(&self.frequencies) {
-                return false
+                return false;
             }
             wave.uncollapsed_cells -= 1;
         }

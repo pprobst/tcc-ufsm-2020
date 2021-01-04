@@ -360,7 +360,7 @@ pub fn check_near(ecs: &World, pt: Point, map: &mut Map) -> RunState {
                 }
             }
         }
-        None => {},
+        None => {}
     }
 
     // Check for tiles (e.g. doors).
