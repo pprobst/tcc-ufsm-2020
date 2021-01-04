@@ -198,6 +198,9 @@ impl Map {
             '♣' => {
                 self.tiles[idx] = Tile::tree();
             }
+            'T' => {
+                self.tiles[idx] = Tile::tree();
+            }
             '♠' => {
                 self.tiles[idx] = Tile::mushroom();
             }

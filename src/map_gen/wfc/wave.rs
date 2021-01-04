@@ -169,7 +169,6 @@ struct Entropy {
     entropy: f32,
     noise: f32,
 }
-//type MinFloat = Reverse<f32>;
 
 impl Eq for Entropy {}
 
@@ -182,16 +181,10 @@ impl PartialOrd for Entropy {
     }
 }
 
-/*impl Ord for MinFloat {
-    fn cmp(&self, other: &MinFloat) -> Ordering {
-        self.partial_cmp(other).unwrap()
-    }
-}*/
-
 #[derive(PartialEq, Eq, Debug, Clone)]
 struct CoordEntropy {
-    entropy: Entropy,
     coord: Point,
+    entropy: Entropy,
 }
 
 impl PartialOrd for CoordEntropy {
@@ -202,7 +195,6 @@ impl PartialOrd for CoordEntropy {
 
 impl Ord for CoordEntropy {
     fn cmp(&self, other: &Self) -> Ordering {
-        //self.partial_cmp(other).unwrap()
         if self < other {
             return Ordering::Less;
         }

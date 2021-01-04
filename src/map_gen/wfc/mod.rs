@@ -111,11 +111,10 @@ impl<'a> WaveFunctionCollapse<'a> {
     /// Runs the core WFC solver.
     fn run_wave(&mut self, wave: &mut Wave, rng: &mut RandomNumberGenerator) -> bool {
         while wave.uncollapsed_cells > 0 {
-            //println!("> Uncollapsed cells: {}", wave.uncollapsed_cells);
             let next_coord = wave.choose_next_cell();
             wave.collapse_cell_at(next_coord, &self.frequencies, rng);
             if !wave.propagate(&self.frequencies) {
-                return false;
+                return false
             }
             wave.uncollapsed_cells -= 1;
         }
@@ -127,13 +126,10 @@ impl<'a> WaveFunctionCollapse<'a> {
         for (i, cell) in wave.cells.iter().enumerate() {
             let cell_x = i as i32 % wave.out_width;
             let cell_y = i as i32 / wave.out_width;
-            //let x1 = cell_x * self.tile_size;
+
             let x1 = self.region.x1 + cell_x * self.tile_size;
-            //let x2 = (cell_x + 1) * self.tile_size;
             let x2 = self.region.x1 + (cell_x + 1) * self.tile_size;
-            //let y1 = cell_y * self.tile_size;
             let y1 = self.region.y1 + cell_y * self.tile_size;
-            //let y2 = (cell_y + 1) * self.tile_size;
             let y2 = self.region.y1 + (cell_y + 1) * self.tile_size;
 
             let mut j: usize = 0;
@@ -154,7 +150,7 @@ impl<'a> WaveFunctionCollapse<'a> {
         self.patterns.clear();
         // Navigate the coordinates of each tile.
         let y1 = if !self.mix_match {
-            input_y 
+            input_y
         } else {
             input_y / self.tile_size
         };
@@ -175,18 +171,53 @@ impl<'a> WaveFunctionCollapse<'a> {
                 } else {
                     Point::new((tx + 1) * self.tile_size, (ty + 1) * self.tile_size)
                 };
+                //println!("Start: {:?}, End: {:?}", start, end);
                 let normal_pattern = self.get_pattern(map, start, end, "normal");
                 let vert_pattern = self.get_pattern(map, start, end, "vertical");
                 let horiz_pattern = self.get_pattern(map, start, end, "horizontal");
                 let verthoriz_pattern = self.get_pattern(map, start, end, "both");
-                let inverted_pattern = self.get_pattern(map, start, end, "invert");
+                //let inverted_pattern = self.get_pattern(map, start, end, "invert");
                 self.patterns.push(normal_pattern);
                 self.patterns.push(vert_pattern);
                 self.patterns.push(horiz_pattern);
                 self.patterns.push(verthoriz_pattern);
-                self.patterns.push(inverted_pattern);
+                //self.patterns.push(inverted_pattern);
             }
         }
+    }
+
+    /// Returns a pattern (reflected or not) taken from the input.
+    fn get_pattern(&mut self, map: &Map, start: Point, end: Point, rot: &str) -> Vec<TileType> {
+        let mut pattern: Vec<TileType> = Vec::new();
+        for y in start.y..end.y {
+            for x in start.x..end.x {
+                let idx;
+                match rot {
+                    "vertical" => {
+                        idx = map.idx(x, end.y - (y + 1));
+                    }
+                    "horizontal" => {
+                        idx = map.idx(end.x - (x + 1), y);
+                    }
+                    "both" => {
+                        idx = map.idx(end.x - (x + 1), end.y - (y + 1));
+                    }
+                    "invert" => {
+                        if map.in_map_bounds_xy(y, x) {
+                            idx = map.idx(y, x);
+                        } else {
+                            idx = map.idx(x, y);
+                        }
+                        //idx = map.idx(end.y - (y + 1), end.x - (x + 1));
+                    }
+                    _ => {
+                        idx = map.idx(x, y);
+                    }
+                }
+                pattern.push(map.tiles[idx].ttype);
+            }
+        }
+        pattern
     }
 
     /// Compute the relative frequencies of each tile.
@@ -219,20 +250,20 @@ impl<'a> WaveFunctionCollapse<'a> {
             //println!("{:?}", p1);
             for (j, p2) in self.patterns.iter().enumerate() {
                 //if p1 == p2 { continue; }
-                if self.is_compatible(p1, p2, NORTH) {
-                    map_tile.compatible.push((j, NORTH));
-                    //println!("{} compat with {:?} NORTH", i, j);
-                }
-                if self.is_compatible(p1, p2, SOUTH) {
-                    map_tile.compatible.push((j, SOUTH));
-                    //println!("{} compat with {:?} SOUTH", i, j);
-                }
                 if self.is_compatible(p1, p2, EAST) {
                     map_tile.compatible.push((j, EAST));
-                    //println!("{} compat with {:?} EAST", i, j);
+                    //println!("{} compat with {:?} NORTH", i, j);
                 }
                 if self.is_compatible(p1, p2, WEST) {
                     map_tile.compatible.push((j, WEST));
+                    //println!("{} compat with {:?} SOUTH", i, j);
+                }
+                if self.is_compatible(p1, p2, NORTH) {
+                    map_tile.compatible.push((j, NORTH));
+                    //println!("{} compat with {:?} EAST", i, j);
+                }
+                if self.is_compatible(p1, p2, SOUTH) {
+                    map_tile.compatible.push((j, SOUTH));
                     //println!("{} compat with {:?} WEST", i, j);
                 }
             }
@@ -269,39 +300,5 @@ impl<'a> WaveFunctionCollapse<'a> {
             }
         }
         true
-    }
-
-    /// Returns a pattern (reflected or not) taken from the input.
-    fn get_pattern(&mut self, map: &Map, start: Point, end: Point, rot: &str) -> Vec<TileType> {
-        let mut pattern: Vec<TileType> = Vec::new();
-        for y in start.y..end.y {
-            for x in start.x..end.x {
-                let idx;
-                match rot {
-                    "vertical" => {
-                        idx = map.idx(x, end.y - (y + 1));
-                    }
-                    "horizontal" => {
-                        idx = map.idx(end.x - (x + 1), y);
-                    }
-                    "both" => {
-                        idx = map.idx(end.x - (x + 1), end.y - (y + 1));
-                    }
-                    "invert" => {
-                        if map.in_map_bounds_xy(y, x) {
-                            idx = map.idx(y, x);
-                        } else {
-                            idx = map.idx(x, y);
-                        }
-                        //idx = map.idx(end.y - (y + 1), end.x - (x + 1));
-                    }
-                    _ => {
-                        idx = map.idx(x, y);
-                    }
-                }
-                pattern.push(map.tiles[idx].ttype);
-            }
-        }
-        pattern
     }
 }

@@ -33,6 +33,9 @@ embedded_resource!(WFC13, "../resources/rex/wfc_14x8.xp");
 embedded_resource!(WFC14, "../resources/rex/wfc_9x9_1.xp");
 embedded_resource!(WFC15, "../resources/rex/wfc_8x8.xp");
 embedded_resource!(WFC16, "../resources/rex/wfc_5x5.xp");
+embedded_resource!(WFC17, "../resources/rex/wfc_8x8_1.xp");
+embedded_resource!(WFC18, "../resources/rex/wfc_20x20_6.xp");
+embedded_resource!(WFC19, "../resources/rex/wfc_4x4.xp");
 
 pub fn load_dungeons() {
     link_resource!(LEVEL01, "resources/level01_80x60.xp");
@@ -55,4 +58,7 @@ pub fn load_dungeons() {
     link_resource!(WFC14, "resources/wfc_9x9_1.xp");
     link_resource!(WFC15, "resources/wfc_8x8.xp");
     link_resource!(WFC16, "resources/wfc_5x5.xp");
+    link_resource!(WFC17, "resources/wfc_8x8_1.xp");
+    link_resource!(WFC18, "resources/wfc_20x20_6.xp");
+    link_resource!(WFC19, "resources/wfc_4x4.xp");
 }
