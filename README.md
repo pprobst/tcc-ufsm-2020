@@ -34,6 +34,15 @@ Then, clone this repository, navigate to it and run ```cargo run``` from your te
 
 Tell me if you have any problems.
 
+While in-game:
+- Use the Vi-keys to move or select targets.
+- Space for contextual action (e.g. open doors).
+- 'i' to access inventory.
+- 'e' to access equipment.
+- 'z' to switch between melee/ranged weapons.
+- 'f' to target and fire.
+- 'r' to reload.
+
 ---
 
 ## Objetivos principais (TCC)
