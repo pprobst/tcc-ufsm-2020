@@ -12,6 +12,8 @@ Embora o jogo não seja totalmente jogável (ou mesmo divertido) no momento,
 ele cumpre minhas expectativas. Um desenvolvimento mais aprofundado ocorrerá de forma independente
 em outro repositório, após a minha graduação.
 
+![In-game screen.](screenshot.png)
+
 ## Wait! I read your article from SBGames 2020! Where do I go?
 [/src/map_gen/](https://github.com/pprobst/tcc-ufsm-2020/tree/master/src/map_gen) contains all the algorithms presented in the article. They're
 generally easy to follow, but for fully understanding WaveFunctionCollapse it
